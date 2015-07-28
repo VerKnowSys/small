@@ -58,8 +58,8 @@ defmodule Sftp do
                 {:ok, handle} ->
                   Logger.debug "Got handle: #{inspect handle}"
                   SFTP.awrite channel, handle, "dane o" # TODO: write real data from local filesystem instead of this
-                  SFTP.stop_channel channel
                   SFTP.close channel, handle
+                  SFTP.stop_channel channel
 
                 {:error, err} ->
                   Logger.error "Error opening file for writing: #{inspect err}"
