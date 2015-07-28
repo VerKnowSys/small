@@ -20,8 +20,8 @@ defmodule Sftp do
   end
 
 
-  def add(server, path_to_file) do
-    GenServer.call(server, {:add, path_to_file})
+  def add(server, local_file, remote_dest_file) do
+    GenServer.call(server, {:add, local_file, remote_dest_file})
   end
 
 
@@ -42,45 +42,58 @@ defmodule Sftp do
   end
 
 
-  def handle_call({:add, remote_dest_file}, _from, ssh_connection) do
+  def read_file_contents a_file do
+    case File.read a_file do
+      {:ok, body} ->
+        body
+    end
+  end
+
+
+
+  def handle_call({:add, local_file, remote_dest_file}, _from, ssh_connection) do
     time = Timer.tc fn ->
-      Logger.info "Handling synchronous task to put file: #{remote_dest_file} to remote: #{hostname}"
-      a_session = SSHConnection.session_channel ssh_connection, :infinity
+      if File.exists?(local_file) and File.regular?(local_file) do
+        Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{hostname}:#{remote_dest_file}"
+        a_session = SSHConnection.session_channel ssh_connection, :infinity
 
-      case a_session do
-        {:ok, session} ->
-          a_channel = SFTP.start_channel ssh_connection
-          case a_channel do
-            {:ok, channel} ->
-              Logger.info "Started channel: #{inspect channel}"
-              a_handle = SFTP.open channel, String.to_char_list(remote_dest_file), [:write]
-              case a_handle do
-                {:ok, handle} ->
-                  Logger.debug "Got handle: #{inspect handle}"
-                  a_write = SFTP.write channel, handle, "dane o" # TODO: write real data from local filesystem instead of this
-                  case a_write do
-                    :ok ->
-                      Logger.info "File written: #{remote_dest_file}"
-                      SFTP.close channel, handle
+        case a_session do
+          {:ok, session} ->
+            a_channel = SFTP.start_channel ssh_connection
+            case a_channel do
+              {:ok, channel} ->
+                Logger.info "Started channel: #{inspect channel}"
+                a_handle = SFTP.open channel, String.to_char_list(remote_dest_file), [:write]
+                case a_handle do
+                  {:ok, handle} ->
+                    Logger.debug "Got handle: #{inspect handle}"
+                    a_write = SFTP.write channel, handle, read_file_contents(local_file)
+                    case a_write do
+                      :ok ->
+                        Logger.info "File written: #{remote_dest_file}"
+                        SFTP.close channel, handle
 
-                    {:error, err} ->
-                      Logger.error "Error writing to file: #{remote_dest_file}!"
-                  end
-                  SFTP.stop_channel channel
+                      {:error, err} ->
+                        Logger.error "Error writing to file: #{remote_dest_file}!"
+                    end
+                    SFTP.stop_channel channel
 
-                {:error, err} ->
-                  Logger.error "Error opening file for writing: #{inspect err}"
-              end
+                  {:error, err} ->
+                    Logger.error "Error opening file for writing: #{inspect err}"
+                end
 
-            {:error, err} ->
-              Logger.error "Error creating SFTP channel"
-          end
+              {:error, err} ->
+                Logger.error "Error creating SFTP channel"
+            end
 
-          Logger.info "Closing session: #{inspect session}"
-          SSHConnection.close ssh_connection, session
+            Logger.info "Closing session: #{inspect session}"
+            SSHConnection.close ssh_connection, session
 
-        {:error, err} ->
-          Logger.error "Failed to create SSH session: #{inspect err}"
+          {:error, err} ->
+            Logger.error "Failed to create SSH session: #{inspect err}"
+        end
+      else
+        Logger.error "Local file not found or not a regular file: #{local_file}!"
       end
     end
 
