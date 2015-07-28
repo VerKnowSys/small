@@ -7,7 +7,7 @@ defmodule SyncEmAll do
 
   def match_events(events, match \\ [:created, :renamed]) do
     Enum.any? events, fn event ->
-      Enum.member?(match, event)
+      Enum.member? match, event
     end
   end
 
