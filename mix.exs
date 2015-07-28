@@ -27,6 +27,9 @@ defmodule SyncEmAll.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0"}]
+    [
+      { :exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0" },
+      { :uuid, "~> 1.0" }
+    ]
   end
 end
