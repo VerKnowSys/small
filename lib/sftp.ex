@@ -57,8 +57,15 @@ defmodule Sftp do
               case a_handle do
                 {:ok, handle} ->
                   Logger.debug "Got handle: #{inspect handle}"
-                  SFTP.awrite channel, handle, "dane o" # TODO: write real data from local filesystem instead of this
-                  SFTP.close channel, handle
+                  a_write = SFTP.write channel, handle, "dane o" # TODO: write real data from local filesystem instead of this
+                  case a_write do
+                    :ok ->
+                      Logger.info "File written: #{remote_dest_file}"
+                      SFTP.close channel, handle
+
+                    {:error, err} ->
+                      Logger.error "Error writing to file: #{remote_dest_file}!"
+                  end
                   SFTP.stop_channel channel
 
                 {:error, err} ->
