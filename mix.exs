@@ -14,7 +14,7 @@ defmodule SyncEmAll.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :exfswatch]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,6 @@ defmodule SyncEmAll.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [{:exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0"}]
   end
 end
