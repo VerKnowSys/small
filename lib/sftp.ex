@@ -9,6 +9,7 @@ defmodule Sftp do
 
 
   def hostname, do: "verknowsys.com"
+  def username, do: "dmilith"
   def port, do: 60022
 
 
@@ -26,7 +27,7 @@ defmodule Sftp do
   ## Callbacks (Server API)
   def init(:ok) do
     SSH.start
-    connection = SSH.connect String.to_char_list(hostname), port, [user_interaction: false, silently_accept_hosts: true, connect_timeout: 5000]
+    connection = SSH.connect String.to_char_list(hostname), port, [user: String.to_char_list(username), user_interaction: false, silently_accept_hosts: true, connect_timeout: 5000]
 
     case connection do
       {:ok, conn} ->
