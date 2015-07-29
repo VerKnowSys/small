@@ -1,6 +1,9 @@
 defmodule SyncSupervisor do
   use Supervisor
 
+  require Logger
+  Logger.info "Loading supervisor"
+
 
   def main [] do
     start :normal, []
