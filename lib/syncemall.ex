@@ -1,5 +1,6 @@
 defmodule SyncEmAll do
   use ExFSWatch, dirs: [System.get_env("HOME") <> "/Pictures/Screenshots"]
+  require Logger
 
   def callback(:stop) do
     IO.puts "STOP"
@@ -22,4 +23,10 @@ defmodule SyncEmAll do
       IO.puts "Matched file: " <> file_path
     end
   end
+
+  def main [] do
+    Logger.info "Launching SyncEmAll"
+
+  end
+
 end
