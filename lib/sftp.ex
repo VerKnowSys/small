@@ -16,12 +16,12 @@ defmodule Sftp do
 
   ## Client API
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+    GenServer.start_link(__MODULE__, :ok, [name: __MODULE__] ++ opts)
   end
 
 
-  def add(server, local_file, remote_dest_file) do
-    GenServer.call(server, {:add, local_file, remote_dest_file}, :infinity)
+  def add(local_file, remote_dest_file) do
+    GenServer.call(__MODULE__, {:add, local_file, remote_dest_file}, :infinity)
   end
 
 
