@@ -1,9 +1,12 @@
 defmodule SyncEmAll do
-  use ExFSWatch, dirs: [System.get_env("HOME") <> "/Pictures/Screenshots"]
+
+  def dirs, do: System.get_env("HOME") <> "/Pictures/Screenshots"
+  use ExFSWatch, dirs: [dirs]
   require Logger
 
+
   def callback(:stop) do
-    IO.puts "STOP"
+    Logger.info "STOP"
   end
 
   def match_events(events, match \\ [:created, :renamed]) do
@@ -20,13 +23,9 @@ defmodule SyncEmAll do
     IO.inspect {file_path, events}
 
     if match_events(events) && match_exts(Path.basename(file_path)) do
-      IO.puts "Matched file: " <> file_path
+      Logger.info "Matched file: " <> file_path
+      Sftp.add file_path, "/home/dmilith/Web/tmp1" # TODO
     end
-  end
-
-  def main [] do
-    Logger.info "Launching SyncEmAll"
-
   end
 
 end
