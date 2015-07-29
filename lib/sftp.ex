@@ -21,7 +21,7 @@ defmodule Sftp do
 
 
   def add(server, local_file, remote_dest_file) do
-    GenServer.call(server, {:add, local_file, remote_dest_file})
+    GenServer.call(server, {:add, local_file, remote_dest_file}, :infinity)
   end
 
 
@@ -67,15 +67,13 @@ defmodule Sftp do
                 case a_handle do
                   {:ok, handle} ->
                     Logger.debug "Got handle: #{inspect handle}"
-                    a_write = SFTP.write channel, handle, read_file_contents(local_file)
-                    case a_write do
-                      :ok ->
-                        Logger.info "File written: #{remote_dest_file}"
-                        SFTP.close channel, handle
-
-                      {:error, err} ->
-                        Logger.error "Error writing to file: #{remote_dest_file}!"
+                    try do
+                      (File.stream! local_file, [:read], 131072)
+                        |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
+                    catch
+                      x -> Logger.error "Error streaming file: #{local_file}: #{inspect x}"
                     end
+                    SFTP.close channel, handle
                     SFTP.stop_channel channel
 
                   {:error, err} ->
@@ -83,7 +81,7 @@ defmodule Sftp do
                 end
 
               {:error, err} ->
-                Logger.error "Error creating SFTP channel"
+                Logger.error "Error creating SFTP channel: #{inspect err}"
             end
 
             Logger.info "Closing session: #{inspect session}"
