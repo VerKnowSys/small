@@ -1,12 +1,15 @@
 defmodule SyncSupervisor do
   use Supervisor
 
+  alias :timer, as: Timer
+
   require Logger
   Logger.info "Loading supervisor"
 
 
   def main [] do
     start :normal, []
+    Timer.sleep :infinity
   end
 
 
@@ -22,7 +25,7 @@ defmodule SyncSupervisor do
   # supervisor callback
   def init([]) do
     children = [
-      worker(Sftp, [], []),
+      worker(Sftp, [], [restart: :permanent])
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1, max_seconds: 5]
   end
