@@ -55,40 +55,29 @@ defmodule Sftp do
     time = Timer.tc fn ->
       if File.exists?(local_file) and File.regular?(local_file) do
         Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{hostname}:#{remote_dest_file}"
-        a_session = SSHConnection.session_channel ssh_connection, :infinity
-
-        case a_session do
-          {:ok, session} ->
-            a_channel = SFTP.start_channel ssh_connection
-            case a_channel do
-              {:ok, channel} ->
-                Logger.info "Started channel: #{inspect channel}"
-                a_handle = SFTP.open channel, String.to_char_list(remote_dest_file), [:write]
-                case a_handle do
-                  {:ok, handle} ->
-                    Logger.debug "Got handle: #{inspect handle}"
-                    try do
-                      (File.stream! local_file, [:read], 131072)
-                        |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
-                    catch
-                      x -> Logger.error "Error streaming file: #{local_file}: #{inspect x}"
-                    end
-                    SFTP.close channel, handle
-                    SFTP.stop_channel channel
-
-                  {:error, err} ->
-                    Logger.error "Error opening file for writing: #{inspect err}"
+        a_channel = SFTP.start_channel ssh_connection
+        case a_channel do
+          {:ok, channel} ->
+            Logger.debug "Started channel: #{inspect channel}"
+            a_handle = SFTP.open channel, String.to_char_list(remote_dest_file), [:write]
+            case a_handle do
+              {:ok, handle} ->
+                try do
+                  (File.stream! local_file, [:read], 131072)
+                    |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
+                catch
+                  x -> Logger.error "Error streaming file: #{local_file}: #{inspect x}"
                 end
+                Logger.debug "Closing channel: #{inspect channel}"
+                SFTP.close channel, handle
+                SFTP.stop_channel channel
 
               {:error, err} ->
-                Logger.error "Error creating SFTP channel: #{inspect err}"
+                Logger.error "Error opening file for writing: #{inspect err}"
             end
 
-            Logger.info "Closing session: #{inspect session}"
-            SSHConnection.close ssh_connection, session
-
           {:error, err} ->
-            Logger.error "Failed to create SSH session: #{inspect err}"
+            Logger.error "Error creating SFTP channel: #{inspect err}"
         end
       else
         Logger.error "Local file not found or not a regular file: #{local_file}!"
