@@ -9,6 +9,7 @@ defmodule Clipboard do
       {:ok, "Copied successfully"}
 
   """
+  @spec put(text :: String.t) :: {:ok, String.t} | {:error, String.t}
   def put text do
     case System.cmd "sh", ["-c", "echo \"$0\" | pbcopy", "#{text}"] do
       {_result, 0} ->
