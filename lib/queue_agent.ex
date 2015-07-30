@@ -39,12 +39,12 @@ defmodule QueueAgent do
   @doc """
   Add an element to current state only if element not already on list
   """
-  def put key do
+  def put element do
     Agent.update @name, fn state ->
-      if Enum.member? state, key do
+      if Enum.member? state, element do
         state
       else
-        [key | state]
+        [element | state]
       end
     end
   end
