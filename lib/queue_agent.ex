@@ -1,42 +1,64 @@
 defmodule QueueAgent do
-    require Logger
+  require Logger
 
-    @name __MODULE__
+  @name __MODULE__
 
 
-    def start_link do
-        Logger.info "Launching QueueAgent"
-        initial_state = []
-        Agent.start_link(fn -> initial_state end, name: @name)
+  def start_link do
+    Logger.info "Launching QueueAgent"
+    initial_state = []
+    Agent.start_link(fn -> initial_state end, name: @name)
+  end
+
+
+  @doc """
+  Gets first state element on list state.
+  """
+  def first do
+    Agent.get @name, fn state ->
+      if Enum.empty? state do
+        :empty
+      else
+        [head | tail] = state
+        head
+      end
     end
+  end
 
 
-    @doc """
-    Pops first state element and remove popped element from current state.
-    """
-    def pop do
-        Agent.get_and_update @name, fn state ->
-            [head | tail] = state
-            {head, tail}
-        end
+  @doc """
+  Gets state of all elements. Don't modify the state
+  """
+  def get_all do
+    Agent.get @name, fn state ->
+      state
     end
+  end
 
 
-    @doc """
-    Gets state of all elements. Don't modify the state
-    """
-    def get_all do
-        Agent.get @name, fn state ->
-            state
-        end
+  @doc """
+  Add an element to current state only if element not already on list
+  """
+  def put key do
+    Agent.update @name, fn state ->
+      if Enum.member? state, key do
+        state
+      else
+        [key | state]
+      end
     end
+  end
 
 
-    @doc """
-    Add an element to current state
-    """
-    def put key do
-        Agent.update @name, fn state -> [key | state] end
+  @doc """
+  Removes an element from current state.
+  """
+  def remove element do
+    Agent.update @name, fn state ->
+      Enum.reject state, fn el ->
+        el == element
+      end
     end
+  end
 
 end
