@@ -2,13 +2,20 @@ defmodule SyncEmAll.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :syncemall,
-     version: "0.0.1",
-     elixir: "~> 1.0",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps,
-     escript: escript]
+    [
+      app: :syncemall,
+      version: "0.0.1",
+      elixir: "~> 1.0",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps,
+      escript: escript,
+      dialyzer: [
+        paths: [
+          "_build/dev/lib/syncemall/ebin",
+        ],
+      ]
+    ]
   end
 
   # Configuration for the OTP application
