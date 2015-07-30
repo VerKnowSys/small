@@ -3,7 +3,6 @@ defmodule Sftp do
   require Logger
 
   alias :ssh, as: SSH
-  alias :ssh_connection, as: SSHConnection
   alias :ssh_sftp, as: SFTP
   alias :timer, as: Timer
 
