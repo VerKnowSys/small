@@ -6,17 +6,17 @@ defmodule Clipboard do
   ## Examples
 
       iex> Clipboard.put "abc"
-      {:ok, "Copied successfully"}
+      :ok
 
   """
-  @spec put(text :: String.t) :: {:ok, String.t} | {:error, String.t}
+  @spec put(text :: String.t) :: :ok | :error
   def put text do
     case System.cmd "sh", ["-c", "echo \"$0\" | pbcopy", "#{text}"] do
       {_result, 0} ->
-        {:ok, "Copied successfully"}
+        :ok
 
-      {_, res} ->
-        {:error, "Can't copy to clipboard. Error: #{res}"}
+      {_, _} ->
+        :error
     end
   end
 

@@ -6,17 +6,17 @@ defmodule Notification do
   ## Examples
 
       iex> Notification.send "abc"
-      {:ok, "Notification sent"}
+      :ok
 
   """
-  @spec send(message :: String.t) :: {:ok, String.t} | {:error, String.t}
+  @spec send(message :: String.t) :: :ok | :error
   def send message do
     case System.cmd "/usr/local/bin/growlnotify", ["-n", "SyncEmAll", "-m", "\"#{message}\""] do
-      {results, 0} ->
-        {:ok, "Notification sent"}
+      {_, 0} ->
+        :ok
 
-      {_, res} ->
-        {:error, "Can't send notification. Error: #{res}"}
+      {_, _} ->
+        :error
     end
   end
 
