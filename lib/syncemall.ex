@@ -28,8 +28,11 @@ defmodule SyncEmAll do
       dest_name = UUID.uuid4
       case username do
         "dmilith" ->
+          link = "http://s.verknowsys.com/#{dest_name}.png"
+          Clipboard.put link
+          Logger.info "Link copied to clipboard: #{link}"
           Sftp.add file_path, "/home/#{username}/Web/Public/Sshots/#{dest_name}.png"
-          Clipboard.put "http://s.verknowsys.com/#{dest_name}.png"
+          Notification.send "Link synchronized: #{link}"
         _ ->
           Logger.error "You should define destination for your user ;P"
       end
