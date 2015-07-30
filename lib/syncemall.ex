@@ -31,10 +31,14 @@ defmodule SyncEmAll do
       case username do
         "dmilith" ->
           link = "http://s.verknowsys.com/#{dest_name}.png"
+          remote_dest_file = "/home/#{username}/Web/Public/Sshots/#{dest_name}.png"
           Clipboard.put link
           Logger.info "Link copied to clipboard: #{link}"
-          Sftp.add file_path, "/home/#{username}/Web/Public/Sshots/#{dest_name}.png"
+          Logger.debug "Adding an element to queue (#{file_path} -> #{remote_dest_file})"
+          QueueAgent.put {:add, file_path, remote_dest_file}
+          Sftp.add
           Notification.send "Link synchronized: #{link}"
+
         _ ->
           Logger.error "You should define destination for your user ;P"
       end
