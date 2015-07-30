@@ -8,7 +8,7 @@ defmodule SyncSupervisor do
 
 
   def main [] do
-    start :normal, []
+    {_ok, _any} = start_link
     Timer.sleep :infinity
   end
 

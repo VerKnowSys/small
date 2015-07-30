@@ -1,12 +1,14 @@
 defmodule SyncEmAll do
-
-  def dirs, do: System.get_env("HOME") <> "/Pictures/Screenshots"
-  use ExFSWatch, dirs: [dirs]
   require Logger
 
+  @spec dirs :: String.t
+  def dirs, do: System.get_env("HOME") <> "/Pictures/Screenshots"
+
+  use ExFSWatch, dirs: [dirs]
 
   def callback(:stop) do
     Logger.info "STOP"
+    {:ok, "Stopped"}
   end
 
   def match_events(events, match \\ [:created, :renamed]) do
