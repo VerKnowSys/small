@@ -24,7 +24,15 @@ defmodule SyncEmAll do
 
     if match_events(events) && match_exts(Path.basename(file_path)) do
       Logger.info "Matched file: " <> file_path
-      Sftp.add file_path, "/home/dmilith/Web/tmp1" # TODO
+      username = System.get_env "USER"
+      dest_name = UUID.uuid4
+      case username do
+        "dmilith" ->
+          Sftp.add file_path, "/home/#{username}/Web/Public/Sshots/#{dest_name}.png"
+          Clipboard.put "http://s.verknowsys.com/#{dest_name}.png"
+        _ ->
+          Logger.error "You should define destination for your user ;P"
+      end
     end
   end
 
