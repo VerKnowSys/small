@@ -65,7 +65,9 @@ defmodule Sftp do
                   (File.stream! local_file, [:read], 131072)
                     |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
                 catch
-                  x -> Logger.error "Error streaming file: #{local_file}: #{inspect x}"
+                  x ->
+                    Notification.send "Error streaming file #{local_file}!"
+                    raise "Error streaming file: #{local_file}: #{inspect x}"
                 end
                 Logger.debug "Closing channel: #{inspect channel}"
                 SFTP.close channel, handle
@@ -76,7 +78,8 @@ defmodule Sftp do
             end
 
           {:error, err} ->
-            Logger.error "Error creating SFTP channel: #{inspect err}"
+            Notification.send "Error creating SFTP channel!"
+            raise "Error creating SFTP channel: #{inspect err}"
         end
       else
         Logger.error "Local file not found or not a regular file: #{local_file}!"
