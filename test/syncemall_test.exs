@@ -1,6 +1,7 @@
 defmodule SyncEmAllTest do
   use ExUnit.Case
   doctest Clipboard
+  doctest Notification
 
   test "the truth" do
     assert 1 + 1 == 2
