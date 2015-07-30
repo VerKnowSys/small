@@ -1,7 +1,7 @@
 defmodule Clipboard do
 
 def put text do
-  case System.cmd "sh", ["-c", "echo $0 | pbcopy", "#{text}"] do
+  case System.cmd "sh", ["-c", "echo \"$0\" | pbcopy", "#{text}"] do
     {results, 0} ->
       {:ok, "Copied successfully"}
 
