@@ -25,6 +25,7 @@ defmodule SyncSupervisor do
   # supervisor callback
   def init([]) do
     children = [
+      worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent])
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1, max_seconds: 5]
