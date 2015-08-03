@@ -1,6 +1,8 @@
 defmodule SyncEmAllApplication do
   use Application
 
+  alias :timer, as: Timer
+
 
   def main [] do
     {_ok, _any} = SyncSupervisor.start_link
