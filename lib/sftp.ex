@@ -1,6 +1,7 @@
 defmodule Sftp do
   use GenServer
   require Logger
+  import Cfg
 
   alias :ssh, as: SSH
   alias :ssh_sftp, as: SFTP
@@ -25,10 +26,10 @@ defmodule Sftp do
   ## Callbacks (Server API)
   def init :ok do
     SSH.start
-    connection = SSH.connect String.to_char_list(ConfigAgent.get :hostname), ConfigAgent.get(:ssh_port),
-      [user: String.to_char_list(ConfigAgent.get :username),
+    connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
+      [user: String.to_char_list(config[:username]),
        user_interaction: false,
-       rsa_pass_phrase: String.to_char_list(ConfigAgent.get :ssh_key_pass),
+       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
        silently_accept_hosts: true,
        connect_timeout: 5000
       ]
@@ -90,7 +91,7 @@ defmodule Sftp do
           |> Enum.map(fn elem ->
             {_, file_path, _, uuid} = elem
             extension = List.last String.split (List.to_string file_path), "."
-            ConfigAgent.get(:address) <> uuid <> "." <> extension
+            config[:address] <> uuid <> "." <> extension
           end)
           |> Enum.join("\n")
           |> Clipboard.put
@@ -98,13 +99,13 @@ defmodule Sftp do
         Logger.debug "Single entry found in QueueAgent, copying to clipboard"
         {_, file_path, _, uuid} = QueueAgent.first
         extension = List.last String.split (List.to_string file_path), "."
-        Clipboard.put ConfigAgent.get(:address) <> uuid <> "." <> extension
+        Clipboard.put config[:address] <> uuid <> "." <> extension
       end
       for element <- QueueAgent.get_all do
         case element do
           {:add, local_file, remote_dest_file, random_uuid} ->
             if File.exists?(local_file) and File.regular?(local_file) do
-              Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{ConfigAgent.get(:hostname)}:#{remote_dest_file}"
+              Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest_file}"
               inner = Timer.tc fn ->
                 send_file ssh_connection, local_file, remote_dest_file, random_uuid
               end

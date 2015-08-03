@@ -1,6 +1,7 @@
 defmodule SyncEmAll do
   require Logger
   use GenServer
+  import Cfg
 
   alias :fs, as: FS
 
@@ -25,11 +26,11 @@ defmodule SyncEmAll do
 
   def process_event file_path do
     random_uuid = UUID.uuid4
-    unless ConfigAgent.get(:username) do
-      raise "Unknown user #{ConfigAgent.user} for ConfigAgent. Define your user and settings first!"
+    unless config[:username] do
+      raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
     end
-    link = "#{ConfigAgent.get :address}#{random_uuid}.png"
-    remote_dest_file = "#{ConfigAgent.get :remote_path}#{random_uuid}.png"
+    link = "#{config[:address]}#{random_uuid}.png"
+    remote_dest_file = "#{config[:remote_path]}#{random_uuid}.png"
 
     QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
     Logger.info "Link copied to clipboard: #{link}"
@@ -39,7 +40,7 @@ defmodule SyncEmAll do
   end
 
 
-  def handle_info({pid, {:fs, :file_event}, {path, event}}, socket) do
+  def handle_info({_pid, {:fs, :file_event}, {path, event}}, _socket) do
     if event == [:renamed, :xattrmod] do
       Logger.debug "Handling event: #{inspect event}"
       process_event path

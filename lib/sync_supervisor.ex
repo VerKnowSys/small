@@ -26,7 +26,6 @@ defmodule SyncSupervisor do
   # supervisor callback
   def init([]) do
     children = [
-      worker(ConfigAgent, [], [restart: :permanent]),
       worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent]),
       worker(SyncEmAll, [], [restart: :permanent])
