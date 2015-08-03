@@ -29,7 +29,13 @@ defmodule Sftp do
     unless config do
       raise "Not configured properly"
     end
-    connection = SSH.connect String.to_char_list(config[:hostname]), config[:port], [user: String.to_char_list(config[:username]), user_interaction: false, rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]), silently_accept_hosts: true, connect_timeout: 5000]
+    connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
+      [user: String.to_char_list(config[:username]),
+       user_interaction: false,
+       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
+       silently_accept_hosts: true,
+       connect_timeout: 5000
+      ]
 
     case connection do
       {:ok, conn} ->
