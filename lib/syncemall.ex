@@ -36,7 +36,6 @@ defmodule SyncEmAll do
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}.png"
 
       QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
-      Clipboard.put link
       Logger.info "Link copied to clipboard: #{link}"
       Logger.debug "Adding an element to queue (#{file_path} -> #{remote_dest_file})"
       Sftp.add
