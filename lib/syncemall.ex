@@ -28,7 +28,7 @@ defmodule SyncEmAll do
       Logger.info "Matched file: " <> file_path
       random_uuid = UUID.uuid4
       unless ConfigAgent.get(:username) do
-        raise "Unknown user #{ConfigAgent.get(:username)} for ConfigAgent. Define your user and settings first!"
+        raise "Unknown user #{ConfigAgent.user} for ConfigAgent. Define your user and settings first!"
       end
       link = "#{ConfigAgent.get :address}#{random_uuid}.png"
       remote_dest_file = "#{ConfigAgent.get :remote_path}#{random_uuid}.png"
