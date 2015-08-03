@@ -29,7 +29,7 @@ defmodule SyncSupervisor do
       worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent])
     ]
-    supervise children, [strategy: :one_for_one, max_restarts: 1, max_seconds: 5]
+    supervise children, [strategy: :one_for_one, max_restarts: 1000, max_seconds: 5]
   end
 
 end
