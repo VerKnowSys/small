@@ -29,7 +29,7 @@ defmodule SyncEmAll.Mixfile do
   end
 
   def escript do
-    [main_module: SyncSupervisor]
+    [main_module: SyncEmAllApplication]
   end
 
   # Dependencies can be Hex packages:
