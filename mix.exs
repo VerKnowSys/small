@@ -23,7 +23,7 @@ defmodule SyncEmAll.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [
-      applications: [:logger, :exfswatch, :uuid],
+      applications: [:logger, :uuid, :fs],
       mod: {SyncSupervisor, []}
     ]
   end
@@ -43,8 +43,9 @@ defmodule SyncEmAll.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      { :exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0" },
-      { :uuid, "~> 1.0" }
+      # { :exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0" },
+      { :uuid, "~> 1.0" },
+      { :fs, "~> 0.9" }
     ]
   end
 end

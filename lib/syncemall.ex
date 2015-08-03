@@ -1,44 +1,51 @@
 defmodule SyncEmAll do
   require Logger
+  use GenServer
 
-  @spec dirs :: String.t
-  def dirs, do: System.get_env("HOME") <> "/Pictures/Screenshots"
+  alias :fs, as: FS
 
-  use ExFSWatch, dirs: [dirs]
 
-  def callback(:stop) do
-    Logger.info "STOP"
-    {:ok, "Stopped"}
+  ## Client API
+  def start_link opts \\ [] do
+    Logger.info "Launching SyncEmAll"
+    GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
-  def match_events(events, match \\ [:created, :renamed]) do
-    Enum.any? events, fn event ->
-      Enum.member? match, event
+
+  def init :ok do
+    fsev = FS.subscribe
+    {:ok, fsev}
+  end
+
+
+  def start :normal, [] do
+    start_link
+  end
+
+
+  def process_event file_path do
+    random_uuid = UUID.uuid4
+    unless ConfigAgent.get(:username) do
+      raise "Unknown user #{ConfigAgent.user} for ConfigAgent. Define your user and settings first!"
     end
+    link = "#{ConfigAgent.get :address}#{random_uuid}.png"
+    remote_dest_file = "#{ConfigAgent.get :remote_path}#{random_uuid}.png"
+
+    QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
+    Logger.info "Link copied to clipboard: #{link}"
+    Logger.debug "Adding an element to queue (#{file_path} -> #{remote_dest_file})"
+    Sftp.add
+    Notification.send "Link synchronized: #{link}"
   end
 
-  def match_exts(filename, pattern \\ ~r/\.[a-zA-Z0-9]{2,4}$/) do
-    Regex.match? pattern, filename
-  end
 
-  def callback(file_path, events) do
-    IO.inspect {file_path, events}
-
-    if match_events(events) && match_exts(Path.basename(file_path)) do
-      Logger.info "Matched file: " <> file_path
-      random_uuid = UUID.uuid4
-      unless ConfigAgent.get(:username) do
-        raise "Unknown user #{ConfigAgent.user} for ConfigAgent. Define your user and settings first!"
-      end
-      link = "#{ConfigAgent.get :address}#{random_uuid}.png"
-      remote_dest_file = "#{ConfigAgent.get :remote_path}#{random_uuid}.png"
-
-      QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
-      Logger.info "Link copied to clipboard: #{link}"
-      Logger.debug "Adding an element to queue (#{file_path} -> #{remote_dest_file})"
-      Sftp.add
-      Notification.send "Link synchronized: #{link}"
+  def handle_info({pid, {:fs, :file_event}, {path, event}}, socket) do
+    if event == [:renamed, :xattrmod] do
+      Logger.debug "Handling event: #{inspect event}"
+      process_event path
+    else
+      Logger.debug "Unhandled event: #{inspect event}"
     end
+    {:noreply, {path, event}}
   end
-
 end

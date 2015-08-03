@@ -8,9 +8,12 @@ use Mix.Config
 # if you want to provide default values for your application for third-
 # party users, it should be done in your mix.exs file.
 
+
+# XXX: can't make this shit working without putting it here
+config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
+
 # Sample configuration:
 #
-#     config :logger, :console,
 #       level: :info,
 #       format: "$date $time [$level] $metadata$message\n",
 #       metadata: [:user_id]
