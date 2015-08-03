@@ -108,16 +108,14 @@ defmodule Sftp do
           {:add, local_file, remote_dest_file, random_uuid} ->
             if File.exists?(local_file) and File.regular?(local_file) do
               Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest_file}"
-              Task.async fn ->
-                inner = Timer.tc fn ->
-                  send_file ssh_connection, local_file, remote_dest_file, random_uuid
-                end
+              inner = Timer.tc fn ->
+                send_file ssh_connection, local_file, remote_dest_file, random_uuid
+              end
 
-                case inner do
-                  {elapsed, _} ->
-                    Logger.info "Inner elapsed: #{elapsed/1000}ms"
+              case inner do
+                {elapsed, _} ->
+                  Logger.info "Sftp file send elapsed: #{elapsed/1000}ms"
 
-                end
               end
             else
               Logger.error "Local file not found or not a regular file: #{local_file}!"
