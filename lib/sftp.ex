@@ -88,8 +88,9 @@ defmodule Sftp do
         Logger.debug "More than one entry found in QueueAgent, merging results"
         QueueAgent.get_all
           |> Enum.map(fn elem ->
-            {_, _, _, uuid} = elem
-            ConfigAgent.get(:address) <> uuid <> ConfigAgent.get(:extension)
+            {_, file_path, _, uuid} = elem
+            extension = List.last(String.split file_path, ".")
+            ConfigAgent.get(:address) <> uuid <> "." <> extension
           end)
           |> Enum.join("\n")
           |> Clipboard.put
@@ -115,9 +116,6 @@ defmodule Sftp do
           :empty ->
             Logger.info "Empty queue. Ignoring request"
         end
-
-          # link = "http://s.verknowsys.com/#{random_uuid}.png"
-
       end
     end
 

@@ -15,7 +15,6 @@ defmodule ConfigAgent do
             address: "http://s.verknowsys.com/",
             remote_path: "/home/dmilith/Web/Public/Sshots/",
             ssh_key_pass: "",
-            extension: ".png"
           ],
           "tallica" => [
             username: "michal",
@@ -24,7 +23,6 @@ defmodule ConfigAgent do
             address: "http://s.tallica.pl/",
             remote_path: "/Users/michal/Screenshots",
             ssh_key_pass: "",
-            extension: ".png"
           ]
         }
       end, name: @name
