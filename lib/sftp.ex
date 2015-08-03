@@ -90,7 +90,7 @@ defmodule Sftp do
     time = Timer.tc fn ->
       user = System.get_env "USER"
       config = ConfigAgent.get user
-      if QueueAgent.get_all > 1 do
+      if (length QueueAgent.get_all) > 1 do
         Logger.debug "More than one entry found in QueueAgent, merging results"
         unless config do
           raise "Unknown user #{user} for ConfigAgent. Define your user and settings first!"
