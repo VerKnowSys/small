@@ -77,7 +77,7 @@ defmodule Sftp do
   end
 
 
-  def handle_call :do_exception, _from, ssh_connection do
+  def handle_call :do_exception, _from, _ssh_connection do
     raise "An exception!"
   end
 
@@ -89,7 +89,7 @@ defmodule Sftp do
         QueueAgent.get_all
           |> Enum.map(fn elem ->
             {_, _, _, uuid} = elem
-            ConfigAgent.get(:address) <> uuid <> ".png" # XXX: hardcode - TODO
+            ConfigAgent.get(:address) <> uuid <> ConfigAgent.get(:extension)
           end)
           |> Enum.join("\n")
           |> Clipboard.put
