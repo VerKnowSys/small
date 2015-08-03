@@ -25,14 +25,10 @@ defmodule Sftp do
   ## Callbacks (Server API)
   def init :ok do
     SSH.start
-    config = ConfigAgent.get System.get_env "USER"
-    unless config do
-      raise "Not configured properly"
-    end
-    connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
-      [user: String.to_char_list(config[:username]),
+    connection = SSH.connect String.to_char_list(ConfigAgent.get :hostname), ConfigAgent.get(:ssh_port),
+      [user: String.to_char_list(ConfigAgent.get :username),
        user_interaction: false,
-       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
+       rsa_pass_phrase: String.to_char_list(ConfigAgent.get :ssh_key_pass),
        silently_accept_hosts: true,
        connect_timeout: 5000
       ]
@@ -88,17 +84,12 @@ defmodule Sftp do
 
   def handle_call :add, _from, ssh_connection do
     time = Timer.tc fn ->
-      user = System.get_env "USER"
-      config = ConfigAgent.get user
-      unless config do
-        raise "Unknown user #{user} for ConfigAgent. Define your user and settings first!"
-      end
       if (length QueueAgent.get_all) > 1 do
         Logger.debug "More than one entry found in QueueAgent, merging results"
         QueueAgent.get_all
           |> Enum.map(fn elem ->
             {_, _, _, uuid} = elem
-            config[:address] <> uuid <> ".png" # XXX: hardcode - TODO
+            ConfigAgent.get(:address) <> uuid <> ".png" # XXX: hardcode - TODO
           end)
           |> Enum.join("\n")
           |> Clipboard.put
@@ -107,7 +98,7 @@ defmodule Sftp do
         case element do
           {:add, local_file, remote_dest_file, random_uuid} ->
             if File.exists?(local_file) and File.regular?(local_file) do
-              Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest_file}"
+              Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{ConfigAgent.get(:hostname)}:#{remote_dest_file}"
               inner = Timer.tc fn ->
                 send_file ssh_connection, local_file, remote_dest_file, random_uuid
               end

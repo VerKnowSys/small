@@ -29,25 +29,28 @@ defmodule ConfigAgent do
   end
 
 
+  def user, do: System.get_env "USER"
+
+
   def get key do
     Agent.get @name, fn state ->
-      Map.get state, key
+      state[user][key]
     end
   end
 
 
-  def get_all do
-    Agent.get @name, fn state ->
-      state
-    end
-  end
+  # def get_all do
+  #   Agent.get @name, fn state ->
+  #     state
+  #   end
+  # end
 
 
-  def set key, value do
-    Agent.update @name, fn state ->
-      Map.put state, key, value
-    end
-  end
+  # def set key, value do
+  #   Agent.update @name, fn state ->
+  #     Map.put state, key, value
+  #   end
+  # end
 
 
 end
