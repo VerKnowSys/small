@@ -89,7 +89,7 @@ defmodule Sftp do
         QueueAgent.get_all
           |> Enum.map(fn elem ->
             {_, file_path, _, uuid} = elem
-            extension = List.last(String.split file_path, ".")
+            extension = List.last String.split file_path, "."
             ConfigAgent.get(:address) <> uuid <> "." <> extension
           end)
           |> Enum.join("\n")
@@ -97,9 +97,8 @@ defmodule Sftp do
       else
         Logger.debug "Single entry found in QueueAgent, copying to clipboard"
         {_, file_path, _, uuid} = QueueAgent.first
-        extension = List.last(String.split file_path, ".")
-        (ConfigAgent.get(:address) <> uuid <> "." <> extension)
-          |> Clipboard.put
+        extension = List.last String.split file_path, "."
+        Clipboard.put ConfigAgent.get(:address) <> uuid <> "." <> extension
       end
       for element <- QueueAgent.get_all do
         case element do
