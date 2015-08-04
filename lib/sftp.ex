@@ -163,9 +163,9 @@ defmodule Sftp do
           |> Enum.join("\n")
           |> Clipboard.put
       else
-        Logger.debug "Single entry found in QueueAgent, copying to clipboard"
         case QueueAgent.first do
           {_, file_path, _, uuid} ->
+            Logger.debug "Single entry found in QueueAgent, copying to clipboard"
             extension = List.last String.split file_path, "."
             Clipboard.put config[:address] <> uuid <> "." <> extension
           :empty ->
@@ -201,7 +201,7 @@ defmodule Sftp do
 
     case time do
       {elapsed, _} ->
-        Logger.info "Outer finished in: #{elapsed/1000}ms"
+        Logger.debug "Whole operation finished in: #{elapsed/1000}ms"
     end
 
     {:reply, ssh_connection, ssh_connection}
