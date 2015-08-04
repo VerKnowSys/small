@@ -1,7 +1,7 @@
 defmodule Notification do
 
   @doc """
-  Sends notification using growlnotify utility
+  Sends notification using native OSX Notification Center
 
   ## Examples
 
