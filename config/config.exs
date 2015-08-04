@@ -18,7 +18,7 @@ config :syncemall, :config,
       hostname: "phoebe.tallica.pl",
       ssh_port: 60022,
       address: "http://s.tallica.pl/",
-      remote_path: "/Users/michal/Screenshots",
+      remote_path: "/Users/michal/Screenshots/",
       ssh_key_pass: "",
     ]
   }
