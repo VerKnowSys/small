@@ -33,7 +33,6 @@ defmodule Sftp do
   ## Callbacks (Server API)
   def init :ok do
     SSH.start
-    # TODO : add config values check to prevent nil
     connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       [user: String.to_char_list(config[:username]),
        user_interaction: false,
