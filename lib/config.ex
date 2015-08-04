@@ -72,4 +72,11 @@ defmodule Cfg do
   end
 
 
+  def log_level level \\ :debug do
+    Logger.warn "Changing log level to: #{inspect level}"
+    Logger.configure [level: level]
+    Logger.configure_backend :console, [level: level]
+  end
+
+
 end
