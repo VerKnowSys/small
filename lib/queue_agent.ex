@@ -19,7 +19,7 @@ defmodule QueueAgent do
       if Enum.empty? state do
         :empty
       else
-        [head | tail] = state
+        [head | _tail] = state
         head
       end
     end
