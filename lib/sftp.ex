@@ -71,7 +71,6 @@ defmodule Sftp do
             Logger.debug "Closing channel: #{inspect channel}"
             SFTP.close channel, handle
             SFTP.stop_channel channel
-            QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
 
           {:error, err} ->
             Logger.error "Error opening file for writing: #{inspect err}"
@@ -117,6 +116,7 @@ defmodule Sftp do
               Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
                 send_file ssh_connection, local_file, remote_dest, random_uuid
+                QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
               end
 
               case inner do
