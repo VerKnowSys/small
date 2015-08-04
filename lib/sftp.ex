@@ -58,7 +58,7 @@ defmodule Sftp do
   def stream_file_to_remote channel, handle, local_file do
     try do
       Logger.info "Streaming file to remote server.."
-      (File.stream! local_file, [:read], 131072)
+      (File.stream! local_file, [:read], sftp_buffer_size)
         |> Enum.each fn chunk ->
           IO.write "."
           SFTP.write channel, handle, chunk, :infinity

@@ -25,6 +25,15 @@ defmodule Cfg do
 
 
   @doc """
+  Returns sftp buffer size
+  """
+  def sftp_buffer_size do
+    Application.get_env :syncemall, :sftp_buffer_size
+  end
+
+
+
+  @doc """
   Returns user specific configuration from global module configuration
   """
   def config do

@@ -2,6 +2,7 @@ use Mix.Config
 
 
 config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
+config :syncemall, :sftp_buffer_size, 131_072
 config :syncemall, :fs_check_interval, 30_000
 config :syncemall, :ssh_connection_timeout, 5_000
 config :syncemall, :config,
