@@ -104,8 +104,7 @@ defmodule Sftp do
           |> Clipboard.put
       else
         Logger.debug "Single entry found in QueueAgent, copying to clipboard"
-        el = QueueAgent.first
-        case el do
+        case QueueAgent.first do
           {_, file_path, _, uuid} ->
             extension = List.last String.split file_path, "."
             Clipboard.put config[:address] <> uuid <> "." <> extension
