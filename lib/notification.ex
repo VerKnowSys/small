@@ -11,7 +11,7 @@ defmodule Notification do
   """
   @spec send(message :: String.t) :: :ok | :error
   def send message do
-    case System.cmd "osascript", ["-e", "display notification \"#{message}\" with title \"SyncEmAll\""] do
+    case System.cmd "osascript", ["-e", "display notification \"#{message}\" sound name \"Default\" with title \"SyncEmAll\""] do
       {_, 0} ->
         :ok
 
