@@ -121,7 +121,6 @@ defmodule Sftp do
               Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
                 send_file ssh_connection, local_file, remote_dest, random_uuid
-                QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
               end
 
               case inner do
@@ -131,8 +130,8 @@ defmodule Sftp do
               end
             else
               Logger.error "Local file not found or not a regular file: #{local_file}!"
-              QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
             end
+            QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
 
           :empty ->
             Logger.info "Empty queue. Ignoring request"
