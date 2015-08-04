@@ -149,28 +149,46 @@ defmodule Sftp do
   end
 
 
+  def build_clipboard do
+    clip_time = Timer.tc fn ->
+      first = QueueAgent.first
+      cond do
+        (length QueueAgent.get_all) > 1 ->
+          Logger.debug "More than one entry found in QueueAgent, merging results"
+          QueueAgent.get_all
+            |> Enum.map(fn elem ->
+              {_, file_path, _, uuid} = elem
+              extension = List.last String.split file_path, "."
+              config[:address] <> uuid <> "." <> extension
+            end)
+            |> Enum.join("\n")
+            |> Clipboard.put
+
+        first != :empty ->
+          case first do
+            {_, file_path, _, uuid} ->
+              Logger.debug "Single entry found in QueueAgent, copying to clipboard"
+              extension = List.last String.split file_path, "."
+              Clipboard.put config[:address] <> uuid <> "." <> extension
+            :empty ->
+              Logger.debug "Skipping copying to clipboard, empty queue"
+          end
+
+        true ->
+          Logger.debug "Clipboard build skipped"
+
+      end
+    end
+    case clip_time do
+      {elapsed, _} ->
+        Logger.info "Clipboard routine done in: #{elapsed/1000}ms"
+    end
+  end
+
+
   def handle_call :add, _from, ssh_connection do
     time = Timer.tc fn ->
-      if (length QueueAgent.get_all) > 1 do
-        Logger.debug "More than one entry found in QueueAgent, merging results"
-        QueueAgent.get_all
-          |> Enum.map(fn elem ->
-            {_, file_path, _, uuid} = elem
-            extension = List.last String.split file_path, "."
-            config[:address] <> uuid <> "." <> extension
-          end)
-          |> Enum.join("\n")
-          |> Clipboard.put
-      else
-        case QueueAgent.first do
-          {_, file_path, _, uuid} ->
-            Logger.debug "Single entry found in QueueAgent, copying to clipboard"
-            extension = List.last String.split file_path, "."
-            Clipboard.put config[:address] <> uuid <> "." <> extension
-          :empty ->
-            Logger.debug "Skipping copying to clipboard, empty queue"
-        end
-      end
+      build_clipboard
       for element <- QueueAgent.get_all do
         case element do
           {:add, local_file, remote_dest_file, random_uuid} ->
