@@ -44,7 +44,7 @@ defmodule Sftp do
     case connection do
       {:ok, conn} ->
         Logger.info "Connected to SSH server"
-        launch_interval_check
+        {:ok, _} = launch_interval_check
         {:ok, conn}
 
       {:error, err} ->
@@ -71,7 +71,8 @@ defmodule Sftp do
   end
 
 
-  def send_file ssh_connection, local_file, remote_dest_file, _random_uuid do
+  @spec send_file(ssh_connection :: String.t, local_file :: String.t, remote_dest_file :: String.t) :: any
+  def send_file ssh_connection, local_file, remote_dest_file do
     a_channel = SFTP.start_channel ssh_connection
     case a_channel do
       {:ok, channel} ->
@@ -116,13 +117,9 @@ defmodule Sftp do
                         Logger.debug "No remote file: #{remote_dest_file}, reason: #{reason}"
                         stream_file_to_remote channel, handle, local_file
                     end
-
-                  {:error, :no_such_file} ->
-                    Logger.error "No remote file"
-
                 end
 
-              {:error, _reason} ->
+              {_, _reason} ->
                 Logger.error "Error reading local file stats of file: #{local_file}"
             end
 
@@ -144,11 +141,9 @@ defmodule Sftp do
   end
 
 
-  def handle_call :do_exception, _from, _ssh_connection do
-    raise "An exception!"
-  end
-
-
+  @doc """
+  Creates content which will be copied to clipboard as http links
+  """
   def build_clipboard do
     clip_time = Timer.tc fn ->
       first = QueueAgent.first
@@ -156,10 +151,9 @@ defmodule Sftp do
         (length QueueAgent.get_all) > 1 ->
           Logger.debug "More than one entry found in QueueAgent, merging results"
           QueueAgent.get_all
-            |> Enum.map(fn elem ->
+            |> (Enum.map fn elem ->
               {_, file_path, _, uuid} = elem
-              extension = List.last String.split file_path, "."
-              config[:address] <> uuid <> "." <> extension
+              config[:address] <> uuid <> "." <> List.last String.split file_path, "."
             end)
             |> Enum.join("\n")
             |> Clipboard.put
@@ -182,7 +176,13 @@ defmodule Sftp do
     case clip_time do
       {elapsed, _} ->
         Logger.info "Clipboard routine done in: #{elapsed/1000}ms"
+        :ok
     end
+  end
+
+
+  def handle_call :do_exception, _from, _ssh_connection do
+    raise "An exception!"
   end
 
 
@@ -197,7 +197,7 @@ defmodule Sftp do
               remote_dest = remote_dest_file <> "." <> extension
               Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
-                send_file ssh_connection, local_file, remote_dest, random_uuid
+                send_file ssh_connection, local_file, remote_dest
               end
 
               case inner do
