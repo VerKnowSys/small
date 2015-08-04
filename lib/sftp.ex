@@ -39,7 +39,7 @@ defmodule Sftp do
        user_interaction: false,
        rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
        silently_accept_hosts: true,
-       connect_timeout: 5000
+       connect_timeout: ssh_connection_timeout
       ]
 
     case connection do

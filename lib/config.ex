@@ -17,6 +17,14 @@ defmodule Cfg do
 
 
   @doc """
+  Returns ssh connection timeout
+  """
+  def ssh_connection_timeout do
+    Application.get_env :syncemall, :ssh_connection_timeout
+  end
+
+
+  @doc """
   Returns user specific configuration from global module configuration
   """
   def config do
