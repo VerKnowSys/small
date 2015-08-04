@@ -20,4 +20,19 @@ defmodule Clipboard do
     end
   end
 
+
+  @doc """
+  Returns current clipboard contents
+  """
+  def get do
+    case System.cmd "pbpaste", [] do
+      {result, 0} ->
+        {:ok, result}
+
+      {_, reason} ->
+        {:error, "Clipboard error: #{inspect reason}"}
+    end
+  end
+
+
 end
