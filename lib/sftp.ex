@@ -175,7 +175,7 @@ defmodule Sftp do
     end
     case clip_time do
       {elapsed, _} ->
-        Logger.info "Clipboard routine done in: #{elapsed/1000}ms"
+        Logger.debug "Clipboard routine done in: #{elapsed/1000}ms"
         :ok
     end
   end
