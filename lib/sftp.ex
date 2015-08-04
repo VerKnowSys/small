@@ -107,9 +107,11 @@ defmodule Sftp do
         case element do
           {:add, local_file, remote_dest_file, random_uuid} ->
             if File.exists?(local_file) and File.regular?(local_file) do
-              Logger.info "Handling asynchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest_file}"
+              extension = List.last String.split (List.to_string local_file), "."
+              remote_dest = remote_dest_file <> "." <> extension
+              Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
-                send_file ssh_connection, local_file, remote_dest_file, random_uuid
+                send_file ssh_connection, local_file, remote_dest, random_uuid
               end
 
               case inner do
