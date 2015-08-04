@@ -2,7 +2,7 @@ use Mix.Config
 
 
 config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
-
+config :syncemall, :fs_check_interval, 30_000
 config :syncemall, :config,
   %{
     "dmilith" => [
