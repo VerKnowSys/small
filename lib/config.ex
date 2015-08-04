@@ -1,4 +1,5 @@
 defmodule Cfg do
+  require Logger
 
   @doc """
   Returns local POSIX username from ENV
@@ -39,5 +40,36 @@ defmodule Cfg do
   def config do
     Application.get_env(:syncemall, :config)[user]
   end
+
+
+  @doc """
+  Performs configuration check
+  """
+  def config_check do
+    Logger.debug "Performing config check"
+    [
+      :username,
+      :hostname,
+      :ssh_port,
+      :address,
+      :remote_path
+    ]
+    |> Enum.each fn e ->
+      cond do
+        config[e] == nil ->
+          raise "Missing configuration value: #{e}!"
+
+        config[e] == "" ->
+          raise "Required configuration value: #{e} is empty!"
+
+        config[e] == 0 ->
+          raise "Required configuration value: #{e} is zero!"
+
+        true ->
+          Logger.debug "Config check passed for #{e}[#{config[e]}]"
+      end
+    end
+  end
+
 
 end

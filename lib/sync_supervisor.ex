@@ -1,8 +1,8 @@
 defmodule SyncSupervisor do
   use Supervisor
 
+  import Cfg
   require Logger
-  Logger.info "Loading supervisor"
 
 
   def start :normal, [] do
@@ -11,6 +11,7 @@ defmodule SyncSupervisor do
 
 
   def start_link do
+    config_check
     Supervisor.start_link(__MODULE__, [], [{:name, __MODULE__}])
   end
 
