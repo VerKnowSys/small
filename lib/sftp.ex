@@ -46,7 +46,7 @@ defmodule Sftp do
   end
 
 
-  def send_file ssh_connection, local_file, remote_dest_file, random_uuid do
+  def send_file ssh_connection, local_file, remote_dest_file, _random_uuid do
     a_channel = SFTP.start_channel ssh_connection
     case a_channel do
       {:ok, channel} ->
@@ -55,6 +55,7 @@ defmodule Sftp do
         case a_handle do
           {:ok, handle} ->
             try do
+              # TODO: handle checksum check to skip uploading already uploaded file
               Logger.info "Streaming file to remote server.."
               (File.stream! local_file, [:read], 131072)
                 |> Enum.each fn chunk ->
