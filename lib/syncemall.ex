@@ -36,7 +36,7 @@ defmodule SyncEmAll do
   end
 
 
-  def handle_info({_pid, {:fs, :file_event}, {path, event}}, _socket) do
+  def handle_info {_pid, {:fs, :file_event}, {path, event}}, _socket do
     path = path |> List.to_string
     case event do
       [:renamed, :xattrmod] ->
