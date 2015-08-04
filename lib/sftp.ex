@@ -23,6 +23,7 @@ defmodule Sftp do
     GenServer.call __MODULE__, :exception, :infinity
   end
 
+
   ## Callbacks (Server API)
   def init :ok do
     SSH.start
@@ -67,27 +68,61 @@ defmodule Sftp do
     a_channel = SFTP.start_channel ssh_connection
     case a_channel do
       {:ok, channel} ->
-        Logger.debug "Started channel: #{inspect channel}"
-        a_handle = SFTP.open channel, String.to_char_list(remote_dest_file), [:write]
+        remote_dest_file = remote_dest_file |> String.to_char_list
+        remote_handle = SFTP.read_file_info channel, remote_dest_file
+        Logger.debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
+
+        a_handle = SFTP.open channel, remote_dest_file, [:write]
         case a_handle do
           {:ok, handle} ->
-            try do
-              # TODO: handle checksum check to skip uploading already uploaded file
-              Logger.info "Streaming file to remote server.."
-              (File.stream! local_file, [:read], 131072)
-                |> Enum.each fn chunk ->
-                  IO.write "."
-                  SFTP.write channel, handle, chunk, :infinity
+            case File.stat local_file do
+              {:ok, file_info} ->
+                case file_info do
+                  %File.Stat{access: _, atime: _, ctime: _, gid: _, inode: _, links: _, major_device: _, minor_device: _, mode: _, mtime: _, size: local_size, type: :regular, uid: _} ->
+                    Logger.warn "Checking remote file #{remote_dest_file}"
+                    case remote_handle do
+                      {:ok, remote_file_info} ->
+                        Logger.debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
+                        case remote_file_info do
+                          {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
+                            Logger.debug "Local size: #{local_size} ~ #{size}"
+                            cond do
+                              size > 0 ->
+                                if size != local_size do
+                                  Logger.info "Found non empty remote file. Uploading file to remote"
+                                  stream_file_to_remote channel, handle, local_file
+                                else
+                                  Logger.debug "Remote file size equals local file size. Upload skipped"
+                                end
+
+                              size == 0 ->
+                                Logger.debug "Remote file empty"
+                                stream_file_to_remote channel, handle, local_file
+                            end
+
+                          {:error, :no_such_file} ->
+                            Logger.debug "No remote file"
+                            stream_file_to_remote channel, handle, local_file
+                        end
+
+                      {:error, reason} ->
+                        Logger.debug "No remote file: #{remote_dest_file}, reason: #{reason}"
+                        stream_file_to_remote channel, handle, local_file
+                    end
+
+                  {:error, :no_such_file} ->
+                    Logger.error "No remote file"
+
                 end
-            catch
-              x ->
-                SSH.stop
-                Notification.send "Error streaming file #{local_file}!"
-                raise "Error streaming file: #{local_file}: #{inspect x}"
+
+              {:error, _reason} ->
+                Logger.error "Error reading local file stats of file: #{local_file}"
             end
+
             Notification.send "Synchronized successfully."
-            Logger.debug "Closing channel: #{inspect channel}"
+            Logger.debug "Closing file handle"
             SFTP.close channel, handle
+            Logger.debug "Closing channel: #{inspect channel}"
             SFTP.stop_channel channel
 
           {:error, err} ->
