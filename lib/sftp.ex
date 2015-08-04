@@ -46,6 +46,23 @@ defmodule Sftp do
   end
 
 
+  def stream_file_to_remote channel, handle, local_file do
+    try do
+      Logger.info "Streaming file to remote server.."
+      (File.stream! local_file, [:read], 131072)
+        |> Enum.each fn chunk ->
+          IO.write "."
+          SFTP.write channel, handle, chunk, :infinity
+        end
+    catch
+      x ->
+        SSH.stop
+        Notification.send "Error streaming file #{local_file}!"
+        raise "Error streaming file: #{local_file}: #{inspect x}"
+    end
+  end
+
+
   def send_file ssh_connection, local_file, remote_dest_file, _random_uuid do
     a_channel = SFTP.start_channel ssh_connection
     case a_channel do
