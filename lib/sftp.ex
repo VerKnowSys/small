@@ -79,7 +79,7 @@ defmodule Sftp do
               {:ok, file_info} ->
                 case file_info do
                   %File.Stat{access: _, atime: _, ctime: _, gid: _, inode: _, links: _, major_device: _, minor_device: _, mode: _, mtime: _, size: local_size, type: :regular, uid: _} ->
-                    Logger.warn "Checking remote file #{remote_dest_file}"
+                    Logger.debug "Checking remote file #{remote_dest_file}"
                     case remote_handle do
                       {:ok, remote_file_info} ->
                         Logger.debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
