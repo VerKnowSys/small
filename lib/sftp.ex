@@ -57,7 +57,10 @@ defmodule Sftp do
             try do
               Logger.info "Streaming file to remote server.."
               (File.stream! local_file, [:read], 131072)
-                |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
+                |> Enum.each fn chunk ->
+                  IO.write "."
+                  SFTP.write channel, handle, chunk, :infinity
+                end
             catch
               x ->
                 SSH.stop
