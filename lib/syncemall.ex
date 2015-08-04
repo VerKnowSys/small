@@ -30,9 +30,7 @@ defmodule SyncEmAll do
     unless config[:username] do
       raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
     end
-    link = "#{config[:address]}#{random_uuid}.png"
     remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-
     QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
     Sftp.add
   end
