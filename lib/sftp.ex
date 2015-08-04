@@ -121,6 +121,7 @@ defmodule Sftp do
               end
             else
               Logger.error "Local file not found or not a regular file: #{local_file}!"
+              QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
             end
 
           :empty ->
