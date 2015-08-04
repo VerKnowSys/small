@@ -59,6 +59,7 @@ defmodule Sftp do
                 |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
             catch
               x ->
+                SSH.stop
                 Notification.send "Error streaming file #{local_file}!"
                 raise "Error streaming file: #{local_file}: #{inspect x}"
             end
@@ -72,6 +73,7 @@ defmodule Sftp do
         end
 
       {:error, err} ->
+        SSH.stop
         Notification.send "Error creating SFTP channel!"
         raise "Error creating SFTP channel: #{inspect err}"
     end
