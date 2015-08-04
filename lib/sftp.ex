@@ -55,6 +55,7 @@ defmodule Sftp do
         case a_handle do
           {:ok, handle} ->
             try do
+              Logger.info "Streaming file to remote server.."
               (File.stream! local_file, [:read], 131072)
                 |> Enum.each fn chunk -> SFTP.write channel, handle, chunk, :infinity end
             catch
@@ -63,6 +64,7 @@ defmodule Sftp do
                 Notification.send "Error streaming file #{local_file}!"
                 raise "Error streaming file: #{local_file}: #{inspect x}"
             end
+            Notification.send "Synchronized successfully."
             Logger.debug "Closing channel: #{inspect channel}"
             SFTP.close channel, handle
             SFTP.stop_channel channel
@@ -132,7 +134,7 @@ defmodule Sftp do
 
     case time do
       {elapsed, _} ->
-        Logger.info "Outer elapsed: #{elapsed/1000}ms"
+        Logger.info "Outer finished in: #{elapsed/1000}ms"
     end
 
     {:reply, ssh_connection, ssh_connection}

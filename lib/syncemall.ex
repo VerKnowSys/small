@@ -30,22 +30,30 @@ defmodule SyncEmAll do
       raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
     end
     link = "#{config[:address]}#{random_uuid}.png"
-    remote_dest_file = "#{config[:remote_path]}#{random_uuid}.png"
+    remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
 
     QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
-    Logger.info "Link copied to clipboard: #{link}"
-    Logger.debug "Adding an element to queue (#{file_path} -> #{remote_dest_file})"
     Sftp.add
-    Notification.send "Link synchronized: #{link}"
   end
 
 
   def handle_info({_pid, {:fs, :file_event}, {path, event}}, _socket) do
-    if event == [:renamed, :xattrmod] do
-      Logger.debug "Handling event: #{inspect event}"
-      process_event path
-    else
-      Logger.debug "Unhandled event: #{inspect event}"
+    case event do
+      [:renamed, :xattrmod] ->
+        Logger.debug "Handling event: #{inspect event}"
+        process_event path
+
+      [:created, :removed, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
+        Logger.debug "Handling event: #{inspect event}"
+        process_event path
+
+      [:created, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
+        Logger.debug "Handling event: #{inspect event}"
+        process_event path
+
+      _ ->
+        Logger.debug "Unhandled event: #{inspect event}"
+
     end
     {:noreply, {path, event}}
   end
