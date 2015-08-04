@@ -38,17 +38,18 @@ defmodule SyncEmAll do
 
 
   def handle_info({_pid, {:fs, :file_event}, {path, event}}, _socket) do
+    path = path |> List.to_string
     case event do
       [:renamed, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event}"
+        Logger.debug "Handling event: #{inspect event} for path #{path}"
         process_event path
 
       [:created, :removed, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event}"
+        Logger.debug "Handling event: #{inspect event} for path #{path}"
         process_event path
 
       [:created, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event}"
+        Logger.debug "Handling event: #{inspect event} for path #{path}"
         process_event path
 
       _ ->

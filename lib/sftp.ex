@@ -96,7 +96,7 @@ defmodule Sftp do
         QueueAgent.get_all
           |> Enum.map(fn elem ->
             {_, file_path, _, uuid} = elem
-            extension = List.last String.split (List.to_string file_path), "."
+            extension = List.last String.split file_path, "."
             config[:address] <> uuid <> "." <> extension
           end)
           |> Enum.join("\n")
@@ -104,14 +104,14 @@ defmodule Sftp do
       else
         Logger.debug "Single entry found in QueueAgent, copying to clipboard"
         {_, file_path, _, uuid} = QueueAgent.first
-        extension = List.last String.split (List.to_string file_path), "."
+        extension = List.last String.split file_path, "."
         Clipboard.put config[:address] <> uuid <> "." <> extension
       end
       for element <- QueueAgent.get_all do
         case element do
           {:add, local_file, remote_dest_file, random_uuid} ->
             if File.exists?(local_file) and File.regular?(local_file) do
-              extension = List.last String.split (List.to_string local_file), "."
+              extension = List.last String.split local_file, "."
               remote_dest = remote_dest_file <> "." <> extension
               Logger.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
