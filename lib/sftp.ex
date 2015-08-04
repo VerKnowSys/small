@@ -24,6 +24,12 @@ defmodule Sftp do
   end
 
 
+  def launch_interval_check do
+    Logger.debug "Starting queue check with check interval: #{interval}ms"
+    Timer.apply_interval interval, Sftp, :add, []
+  end
+
+
   ## Callbacks (Server API)
   def init :ok do
     SSH.start
@@ -39,6 +45,7 @@ defmodule Sftp do
     case connection do
       {:ok, conn} ->
         Logger.info "Connected to SSH server"
+        launch_interval_check
         {:ok, conn}
 
       {:error, err} ->
