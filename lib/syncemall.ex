@@ -24,7 +24,8 @@ defmodule SyncEmAll do
   end
 
 
-  def process_event file_path do
+  def process_event event, file_path do
+    Logger.debug "Handling event: #{inspect event} for path #{file_path}"
     random_uuid = UUID.uuid4
     unless config[:username] do
       raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
@@ -41,16 +42,13 @@ defmodule SyncEmAll do
     path = path |> List.to_string
     case event do
       [:renamed, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event} for path #{path}"
-        process_event path
+        process_event event, path
 
       [:created, :removed, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event} for path #{path}"
-        process_event path
+        process_event event, path
 
       [:created, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        Logger.debug "Handling event: #{inspect event} for path #{path}"
-        process_event path
+        process_event event, path
 
       _ ->
         Logger.debug "Unhandled event: #{inspect event} for path #{path}"
