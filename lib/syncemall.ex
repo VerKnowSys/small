@@ -50,6 +50,9 @@ defmodule SyncEmAll do
       [:created, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
         process_event event, path
 
+      [:created, :modified, :xattrmod] ->
+        process_event event, path
+
       _ ->
         Logger.debug "Unhandled event: #{inspect event} for path #{path}"
 
