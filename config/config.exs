@@ -1,5 +1,9 @@
 use Mix.Config
 
+config :logger, :console,
+  format: "\n$date $time [$level] $metadata$message",
+  metadata: [:user_id],
+  level: :info
 
 config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
 config :syncemall, :sftp_buffer_size, 131_072
