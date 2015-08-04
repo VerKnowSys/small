@@ -26,12 +26,14 @@ defmodule SyncEmAll do
 
   def process_event event, file_path do
     Logger.debug "Handling event: #{inspect event} for path #{file_path}"
-    random_uuid = UUID.uuid4
     unless config[:username] do
       raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
     end
+    random_uuid = UUID.uuid3 nil, file_path, :hex
     remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-    QueueAgent.put {:add, file_path, remote_dest_file, random_uuid}
+    record = {:add, file_path, remote_dest_file, random_uuid}
+    Logger.debug "#{inspect record}"
+    QueueAgent.put record
     Sftp.add
   end
 
