@@ -53,7 +53,7 @@ defmodule SyncEmAll do
         process_event path
 
       _ ->
-        Logger.debug "Unhandled event: #{inspect event}"
+        Logger.debug "Unhandled event: #{inspect event} for path #{path}"
 
     end
     {:noreply, {path, event}}
