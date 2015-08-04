@@ -13,7 +13,7 @@ config :syncemall, :config,
       remote_path: "/home/dmilith/Web/Public/Sshots/",
       ssh_key_pass: "",
     ],
-    "tallica" => [
+    "michal" => [
       username: "michal",
       hostname: "phoebe.tallica.pl",
       ssh_port: 60022,
