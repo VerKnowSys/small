@@ -1,19 +1,19 @@
 SyncEmAll
 =========
 
-REQUIREMENTS:
+## REQUIREMENTS:
 
-Erlang OTP 18.x (required)
-Elixir 1.0.x (required)
-Tmux 1.x (optional)
+* Erlang OTP 18.x (required)
+* Elixir 1.0.x (required)
+* Tmux 1.x (optional)
 
 
-WARNING:
+## WARNING:
 
 You'll need to put bin/reattach-to-user-namespace binary to /usr/local/bin for OSX Notifications to work properly in tmux session (used in bin/launcher).
 
 
-USAGE:
+## USAGE:
 
 To run normally:
 
