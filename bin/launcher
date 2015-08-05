@@ -6,5 +6,9 @@ tmux has-session -t syncemall 2> /dev/null
 if [ "$?" = "0" ]; then
     tmux attach -t syncemall
 else
-    tmux new-session -s syncemall -n syncemall -d "TERM=xterm-256color ; cd ${PROJECT_DIR} ; MIX_ENV=prod mix compile ; MIX_ENV=prod iex -S mix"
+    cd ${PROJECT_DIR}
+    MIX_ENV=prod mix do deps.get, deps.compile, compile
+    if [ "$?" = "0" ]; then
+        tmux new -s syncemall -c ${PROJECT_DIR} -n syncemall "MIX_ENV=prod iex -S mix"
+    fi
 fi
