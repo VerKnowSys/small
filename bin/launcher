@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PROJECT_DIR="/Projects/syncemall"
+PROJECT_NAME="syncemall"
 
 tmux has-session -t syncemall 2> /dev/null
 if [ "$?" = "0" ]; then
@@ -9,6 +10,6 @@ else
     cd ${PROJECT_DIR}
     MIX_ENV=prod mix do deps.get, deps.compile, compile
     if [ "$?" = "0" ]; then
-        tmux new -s syncemall -c ${PROJECT_DIR} -n syncemall "MIX_ENV=prod iex -S mix"
+        tmux new -s ${PROJECT_NAME} -c ${PROJECT_DIR} -n ${PROJECT_NAME} -d "MIX_ENV=prod iex --name \"${PROJECT_NAME}\" --sname \"${PROJECT_NAME}\" --cookie \"${PROJECT_NAME}\" -S mix"
     fi
 fi
