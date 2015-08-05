@@ -12,6 +12,7 @@ defmodule SyncSupervisor do
 
   def start_link do
     config_check
+    Notification.send "Starting SyncEmAll"
     Supervisor.start_link(__MODULE__, [], [{:name, __MODULE__}])
   end
 
