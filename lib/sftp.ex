@@ -62,6 +62,7 @@ defmodule Sftp do
           IO.write "."
           SFTP.write channel, handle, chunk, :infinity
         end
+      Notification.send "Synchronized successfully."
     catch
       x ->
         SSH.stop
@@ -123,7 +124,6 @@ defmodule Sftp do
                 Logger.error "Error reading local file stats of file: #{local_file}"
             end
 
-            Notification.send "Synchronized successfully."
             Logger.debug "Closing file handle"
             SFTP.close channel, handle
             Logger.debug "Closing channel: #{inspect channel}"
@@ -203,7 +203,6 @@ defmodule Sftp do
               case inner do
                 {elapsed, _} ->
                   Logger.info "Sftp file send elapsed: #{elapsed/1000}ms"
-
               end
             else
               Logger.error "Local file not found or not a regular file: #{local_file}!"
