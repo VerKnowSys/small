@@ -3,8 +3,11 @@ SyncEmAll
 
 ## REQUIREMENTS:
 
+* OSX 10.x (required)
 * Erlang OTP 18.x (required)
 * Elixir 1.0.x (required)
+* Sofin 0.80.x (optional)
+* Zsh 5.x (optional)
 * Tmux 1.x (optional)
 
 
@@ -27,3 +30,7 @@ or to run in production environment (if you have tmux and prebuilt reattach-to-u
 ```
 bin/launcher
 ```
+
+## Autostart for user
+
+`cp $(pwd)/LaunchAgents/com.verknowsys.SyncEmAll.plist ~/Library/LaunchAgents/`
