@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>Label</key>
+	<string>Launch SyncEmAll</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Software/Zsh/exports/zsh</string>
+		<string>-c</string>
+		<string>/Projects/syncemall/bin/launcher</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+</dict>
+</plist>
+
+<!-- @@@@LingonWhatStart:/Software/Zsh/exports/zsh -c /Projects/syncemall/bin/launcher@@@@LingonWhatEnd -->
