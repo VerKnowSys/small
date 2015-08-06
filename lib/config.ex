@@ -73,7 +73,12 @@ defmodule Cfg do
 
 
   def log_level level \\ :debug do
-    Logger.warn "Changing log level to: #{inspect level}"
+    env = (System.get_env "MIX_ENV")
+    if env do
+      Logger.info "Changing log level to: #{level} for environment: #{env}"
+    else
+      Logger.info "Changing log level to: #{level}"
+    end
     Logger.configure [level: level]
     Logger.configure_backend :console, [level: level]
   end
