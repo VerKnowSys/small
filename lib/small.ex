@@ -8,7 +8,7 @@ defmodule Small do
 
   ## Client API
   def start_link opts \\ [] do
-    Logger.info "Launching Small"
+    Logger.info "Launching Small Filesystem Handler"
     GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
