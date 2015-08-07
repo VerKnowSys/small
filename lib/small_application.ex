@@ -5,6 +5,11 @@ defmodule SmallApplication do
   alias :timer, as: Timer
 
 
+  def start _, _ do
+    main []
+  end
+
+
   def main _ do
     notification "Launching SmallApplication", :start
     SyncSupervisor.start_link
