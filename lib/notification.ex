@@ -13,12 +13,15 @@ defmodule Notification do
 
   """
   @spec send(message :: String.t) :: :ok | :error
-  def send message do
+  def send message, sound_name \\ :no_sound do
+    sound_command = "sound name \"#{sound_name}\""
+    (sound_name == :no_sound) && (sound_command = "")
+
     # NOTE: Using - https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
     reattach_helper = File.exists? "/usr/local/bin/reattach-to-user-namespace"
     case reattach_helper do
       true ->
-        case System.cmd "/usr/local/bin/reattach-to-user-namespace", ["/usr/bin/osascript", "-e", "display notification \"#{message}\" sound name \"Default\" with title \"Small\""] do
+        case System.cmd "/usr/local/bin/reattach-to-user-namespace", ["/usr/bin/osascript", "-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
           {_, 0} ->
             :ok
 
@@ -46,7 +49,11 @@ defmodule Notification do
   def notification message, type do
     if config[:notifications][type] do
       Logger.debug "Notification of type #{inspect type} with result: #{inspect config[:notifications][type]}"
-      send message
+      if config[:notifications][:sound] do
+        Notification.send message, config[:notifications][:sound_name]
+      else
+        Notification.send message
+      end
       if type == :error do
         raise message
       end
