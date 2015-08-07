@@ -18,6 +18,7 @@ config :small, :config,
       address: "http://s.verknowsys.com/",
       remote_path: "/home/dmilith/Web/Public/Sshots/",
       ssh_key_pass: "",
+      notifications: [start: true, clipboard: true, upload: true, error: true]
     ],
     "michal" => [
       username: "michal",
@@ -26,6 +27,7 @@ config :small, :config,
       address: "http://s.tallica.pl/",
       remote_path: "/Users/michal/Screenshots/",
       ssh_key_pass: "",
+      notifications: [start: true, clipboard: true, upload: true, error: true]
     ]
   }
 

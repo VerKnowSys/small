@@ -1,5 +1,6 @@
 defmodule Notification do
   require Logger
+  import Cfg
 
 
   @doc """
@@ -35,5 +36,20 @@ defmodule Notification do
         end
     end
   end
+
+
+  @doc """
+  Send notifications based on user settings.
+  Notify with error level will automatically raise an exception.
+  """
+  def notify message, type do
+    if config[:notifications][type] do
+      send "#{inspect message}"
+      if type == :notify_error do
+        raise message
+      end
+    end
+  end
+
 
 end
