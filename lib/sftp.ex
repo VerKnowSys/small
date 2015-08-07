@@ -33,6 +33,7 @@ defmodule Sftp do
 
   ## Callbacks (Server API)
   def init :ok do
+    Logger.info "Launching Sftp client"
     SSH.start
     connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       [user: String.to_char_list(config[:username]),
@@ -120,8 +121,8 @@ defmodule Sftp do
                     end
                 end
 
-              {_, _reason} ->
-                Logger.error "Error reading local file stats of file: #{local_file}"
+              {_, reason} ->
+                Logger.error "Error reading local file stats of file: #{local_file}: #{inspect reason}"
             end
 
             Logger.debug "Closing file handle"
