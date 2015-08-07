@@ -10,6 +10,11 @@ small - Sync 'eM ALL!
 * Zsh 5.x (optional)
 * Tmux 1.x (optional)
 
+## USED INTERNALY:
+
+* https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
+* https://github.com/VerKnowSys/fs
+
 
 ## WARNING:
 
