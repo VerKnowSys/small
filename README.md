@@ -1,4 +1,4 @@
-SyncEmAll
+small - Sync 'eM ALL!
 =========
 
 ## REQUIREMENTS:
