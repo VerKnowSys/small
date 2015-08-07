@@ -1,4 +1,5 @@
 defmodule Clipboard do
+  import Notification
 
   @doc """
   Puts text given as param to clipboard. Works on OSX only (for now)
@@ -13,6 +14,7 @@ defmodule Clipboard do
   def put text do
     case System.cmd "sh", ["-c", "echo \"$0\" | pbcopy", "#{text}"] do
       {_result, 0} ->
+        notification "Link copied to clipboard", :clipboard
         :ok
 
       {_, _} ->

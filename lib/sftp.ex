@@ -2,6 +2,7 @@ defmodule Sftp do
   use GenServer
   require Logger
   import Cfg
+  import Notification
 
   alias :ssh, as: SSH
   alias :ssh_sftp, as: SFTP
@@ -62,12 +63,11 @@ defmodule Sftp do
           IO.write "."
           SFTP.write channel, handle, chunk, :infinity
         end
-      Notification.send "Synchronized successfully."
+      notification "Uploaded successfully.", :upload
     catch
       x ->
         SSH.stop
-        Notification.send "Error streaming file #{local_file}!"
-        raise "Error streaming file: #{local_file}: #{inspect x}"
+        notification "Error streaming file #{local_file}!", :error
     end
   end
 
@@ -135,8 +135,7 @@ defmodule Sftp do
 
       {:error, err} ->
         SSH.stop
-        Notification.send "Error creating SFTP channel!"
-        raise "Error creating SFTP channel: #{inspect err}"
+        notification "Error creating SFTP channel!", :error
     end
   end
 

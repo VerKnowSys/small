@@ -41,11 +41,13 @@ defmodule Notification do
   @doc """
   Send notifications based on user settings.
   Notify with error level will automatically raise an exception.
+  Types: [:start, :clipboard, :upload, :error]
   """
-  def notify message, type do
+  def notification message, type do
     if config[:notifications][type] do
-      send "#{inspect message}"
-      if type == :notify_error do
+      Logger.debug "Notification of type #{inspect type} with result: #{inspect config[:notifications][type]}"
+      send message
+      if type == :error do
         raise message
       end
     end
