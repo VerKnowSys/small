@@ -67,7 +67,7 @@ defmodule Sftp do
     catch
       x ->
         SSH.stop
-        notification "Error streaming file #{local_file}!", :error
+        notification "Error streaming file #{local_file}: #{inspect x}!", :error
     end
   end
 
@@ -135,7 +135,7 @@ defmodule Sftp do
 
       {:error, err} ->
         SSH.stop
-        notification "Error creating SFTP channel!", :error
+        notification "Error creating SFTP channel: #{inspect err}!", :error
     end
   end
 
