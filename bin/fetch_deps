@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ -z "${MIX_ENV}" ]; then
+    MIX_ENV=dev
+fi
+export MIX_ENV=dev
+
+rm -rf deps
+mix do deps.get, deps.compile

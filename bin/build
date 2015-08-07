@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -z "${MIX_ENV}" ]; then
+    MIX_ENV=dev
+fi
+export MIX_ENV=dev
+
+mix do deps.compile, compile, escript.build
