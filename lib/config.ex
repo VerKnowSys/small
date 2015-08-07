@@ -1,6 +1,17 @@
 defmodule Cfg do
   require Logger
 
+
+  @doc """
+  Returns application version
+  """
+  def version app_name \\ :small do
+    {:ok, info} = :application.get_all_key app_name
+    List.to_string info[:vsn]
+  end
+
+
+
   @doc """
   Returns local POSIX username from ENV
   """
