@@ -24,7 +24,7 @@ defmodule Small.Mixfile do
   def application do
     [
       applications: [:logger, :uuid, :fs],
-      # mod: {SyncSupervisor, []}
+      mod: {SyncSupervisor, []}
     ]
   end
 
