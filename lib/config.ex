@@ -84,7 +84,7 @@ defmodule Cfg do
 
 
   def log_level level \\ :debug do
-    env = (System.get_env "MIX_ENV")
+    env = System.get_env "MIX_ENV"
     if env do
       Logger.info "Changing log level to: #{level} for environment: #{env}"
     else

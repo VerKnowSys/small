@@ -14,7 +14,7 @@ defmodule Notification do
   """
   @spec send(message :: String.t) :: :ok | :error
   def send message, sound_name \\ :no_sound do
-    sound_command = if (sound_name == :no_sound), do: "sound name \"#{sound_name}\"", else: sound_command = ""
+    sound_command = if (sound_name == :no_sound), do: "", else: sound_command = "sound name \"#{sound_name}\""
 
     # NOTE: Using - https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
     reattach_helper = File.exists? "/usr/local/bin/reattach-to-user-namespace"
