@@ -50,7 +50,8 @@ defmodule Small.Mixfile do
     [
       # { :exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0" },
       { :uuid, "~> 1.0" },
-      { :fs, "~> 0.9" }
+      { :fs, github: "VerKnowSys/fs"}
+      # { :fs, "~> 0.9" }
     ]
   end
 end
