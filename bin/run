@@ -6,4 +6,4 @@ if [ -z "${MIX_ENV}" ]; then
 fi
 export MIX_ENV
 
-mix do deps.compile, compile, escript.build
+./small
