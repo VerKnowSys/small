@@ -1,4 +1,4 @@
-defmodule SyncEmAll do
+defmodule Small do
   require Logger
   use GenServer
   import Cfg
@@ -8,14 +8,15 @@ defmodule SyncEmAll do
 
   ## Client API
   def start_link opts \\ [] do
-    Logger.info "Launching SyncEmAll"
+    Logger.info "Launching Small"
     GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
 
   def init :ok do
-    fsev = FS.subscribe
-    {:ok, fsev}
+    Logger.debug "Subscribing filesystem events"
+    FS.subscribe
+    {:ok, self}
   end
 
 
@@ -38,7 +39,7 @@ defmodule SyncEmAll do
   end
 
 
-  def handle_info {_pid, {:fs, :file_event}, {path, event}}, _socket do
+  def handle_info {pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> List.to_string
     case event do
       [:renamed, :xattrmod] ->
@@ -57,7 +58,7 @@ defmodule SyncEmAll do
         Logger.debug "Unhandled event: #{inspect event} for path #{path}"
 
     end
-    {:noreply, {path, event}}
+    {:noreply, state}
   end
 
 
