@@ -33,5 +33,4 @@ config :small, :config,
 
 config :logger, :console,
   format: "\n$time [$level] $metadata$message",
-  metadata: [:user_id],
-  level: :info
+  metadata: [:user_id]
