@@ -15,14 +15,7 @@ defmodule SmallApplication do
     content = "Launching SmallApplication v#{version}"
     Logger.info content
     notification content, :start
-    time = Timer.tc fn ->
-      SyncSupervisor.start_link
-    end
-    case time do
-      {elapsed, _} ->
-        Logger.info "SmallApplication started in: #{elapsed/1000}ms"
-        :ok
-    end
+    SyncSupervisor.start_link
     Timer.sleep :infinity
   end
 

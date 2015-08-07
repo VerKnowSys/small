@@ -1,4 +1,3 @@
-
 defmodule Notification do
   require Logger
   import Cfg
