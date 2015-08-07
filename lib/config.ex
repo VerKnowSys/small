@@ -11,6 +11,13 @@ defmodule Cfg do
   end
 
 
+  @doc """
+  Returns user helper binary to hack sessions launched under tmux
+  """
+  def user_helper do
+    Application.get_env :small, :user_helper
+  end
+
 
   @doc """
   Returns local POSIX username from ENV

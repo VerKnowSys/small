@@ -6,8 +6,9 @@ config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
 # absolute path to events listener executable
 config :fs, :events_helper, to_char_list "/Projects/small/deps/fs/priv/mac_listener"
 
+config :small, :user_helper, "/Projects/small/bin/reattach-to-user-namespace"
 config :small, :sftp_buffer_size, 131_072
-config :small, :fs_check_interval, 30_000
+config :small, :fs_check_interval, 60_000
 config :small, :ssh_connection_timeout, 5_000
 config :small, :config,
   %{

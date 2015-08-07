@@ -4,7 +4,8 @@ defmodule Notification do
 
 
   @doc """
-  Sends notification using native OSX Notification Center
+  Sends notification using native OSX Notification Center.
+  For Tmux sessions, Small includes helper application to fix issues with Notification Center not working under Tmux. More: https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.
 
   ## Examples
 
@@ -16,11 +17,9 @@ defmodule Notification do
   def send message, sound_name \\ :no_sound do
     sound_command = if (sound_name == :no_sound), do: "", else: sound_command = "sound name \"#{sound_name}\""
 
-    # NOTE: Using - https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
-    reattach_helper = File.exists? "/usr/local/bin/reattach-to-user-namespace"
-    case reattach_helper do
+    case File.exists? config.user_helper do
       true ->
-        case System.cmd "/usr/local/bin/reattach-to-user-namespace", ["/usr/bin/osascript", "-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
+        case System.cmd config.user_helper, ["/usr/bin/osascript", "-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
           {_, 0} ->
             :ok
 
