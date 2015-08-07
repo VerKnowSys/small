@@ -1,9 +1,9 @@
-defmodule SyncEmAll.Mixfile do
+defmodule Small.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :syncemall,
+      app: :small,
       version: "0.2.1",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
@@ -12,7 +12,7 @@ defmodule SyncEmAll.Mixfile do
       escript: escript,
       dialyzer: [
         paths: [
-          "_build/dev/lib/syncemall/ebin",
+          "_build/dev/lib/small/ebin",
         ],
       ]
     ]
@@ -24,12 +24,17 @@ defmodule SyncEmAll.Mixfile do
   def application do
     [
       applications: [:logger, :uuid, :fs],
-      mod: {SyncSupervisor, []}
+      # mod: {SyncSupervisor, []}
     ]
   end
 
   def escript do
-    [main_module: SyncEmAllApplication]
+    [
+      main_module: SmallApplication,
+      embed_elixir: true,
+      language: [:elixir, :erlang],
+      force: true
+    ]
   end
 
   # Dependencies can be Hex packages:

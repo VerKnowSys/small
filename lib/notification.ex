@@ -17,7 +17,7 @@ defmodule Notification do
     reattach_helper = File.exists? "/usr/local/bin/reattach-to-user-namespace"
     case reattach_helper do
       true ->
-        case System.cmd "/usr/local/bin/reattach-to-user-namespace", ["/usr/bin/osascript", "-e", "display notification \"#{message}\" sound name \"Default\" with title \"SyncEmAll\""] do
+        case System.cmd "/usr/local/bin/reattach-to-user-namespace", ["/usr/bin/osascript", "-e", "display notification \"#{message}\" sound name \"Default\" with title \"Small\""] do
           {_, 0} ->
             :ok
 
@@ -26,7 +26,7 @@ defmodule Notification do
         end
 
       false ->
-        case System.cmd "/usr/bin/osascript", ["-e", "display notification \"#{message}\" sound name \"Default\" with title \"SyncEmAll\""] do
+        case System.cmd "/usr/bin/osascript", ["-e", "display notification \"#{message}\" sound name \"Default\" with title \"Small\""] do
           {_, 0} ->
             :ok
 

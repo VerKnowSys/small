@@ -13,11 +13,11 @@
 	<array>
 		<string>/Software/Zsh/exports/zsh</string>
 		<string>-c</string>
-		<string>/Projects/syncemall/bin/launcher</string>
+		<string>/Projects/small/bin/launcher</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
 </dict>
 </plist>
 
-<!-- @@@@LingonWhatStart:/Software/Zsh/exports/zsh -c /Projects/syncemall/bin/launcher@@@@LingonWhatEnd -->
+<!-- @@@@LingonWhatStart:/Software/Zsh/exports/zsh -c /Projects/small/bin/launcher@@@@LingonWhatEnd -->

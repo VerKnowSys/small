@@ -1,15 +1,15 @@
 use Mix.Config
 
 config :logger, :console,
-  format: "\n$date $time [$level] $metadata$message",
+  format: "\n$time [$level] $metadata$message",
   metadata: [:user_id],
   level: :info
 
 config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
-config :syncemall, :sftp_buffer_size, 131_072
-config :syncemall, :fs_check_interval, 30_000
-config :syncemall, :ssh_connection_timeout, 5_000
-config :syncemall, :config,
+config :small, :sftp_buffer_size, 131_072
+config :small, :fs_check_interval, 30_000
+config :small, :ssh_connection_timeout, 5_000
+config :small, :config,
   %{
     "dmilith" => [
       username: "dmilith",

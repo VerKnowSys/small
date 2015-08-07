@@ -13,7 +13,7 @@ defmodule Cfg do
   Returns filesystem check interval (for Sftp)
   """
   def interval do
-    Application.get_env :syncemall, :fs_check_interval
+    Application.get_env :small, :fs_check_interval
   end
 
 
@@ -21,7 +21,7 @@ defmodule Cfg do
   Returns ssh connection timeout
   """
   def ssh_connection_timeout do
-    Application.get_env :syncemall, :ssh_connection_timeout
+    Application.get_env :small, :ssh_connection_timeout
   end
 
 
@@ -29,7 +29,7 @@ defmodule Cfg do
   Returns sftp buffer size
   """
   def sftp_buffer_size do
-    Application.get_env :syncemall, :sftp_buffer_size
+    Application.get_env :small, :sftp_buffer_size
   end
 
 
@@ -38,7 +38,7 @@ defmodule Cfg do
   Returns user specific configuration from global module configuration
   """
   def config do
-    Application.get_env(:syncemall, :config)[user]
+    Application.get_env(:small, :config)[user]
   end
 
 

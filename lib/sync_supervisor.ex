@@ -31,17 +31,17 @@ defmodule SyncSupervisor do
   def start_link do
     log_level get_initial_log_level
     config_check
-    Notification.send "Starting SyncEmAll"
-    Supervisor.start_link(__MODULE__, [], [{:name, __MODULE__}])
+    Supervisor.start_link __MODULE__, [], [name: __MODULE__]
   end
 
 
   # supervisor callback
-  def init([]) do
+  def init params do
+    Logger.debug "Init params: #{inspect params}"
     children = [
       worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent]),
-      worker(SyncEmAll, [], [restart: :permanent])
+      worker(Small, [], [restart: :permanent]),
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1000, max_seconds: 5]
   end

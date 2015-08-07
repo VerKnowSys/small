@@ -1,4 +1,4 @@
-defmodule SyncEmAllTest do
+defmodule SmallTest do
   use ExUnit.Case
   doctest Clipboard
   doctest Notification
