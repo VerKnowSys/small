@@ -55,7 +55,7 @@ defmodule Small do
         process_event event, path
 
       _ ->
-        Logger.debug "Unhandled event: #{inspect event} for path #{path}"
+        Logger.debug "Unhandled event: #{inspect event} for path #{path} of pid #{inspect pid}"
 
     end
     {:noreply, state}
