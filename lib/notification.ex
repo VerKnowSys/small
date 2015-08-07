@@ -1,3 +1,4 @@
+
 defmodule Notification do
   require Logger
   import Cfg
@@ -29,7 +30,7 @@ defmodule Notification do
         end
 
       false ->
-        case System.cmd "/usr/bin/osascript", ["-e", "display notification \"#{message}\" sound name \"Default\" with title \"Small\""] do
+        case System.cmd "/usr/bin/osascript", ["-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
           {_, 0} ->
             :ok
 
