@@ -32,8 +32,9 @@ defmodule Small.Mixfile do
     [
       main_module: SmallApplication,
       embed_elixir: true,
-      language: [:elixir, :erlang],
-      force: true
+      language: :elixir,
+      force: true,
+      emu_args: "-smp enable -sname small#{mixenv} -name small#{mixenv}"
     ]
   end
 
