@@ -19,7 +19,22 @@ config :small, :config,
       address: "http://s.verknowsys.com/",
       remote_path: "/home/dmilith/Web/Public/Sshots/",
       ssh_key_pass: "",
-      notifications: [start: true, clipboard: true, upload: true, error: true, sound: true, sound_name: "Glass"]
+      notifications: [
+        start: true,
+        clipboard: true,
+        upload: true,
+        error: true
+      ],
+      sounds: [
+        start: false,
+        start_sound: "Glass",
+        clipboard: false,
+        clipboard_sound: "Tink",
+        upload: true,
+        upload_sound: "Hero",
+        error: true,
+        error_sound: "Sosumi"
+      ]
     ],
     "michal" => [
       username: "michal",
@@ -28,7 +43,17 @@ config :small, :config,
       address: "http://s.tallica.pl/",
       remote_path: "/Users/michal/Screenshots/",
       ssh_key_pass: "",
-      notifications: [start: true, clipboard: true, upload: true, error: true, sound: true, sound_name: "Default"]
+      notifications: [start: true, clipboard: true, upload: true, error: true],
+      sounds: [
+        start: false,
+        start_sound: "Glass",
+        clipboard: false,
+        clipboard_sound: "Tink",
+        upload: true,
+        upload_sound: "Hero",
+        error: true,
+        error_sound: "Sosumi",
+      ]
     ]
   }
 
