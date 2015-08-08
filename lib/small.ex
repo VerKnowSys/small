@@ -26,44 +26,23 @@ defmodule Small do
 
 
   def process_event event, file_path do
-    Logger.debug "Handling event: #{inspect event} for path #{file_path}"
-    unless config[:username] do
-      raise "Unknown user #{config.user} for ConfigAgent. Define your user and settings first!"
+    if (File.exists? file_path) do
+      Logger.debug "Handling event: #{inspect event} for path #{file_path}"
+      random_uuid = UUID.uuid3 nil, file_path, :hex
+      remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
+      record = {:add, file_path, remote_dest_file, random_uuid}
+      Logger.debug "#{inspect record}"
+      QueueAgent.put record
+      Sftp.add
+    else
+      Logger.debug "File doesn't exists: #{file_path} after event #{inspect event}. Skipped process_event"
     end
-    random_uuid = UUID.uuid3 nil, file_path, :hex
-    remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-    record = {:add, file_path, remote_dest_file, random_uuid}
-    Logger.debug "#{inspect record}"
-    QueueAgent.put record
-    Sftp.add
   end
 
 
   def handle_info {pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> List.to_string
-    case event do
-      [:renamed] ->
-        process_event event, path
-
-      [:renamed, :xattrmod] ->
-        process_event event, path
-
-      [:inodemetamod, :changeowner] ->
-        process_event event, path
-
-      [:created, :removed, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        process_event event, path
-
-      [:created, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
-        process_event event, path
-
-      [:created, :modified, :xattrmod] ->
-        process_event event, path
-
-      _ ->
-        Logger.debug "Unhandled event: #{inspect event} for path #{path} of pid #{inspect pid}"
-
-    end
+    process_event event, path
     {:noreply, state}
   end
 
