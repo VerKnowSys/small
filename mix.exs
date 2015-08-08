@@ -23,7 +23,7 @@ defmodule Small.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [
-      applications: [:logger, :uuid, :fs],
+      applications: [:exsync, :logger, :uuid, :fs],
       mod: {SyncSupervisor, []}
     ]
   end
@@ -48,10 +48,10 @@ defmodule Small.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      # { :exfswatch, git: "https://github.com/falood/exfswatch.git", tag: "v0.1.0" },
       { :uuid, "~> 1.0" },
-      { :fs, github: "VerKnowSys/fs"}
-      # { :fs, "~> 0.9" }
+      { :fs, github: "VerKnowSys/fs", override: true },
+      # { :remix, "~> 0.0.1", only: :dev },
+      { :exsync, "~> 0.1", only: :dev }
     ]
   end
 end
