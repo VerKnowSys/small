@@ -14,8 +14,8 @@ defmodule Small do
 
 
   def init :ok do
-    Logger.debug "Subscribing filesystem events"
     FS.subscribe
+    Logger.info "Filesystem events watcher initialized"
     {:ok, self}
   end
 
