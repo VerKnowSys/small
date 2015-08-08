@@ -4,7 +4,7 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.4.0",
+      version: "0.4.1",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -28,6 +28,12 @@ defmodule Small.Mixfile do
     ]
   end
 
+
+  defp mixenv do
+    Atom.to_string Mix.env
+  end
+
+
   def escript do
     [
       main_module: SmallApplication,
@@ -37,6 +43,17 @@ defmodule Small.Mixfile do
       emu_args: "-smp enable -sname small#{mixenv} -name small#{mixenv}"
     ]
   end
+
+
+  def applications do
+    case Mix.env do
+      :prod ->
+        [:logger, :uuid, :fs]
+      _ ->
+        [:exsync, :logger, :uuid, :fs]
+    end
+  end
+
 
   # Dependencies can be Hex packages:
   #
@@ -51,7 +68,6 @@ defmodule Small.Mixfile do
     [
       { :uuid, "~> 1.0" },
       { :fs, github: "VerKnowSys/fs", override: true },
-      # { :remix, "~> 0.0.1", only: :dev },
       { :exsync, "~> 0.1", only: :dev }
     ]
   end
