@@ -8,7 +8,7 @@ config :fs, :events_helper, to_char_list "/Projects/small/deps/fs/priv/mac_liste
 
 config :small, :user_helper, "/Projects/small/bin/reattach-to-user-namespace"
 config :small, :sftp_buffer_size, 131_072
-config :small, :fs_check_interval, 60_000
+config :small, :fs_check_interval, 5_000
 config :small, :ssh_connection_timeout, 5_000
 config :small, :config,
   %{
