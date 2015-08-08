@@ -42,7 +42,13 @@ defmodule Small do
   def handle_info {pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> List.to_string
     case event do
+      [:renamed] ->
+        process_event event, path
+
       [:renamed, :xattrmod] ->
+        process_event event, path
+
+      [:inodemetamod, :changeowner] ->
         process_event event, path
 
       [:created, :removed, :inodemetamod, :modified, :finderinfomod, :changeowner, :xattrmod] ->
