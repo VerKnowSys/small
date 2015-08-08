@@ -40,7 +40,7 @@ defmodule Small do
   end
 
 
-  def handle_info {pid, {:fs, :file_event}, {path, event}}, state do
+  def handle_info {_pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> List.to_string
     process_event event, path
     {:noreply, state}
