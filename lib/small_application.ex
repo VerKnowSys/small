@@ -15,7 +15,13 @@ defmodule SmallApplication do
     content = "Launching SmallApplication v#{version}"
     Logger.info content
     notification content, :start
-    SyncSupervisor.start_link
+    case SyncSupervisor.start_link do
+      {:ok, pid} ->
+        Logger.info "SyncSupervisor started properly with pid: #{inspect pid}"
+
+      {:error, err} ->
+        Logger.error "SyncSupervisor error: #{inspect err}"
+    end
     Timer.sleep :infinity
   end
 
