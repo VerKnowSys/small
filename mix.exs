@@ -23,8 +23,8 @@ defmodule Small.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [
-      applications: [:exsync, :logger, :uuid, :fs],
-      mod: {SyncSupervisor, []}
+      applications: applications,
+      # mod: {SyncSupervisor, []}
     ]
   end
 
