@@ -34,13 +34,18 @@ defmodule Small.Mixfile do
   end
 
 
+  def default_emu_args do
+    "-smp enable -sname small#{mixenv} -name small#{mixenv}"
+  end
+
+
   def escript do
     [
       main_module: SmallApplication,
       embed_elixir: true,
       language: :elixir,
       force: true,
-      emu_args: "-smp enable -sname small#{mixenv} -name small#{mixenv}"
+      emu_args: default_emu_args
     ]
   end
 
