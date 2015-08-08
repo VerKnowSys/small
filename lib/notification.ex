@@ -17,9 +17,9 @@ defmodule Notification do
   def send message, sound_name \\ :no_sound do
     sound_command = if (sound_name == :no_sound), do: "", else: sound_command = "sound name \"#{sound_name}\""
 
-    case File.exists? config.user_helper do
+    case File.exists? user_helper do
       true ->
-        case System.cmd config.user_helper, ["/usr/bin/osascript", "-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
+        case System.cmd user_helper, ["/usr/bin/osascript", "-e", "display notification \"#{message}\" #{sound_command} with title \"Small\""] do
           {_, 0} ->
             :ok
 
