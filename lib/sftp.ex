@@ -75,7 +75,7 @@ defmodule Sftp do
 
   @spec send_file(ssh_connection :: String.t, local_file :: String.t, remote_dest_file :: String.t) :: any
   def send_file ssh_connection, local_file, remote_dest_file do
-    a_channel = SFTP.start_channel ssh_connection
+    a_channel = SFTP.start_channel ssh_connection, [blocking: false, pull_interval: 2]
     case a_channel do
       {:ok, channel} ->
         remote_dest_file = remote_dest_file |> String.to_char_list
