@@ -35,7 +35,7 @@ defmodule Small.Mixfile do
 
 
   def default_emu_args do
-    "-smp enable -sname small#{mixenv} -name small#{mixenv}"
+    "-smp enable -sname small#{mixenv}"
   end
 
 
