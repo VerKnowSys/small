@@ -11,7 +11,9 @@ defmodule SyncSupervisor do
 
 
   def start_link do
+    Lager.notice "Setting initial log level"
     log_level get_initial_log_level
+    Lager.info "Performing configuration check"
     config_check
     Supervisor.start_link __MODULE__, [], [name: __MODULE__]
   end
