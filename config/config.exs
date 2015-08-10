@@ -74,11 +74,11 @@ config :lager,
     ],
     crash_log: "log/crash.log",
     error_logger_hwm: 10, # max 10 messages/s
-    handlers: [
-      lager_console_backend: :notice,
-      lager_file_backend: [
-        file: "error.log",
-        level: :error,
-      ]
-    ],
+    # handlers: [
+    #   lager_console_backend: :notice,
+    #   lager_file_backend: [
+    #     file: "error.log",
+    #     level: :error,
+    #   ]
+    # ],
   ]
