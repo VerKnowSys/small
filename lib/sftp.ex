@@ -56,14 +56,16 @@ defmodule Sftp do
   end
 
 
-  def stream_file_to_remote channel, handle, local_file do
+  def stream_file_to_remote channel, handle, local_file, local_size do
     try do
-      Lager.notice "Streaming file to remote server.."
+      Lager.notice "Streaming file of size: #{local_size} to remote server.."
+      chunks = div local_size, sftp_buffer_size
       (File.stream! local_file, [:read], sftp_buffer_size)
-        |> Enum.each fn chunk ->
-          IO.write "."
-          SFTP.write channel, handle, chunk, :infinity
-        end
+        |> Enum.with_index |> (Enum.each fn {chunk, index} ->
+          percent = Float.round index * 100 / chunks, 2
+          IO.write "\rProgress: #{percent}%"
+          SFTP.write channel, handle, chunk, sftp_write_timeout
+        end)
       notification "Uploaded successfully.", :upload
     catch
       x ->
@@ -100,24 +102,24 @@ defmodule Sftp do
                               size > 0 ->
                                 if size != local_size do
                                   Lager.notice "Found non empty remote file. Uploading file to remote"
-                                  stream_file_to_remote channel, handle, local_file
+                                  stream_file_to_remote channel, handle, local_file, local_size
                                 else
                                   Lager.debug "Remote file size equals local file size. Upload skipped"
                                 end
 
                               size == 0 ->
                                 Lager.debug "Remote file empty"
-                                stream_file_to_remote channel, handle, local_file
+                                stream_file_to_remote channel, handle, local_file, local_size
                             end
 
                           {:error, :no_such_file} ->
                             Lager.debug "No remote file"
-                            stream_file_to_remote channel, handle, local_file
+                            stream_file_to_remote channel, handle, local_file, local_size
                         end
 
                       {:error, _reason} ->
                         Lager.debug "No remote file: #{remote_dest_file}, reason: #{_reason}"
-                        stream_file_to_remote channel, handle, local_file
+                        stream_file_to_remote channel, handle, local_file, local_size
                     end
                 end
 
@@ -202,7 +204,7 @@ defmodule Sftp do
 
               case inner do
                 {elapsed, _} ->
-                  Lager.notice "Sftp file send elapsed: #{elapsed/1000}ms"
+                  Lager.info "Sftp file send elapsed: #{elapsed/1000}ms"
               end
             else
               Lager.error "Local file not found or not a regular file: #{local_file}!"
