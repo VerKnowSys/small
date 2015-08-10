@@ -52,6 +52,13 @@ defmodule Cfg do
   end
 
 
+  @doc """
+  Gets sftp chunk write timeout
+  """
+  def sftp_write_timeout do
+    Application.get_env :small, :sftp_write_timeout
+  end
+
 
   @doc """
   Returns user specific configuration from global module configuration
