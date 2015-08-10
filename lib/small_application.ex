@@ -13,11 +13,11 @@ defmodule SmallApplication do
 
   def main _ do
     content = "Launching SmallApplication v#{version}"
-    Lager.info content
+    Lager.notice content
     notification content, :start
     case SyncSupervisor.start_link do
       {:ok, pid} ->
-        Lager.info "SyncSupervisor started properly with pid: #{inspect pid}"
+        Lager.notice "SyncSupervisor started properly with pid: #{inspect pid}"
 
       {:error, err} ->
         Lager.error "SyncSupervisor error: #{inspect err}"

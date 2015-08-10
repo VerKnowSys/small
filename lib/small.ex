@@ -8,14 +8,14 @@ defmodule Small do
 
   ## Client API
   def start_link opts \\ [] do
-    Lager.info "Launching Small Filesystem Handler"
+    Lager.notice "Launching Small Filesystem Handler"
     GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
 
   def init :ok do
     FS.subscribe
-    Lager.info "Filesystem events watcher initialized"
+    Lager.notice "Filesystem events watcher initialized"
     {:ok, self}
   end
 

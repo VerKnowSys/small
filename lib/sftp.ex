@@ -26,14 +26,14 @@ defmodule Sftp do
 
 
   def launch_interval_check do
-    Lager.debug "Starting queue check with check interval: #{interval}ms"
+    Lager.info "Starting queue check with check interval: #{interval}ms"
     Timer.apply_interval interval, Sftp, :add, []
   end
 
 
   ## Callbacks (Server API)
   def init :ok do
-    Lager.info "Launching Sftp client"
+    Lager.notice "Launching Sftp client"
     SSH.start
     connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       [user: String.to_char_list(config[:username]),
@@ -45,7 +45,7 @@ defmodule Sftp do
 
     case connection do
       {:ok, conn} ->
-        Lager.info "Connected to SSH server"
+        Lager.notice "Connected to SSH server"
         {:ok, _} = launch_interval_check
         {:ok, conn}
 
@@ -58,7 +58,7 @@ defmodule Sftp do
 
   def stream_file_to_remote channel, handle, local_file do
     try do
-      Lager.info "Streaming file to remote server.."
+      Lager.notice "Streaming file to remote server.."
       (File.stream! local_file, [:read], sftp_buffer_size)
         |> Enum.each fn chunk ->
           IO.write "."
@@ -99,7 +99,7 @@ defmodule Sftp do
                             cond do
                               size > 0 ->
                                 if size != local_size do
-                                  Lager.info "Found non empty remote file. Uploading file to remote"
+                                  Lager.notice "Found non empty remote file. Uploading file to remote"
                                   stream_file_to_remote channel, handle, local_file
                                 else
                                   Lager.debug "Remote file size equals local file size. Upload skipped"
@@ -195,14 +195,14 @@ defmodule Sftp do
             if File.exists?(local_file) and File.regular?(local_file) do
               extension = List.last String.split local_file, "."
               remote_dest = remote_dest_file <> "." <> extension
-              Lager.info "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
+              Lager.notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
               inner = Timer.tc fn ->
                 send_file ssh_connection, local_file, remote_dest
               end
 
               case inner do
                 {elapsed, _} ->
-                  Lager.info "Sftp file send elapsed: #{elapsed/1000}ms"
+                  Lager.notice "Sftp file send elapsed: #{elapsed/1000}ms"
               end
             else
               Lager.error "Local file not found or not a regular file: #{local_file}!"
@@ -210,7 +210,7 @@ defmodule Sftp do
             QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
 
           :empty ->
-            Lager.info "Empty queue. Ignoring request"
+            Lager.notice "Empty queue. Ignoring request"
         end
       end
     end

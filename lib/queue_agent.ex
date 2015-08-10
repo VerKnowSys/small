@@ -5,7 +5,7 @@ defmodule QueueAgent do
 
 
   def start_link do
-    Lager.info "Launching QueueAgent"
+    Lager.notice "Launching QueueAgent"
     initial_state = []
     Agent.start_link(fn -> initial_state end, name: @name)
   end
