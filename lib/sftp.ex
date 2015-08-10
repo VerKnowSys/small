@@ -187,15 +187,6 @@ defmodule Sftp do
 
 
   def handle_call :add, _from, ssh_connection do
-    Lager.debug "Hi debug"
-    Lager.info "Hi info"
-    Lager.notice "Hi notice"
-    Lager.warning "Hi warning"
-    Lager.error "Hi error"
-    Lager.critical "Hi critical"
-    Lager.alert "Hi alert"
-    Lager.emergency "Hi emergency"
-
     time = Timer.tc fn ->
       build_clipboard
       for element <- QueueAgent.get_all do
