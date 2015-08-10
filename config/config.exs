@@ -57,6 +57,28 @@ config :small, :config,
     ]
   }
 
-config :logger, :console,
-  format: "\n$time [$level] $metadata$message",
-  metadata: [:user_id]
+
+config :exlager, level: :debug
+config :lager,
+  [
+    colored: true,
+    colors: [
+      {:debug,     "\e[1;36m" },
+      {:info,      "\e[0;38m" },
+      {:notice,    "\e[1;37m" },
+      {:warning,   "\e[1;33m" },
+      {:error,     "\e[1;31m" },
+      {:critical,  "\e[1;35m" },
+      {:alert,     "\e[1;44m" },
+      {:emergency, "\e[1;41m" }
+    ],
+    crash_log: "log/crash.log",
+    error_logger_hwm: 10, # max 10 messages/s
+    handlers: [
+      lager_console_backend: :notice,
+      lager_file_backend: [
+        file: "error.log",
+        level: :error,
+      ]
+    ],
+  ]

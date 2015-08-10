@@ -1,11 +1,11 @@
 defmodule QueueAgent do
-  require Logger
+  require Lager
 
   @name __MODULE__
 
 
   def start_link do
-    Logger.info "Launching QueueAgent"
+    Lager.info "Launching QueueAgent"
     initial_state = []
     Agent.start_link(fn -> initial_state end, name: @name)
   end

@@ -2,7 +2,7 @@ defmodule SyncSupervisor do
   use Supervisor
 
   import Cfg
-  require Logger
+  require Lager
 
 
   def start :normal, [] do
@@ -36,8 +36,8 @@ defmodule SyncSupervisor do
 
 
   # supervisor callback
-  def init params do
-    Logger.debug "Supervisor params: #{inspect params}"
+  def init _params do
+    Lager.debug "Supervisor params: #{inspect _params}"
     children = [
       worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent]),

@@ -1,6 +1,7 @@
 defmodule Cfg do
-  require Logger
+  require Lager
 
+  alias :lager, as: LagerBackend
 
   @doc """
   Returns application version
@@ -64,7 +65,7 @@ defmodule Cfg do
   Performs configuration check
   """
   def config_check do
-    Logger.debug "Performing config check"
+    Lager.debug "Performing config check"
     [
       :username,
       :hostname,
@@ -84,7 +85,7 @@ defmodule Cfg do
           raise "Required configuration value: #{e} is zero!"
 
         true ->
-          Logger.debug "Config check passed for #{e}[#{config[e]}]"
+          Lager.debug "Config check passed for #{e}[#{config[e]}]"
       end
     end
   end
@@ -93,12 +94,11 @@ defmodule Cfg do
   def log_level level \\ :debug do
     env = System.get_env "MIX_ENV"
     if env do
-      Logger.info "Changing log level to: #{level} for environment: #{env}"
+      Lager.notice "Changing log level to: #{level} for environment: #{env}"
     else
-      Logger.info "Changing log level to: #{level}"
+      Lager.notice "Changing log level to: #{level}"
     end
-    Logger.configure [level: level]
-    Logger.configure_backend :console, [level: level]
+    LagerBackend.set_loglevel :lager_console_backend, level
   end
 
 
