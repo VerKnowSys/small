@@ -73,7 +73,7 @@ defmodule Small.Mixfile do
     [
       { :uuid, "~> 1.0" },
       { :fs, github: "VerKnowSys/fs", override: true },
-      { :exsync, "~> 0.1", only: :dev },
+      { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "khia/exlager" }
     ]
   end
