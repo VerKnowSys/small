@@ -7,7 +7,7 @@ config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
 config :fs, :events_helper, to_char_list "/Projects/small/deps/fs/priv/mac_listener"
 
 config :small, :user_helper, "/Projects/small/bin/reattach-to-user-namespace"
-config :small, :sftp_write_timeout, 25_000
+config :small, :sftp_write_timeout, 10_000
 config :small, :sftp_buffer_size, 131_072
 config :small, :fs_check_interval, (if Mix.env == :dev, do: 50_000, else: 5_000)
 config :small, :ssh_connection_timeout, 5_000
