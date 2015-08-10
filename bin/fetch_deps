@@ -6,5 +6,4 @@ if [ -z "${MIX_ENV}" ]; then
 fi
 export MIX_ENV
 
-rm -rf deps
 mix do deps.get, deps.compile
