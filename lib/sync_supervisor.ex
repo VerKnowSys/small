@@ -10,24 +10,6 @@ defmodule SyncSupervisor do
   end
 
 
-  def get_initial_log_level do
-    result = System.get_env "MIX_ENV"
-    cond do
-      result == "dev" ->
-        :debug
-
-      result == nil ->
-        :debug
-
-      result == "prod" ->
-        :info
-
-      result == "test" ->
-        :debug
-    end
-  end
-
-
   def start_link do
     log_level get_initial_log_level
     config_check

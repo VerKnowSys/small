@@ -102,4 +102,22 @@ defmodule Cfg do
   end
 
 
+  def get_initial_log_level do
+    result = System.get_env "MIX_ENV"
+    cond do
+      result == "dev" ->
+        :debug
+
+      result == nil ->
+        :info
+
+      result == "prod" ->
+        :notice
+
+      result == "test" ->
+        :warn
+    end
+  end
+
+
 end
