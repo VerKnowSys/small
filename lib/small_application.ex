@@ -1,5 +1,6 @@
 defmodule SmallApplication do
   require Lager
+  import Lager
   use Application
   import Notification
   import Cfg
@@ -13,14 +14,14 @@ defmodule SmallApplication do
 
   def main _ do
     content = "Launching SmallApplication v#{version}"
-    Lager.notice content
+    notice content
     notification content, :start
     case SyncSupervisor.start_link do
       {:ok, pid} ->
-        Lager.notice "SyncSupervisor started properly with pid: #{inspect pid}"
+        notice "SyncSupervisor started properly with pid: #{inspect pid}"
 
       {:error, err} ->
-        Lager.error "SyncSupervisor error: #{inspect err}"
+        error "SyncSupervisor error: #{inspect err}"
     end
     Timer.sleep :infinity
   end

@@ -1,11 +1,12 @@
 defmodule QueueAgent do
   require Lager
+  import Lager
 
   @name __MODULE__
 
 
   def start_link do
-    Lager.notice "Launching QueueAgent"
+    notice "Launching QueueAgent"
     initial_state = []
     Agent.start_link(fn -> initial_state end, name: @name)
   end

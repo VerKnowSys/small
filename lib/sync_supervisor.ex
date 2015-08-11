@@ -3,6 +3,7 @@ defmodule SyncSupervisor do
 
   import Cfg
   require Lager
+  import Lager
 
 
   def start :normal, [] do
@@ -11,9 +12,9 @@ defmodule SyncSupervisor do
 
 
   def start_link do
-    Lager.notice "Setting initial log level"
+    notice "Setting initial log level"
     log_level get_initial_log_level
-    Lager.info "Performing configuration check"
+    info "Performing configuration check"
     config_check
     Supervisor.start_link __MODULE__, [], [name: __MODULE__]
   end
@@ -21,7 +22,7 @@ defmodule SyncSupervisor do
 
   # supervisor callback
   def init _params do
-    Lager.debug "Supervisor params: #{inspect _params}"
+    debug "Supervisor params: #{inspect _params}"
     children = [
       worker(QueueAgent, [], [restart: :permanent]),
       worker(Sftp, [], [restart: :permanent]),
