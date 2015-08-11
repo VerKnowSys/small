@@ -46,6 +46,22 @@ defmodule Cfg do
 
 
   @doc """
+  Returns sftp start channel timeout
+  """
+  def sftp_start_channel_timeout do
+    Application.get_env :small, :sftp_start_channel_timeout
+  end
+
+
+  @doc """
+  Returns sftp open channel timeout
+  """
+  def sftp_open_channel_timeout do
+    Application.get_env :small, :sftp_open_channel_timeout
+  end
+
+
+  @doc """
   Returns sftp buffer size
   """
   def sftp_buffer_size do

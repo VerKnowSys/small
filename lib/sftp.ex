@@ -42,7 +42,7 @@ defmodule Sftp do
        rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
        silently_accept_hosts: true,
        connect_timeout: ssh_connection_timeout
-      ]
+      ], ssh_connection_timeout
 
     case connection do
       {:ok, conn} ->
@@ -80,14 +80,15 @@ defmodule Sftp do
 
   @spec send_file(ssh_connection :: String.t, local_file :: String.t, remote_dest_file :: String.t) :: any
   def send_file ssh_connection, local_file, remote_dest_file do
-    a_channel = SFTP.start_channel ssh_connection, [blocking: false, pull_interval: 2]
+    debug "Starting ssh channel.."
+    a_channel = SFTP.start_channel ssh_connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout]
     case a_channel do
       {:ok, channel} ->
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
 
-        a_handle = SFTP.open channel, remote_dest_file, [:write]
+        a_handle = SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout
         case a_handle do
           {:ok, handle} ->
             case File.stat local_file do
