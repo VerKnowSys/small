@@ -51,11 +51,13 @@ defmodule Small.Mixfile do
 
 
   def applications do
+    dev = [:exsync]
+    prod = [:exlager, :logger, :uuid, :fs]
     case Mix.env do
       :prod ->
-        [:exlager, :logger, :uuid, :fs]
+        prod
       _ ->
-        [:exsync, :exlager, :logger, :uuid, :fs]
+        dev ++ prod
     end
   end
 
