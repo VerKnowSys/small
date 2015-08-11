@@ -74,7 +74,7 @@ config :lager,
       {:emergency, "\e[1;41m" }
     ],
     crash_log: "log/crash.log",
-    error_logger_hwm: 10, # max 10 messages/s
+    error_logger_hwm: 30, # max 30 messages/s
     # handlers: [
     #   lager_console_backend: :notice,
     #   lager_file_backend: [
