@@ -101,14 +101,14 @@ defmodule Sftp do
                         debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
                         case remote_file_info do
                           {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
-                            debug "Local size: #{local_size} ~ #{size}"
+                            debug "Local size: #{local_size}, remote size: #{size}"
                             cond do
                               size > 0 ->
                                 if size != local_size do
-                                  notice "Found non empty remote file. Uploading file to remote"
+                                  info "Found non empty remote file. Uploading file to remote"
                                   stream_file_to_remote channel, handle, local_file, local_size
                                 else
-                                  debug "Remote file size equals local file size. Upload skipped"
+                                  info "Remote file size equals local file size. File already uploaded. File upload skipped."
                                 end
 
                               size == 0 ->
@@ -193,39 +193,40 @@ defmodule Sftp do
 
 
   def handle_call :add, _from, ssh_connection do
-    time = Timer.tc fn ->
-      build_clipboard
-      for element <- QueueAgent.get_all do
-        case element do
-          {:add, local_file, remote_dest_file, random_uuid} ->
-            if File.exists?(local_file) and File.regular?(local_file) do
-              extension = if (String.contains? local_file, "."), do: "." <> (List.last String.split local_file, "."), else: ""
-              remote_dest = remote_dest_file <> extension
-              notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
-              inner = Timer.tc fn ->
-                send_file ssh_connection, local_file, remote_dest
-              end
+    unless Enum.empty? QueueAgent.get_all do
+      time = Timer.tc fn ->
+        build_clipboard
+        for element <- QueueAgent.get_all do
+          case element do
+            {:add, local_file, remote_dest_file, random_uuid} ->
+              if File.exists?(local_file) and File.regular?(local_file) do
+                extension = if (String.contains? local_file, "."), do: "." <> (List.last String.split local_file, "."), else: ""
+                remote_dest = remote_dest_file <> extension
+                notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
+                inner = Timer.tc fn ->
+                  send_file ssh_connection, local_file, remote_dest
+                end
 
-              case inner do
-                {elapsed, _} ->
-                  info "Sftp file send elapsed: #{elapsed/1000}ms"
+                case inner do
+                  {elapsed, _} ->
+                    info "Sftp file send elapsed: #{elapsed/1000}ms"
+                end
+              else
+                error "Local file not found or not a regular file: #{local_file}!"
               end
-            else
-              error "Local file not found or not a regular file: #{local_file}!"
-            end
-            QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
+              QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
 
-          :empty ->
-            notice "Empty queue. Ignoring request"
+            :empty ->
+              notice "Empty queue. Ignoring request"
+          end
         end
       end
-    end
 
-    case time do
-      {_elapsed, _} ->
-        debug "Whole operation finished in: #{_elapsed/1000}ms"
+      case time do
+        {_elapsed, _} ->
+          debug "Whole operation finished in: #{_elapsed/1000}ms"
+      end
     end
-
     {:reply, ssh_connection, ssh_connection}
   end
 

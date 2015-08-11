@@ -11,7 +11,7 @@ config :small, :sftp_write_timeout, 5_000
 config :small, :sftp_open_channel_timeout, 2_000
 config :small, :sftp_start_channel_timeout, 2_000
 config :small, :sftp_buffer_size, 131_072
-config :small, :fs_check_interval, (if Mix.env == :dev, do: 50_000, else: 5_000)
+config :small, :fs_check_interval, 5_000
 config :small, :ssh_connection_timeout, 5_000
 config :small, :config,
   %{
