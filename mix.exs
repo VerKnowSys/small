@@ -52,7 +52,7 @@ defmodule Small.Mixfile do
 
   def applications do
     dev = [:exsync]
-    prod = [:exlager, :logger, :uuid, :fs]
+    prod = [:amnesia, :exlager, :uuid, :fs, :logger]
     case Mix.env do
       :prod ->
         prod
@@ -76,7 +76,8 @@ defmodule Small.Mixfile do
       { :uuid, "~> 1.0" },
       { :fs, github: "VerKnowSys/fs", override: true },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
-      { :exlager, github: "khia/exlager" }
+      { :exlager, github: "khia/exlager" },
+      { :amnesia, github: "meh/amnesia" }
     ]
   end
 end
