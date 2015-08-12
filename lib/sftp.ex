@@ -148,6 +148,17 @@ defmodule Sftp do
 
 
   @doc """
+  Adds clipboard items to persistent history
+  """
+  def add_to_history do
+    to_history_entry = Clipboard.get
+    to_history = Regex.replace ~r/\n/, to_history_entry, ""
+    debug "Putting content: '#{to_history}' to history"
+    DB.add to_history
+  end
+
+
+  @doc """
   Creates content which will be copied to clipboard as http links
   """
   def build_clipboard do
@@ -163,6 +174,7 @@ defmodule Sftp do
             end)
             |> Enum.join("\n")
             |> Clipboard.put
+          add_to_history
 
         first != :empty ->
           case first do
@@ -170,6 +182,8 @@ defmodule Sftp do
               debug "Single entry found in QueueAgent, copying to clipboard"
               extension = List.last String.split file_path, "."
               Clipboard.put config[:address] <> uuid <> "." <> extension
+              add_to_history
+
             :empty ->
               debug "Skipping copying to clipboard, empty queue"
           end

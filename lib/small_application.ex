@@ -13,6 +13,9 @@ defmodule SmallApplication do
 
 
   def main _ do
+    notice "Starting database backend."
+    DB.init_and_start
+
     content = "Launching SmallApplication v#{version}"
     notice content
     notification content, :start
@@ -21,8 +24,9 @@ defmodule SmallApplication do
         notice "SyncSupervisor started properly with pid: #{inspect pid}"
 
       {:error, err} ->
-        error "SyncSupervisor error: #{inspect err}"
+        critical "SyncSupervisor error: #{inspect err}"
     end
+
     Timer.sleep :infinity
   end
 
