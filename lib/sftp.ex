@@ -174,7 +174,6 @@ defmodule Sftp do
             end)
             |> Enum.join("\n")
             |> Clipboard.put
-          add_to_history
 
         first != :empty ->
           case first do
@@ -182,7 +181,6 @@ defmodule Sftp do
               debug "Single entry found in QueueAgent, copying to clipboard"
               extension = List.last String.split file_path, "."
               Clipboard.put config[:address] <> uuid <> "." <> extension
-              add_to_history
 
             :empty ->
               debug "Skipping copying to clipboard, empty queue"
@@ -219,6 +217,11 @@ defmodule Sftp do
                 notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
                 inner = Timer.tc fn ->
                   send_file ssh_connection, local_file, remote_dest
+                end
+
+                if (List.last QueueAgent.get_all) == element do
+                  notice "Uploading last element, adding to history"
+                  add_to_history
                 end
 
                 case inner do
