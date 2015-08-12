@@ -1,4 +1,8 @@
 defmodule DB do
+  @moduledoc """
+  Database Backend module.
+  """
+
   require Lager
   import Lager
   use Database
@@ -8,7 +12,7 @@ defmodule DB do
   def init_and_start do
     case Amnesia.Schema.create do
       :ok ->
-        info "Amnesia Schema created"
+        notice "Amnesia Schema created"
 
       {:error, {_, {:already_exists, node}}} ->
         debug "Amnesia schema already created for node: #{node}"
@@ -96,8 +100,7 @@ defmodule DB do
       selection = User.where name == Cfg.user
       user = selection |> Amnesia.Selection.values |> List.first
 
-      all_user_history = History.where user_id == user.id
-      all_user_history
+      (History.where user_id == user.id)
         |> Amnesia.Selection.values
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
         |> Enum.map fn entry ->
