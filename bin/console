@@ -6,4 +6,4 @@ if [ -z "${MIX_ENV}" ]; then
 fi
 export MIX_ENV
 
-iex --sname "console" --name "console" -S mix
+iex --sname "small${MIX_ENV}" --name "small${MIX_ENV}" -S mix
