@@ -57,9 +57,14 @@ defmodule Sftp do
   end
 
 
+  def size_kib size_in_bytes do
+    Float.round size_in_bytes / 1024, 2
+  end
+
+
   def stream_file_to_remote channel, handle, local_file, local_size do
     try do
-      notice "Streaming file of size: #{local_size} to remote server.."
+      notice "Streaming file of size: #{size_kib local_size}KiB to remote server.."
       chunks = div local_size, sftp_buffer_size
       debug "Chunks: #{chunks}"
       (File.stream! local_file, [:read], sftp_buffer_size)
@@ -101,7 +106,7 @@ defmodule Sftp do
                         debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
                         case remote_file_info do
                           {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
-                            debug "Local size: #{local_size}, remote size: #{size}"
+                            debug "Local size: #{local_size}KiB, remote size: #{size}KiB"
                             cond do
                               size > 0 ->
                                 if size != local_size do
