@@ -97,7 +97,7 @@ defmodule DB do
       user = selection |> Amnesia.Selection.values |> List.first
 
       all_user_history = History.where user_id == user.id
-      all_user_history |> Amnesia.Selection.values |> Enum.map fn entry ->
+      all_user_history |> Amnesia.Selection.values |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end) |> Enum.map fn entry ->
         "#{entry.timestamp} - #{entry.content}"
       end
     end
