@@ -99,9 +99,12 @@ defmodule DB do
     Amnesia.transaction do
       selection = User.where name == Cfg.user
       user = selection |> Amnesia.Selection.values |> List.first
-
-      (History.where user_id == user.id)
-        |> Amnesia.Selection.values
+      # NOTE: slower but more expressie way:
+      # (History.where user_id == user.id)
+      # |> Amnesia.Selection.values
+      #
+      # or:
+      user |> User.histories
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
         |> Enum.map fn entry ->
         "#{entry.timestamp} - #{entry.content}"
