@@ -25,9 +25,9 @@ defmodule SyncSupervisor do
     debug "Supervisor params: #{inspect _params}"
     children = [
       worker(QueueAgent, [], [restart: :permanent]),
-      worker(Sftp, [], [restart: :permanent]),
       worker(Small, [], [restart: :permanent]),
-      worker(WebApi, [], [restart: :permanent])
+      worker(WebApi, [], [restart: :permanent]),
+      worker(SshSupervisor, [], [restart: :permanent]),
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1000, max_seconds: 5]
   end

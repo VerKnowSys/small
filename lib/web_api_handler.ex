@@ -32,6 +32,7 @@ defmodule WebApi.Handler do
     div.item { vertical-align: top; display: inline-block; text-align: center; }
     img { background-color: grey; padding: 0.5em; margin-top: 3em; margin-left: 2em; margin-right: 2em; }
     .caption { display: block; }
+    body { background-color: #e1e1e1; }
   </style>
 </head>
 """
