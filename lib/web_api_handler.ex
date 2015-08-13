@@ -12,9 +12,12 @@ defmodule WebApi.Handler do
   end
 
 
-  defp extract_links input_string do
-    [timestamp | link] = String.split input_string, " - "
-    "<img src=\"#{List.first link}\"></img><span class=\"caption\">#{timestamp}</span>"
+  defp extract_links timestamp, link, file do
+    if String.ends_with? link, ["png", "jpg", "jpeg", "gif"] do
+      "<a href=\"#{link}\"><img src=\"#{link}\"></img><span class=\"caption\">#{timestamp} - #{file}</span></a>"
+    else
+      "<a href=\"#{link}\"><img src=\"http://findicons.com/icon/download/203385/text_x_xslfo/128/png\"><span class=\"caption\">#{timestamp} - #{file}</span></div></a>"
+    end
   end
 
 
@@ -39,16 +42,17 @@ defmodule WebApi.Handler do
     history = DB.get_history
     case path do
       "/" ->
-        list = history
-          |> (Stream.take 20)
-          |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
+        list = history |> (Enum.take 10) |> Enum.map fn {ts, link, file} ->
+          "<div class=\"text-center\">" <> (extract_links ts, link, file) <> "</div>"
+        end
         {:ok, req} = :cowboy_req.reply 200, [],
           "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
         {:ok, req, state}
 
       "/all" ->
-        list = history
-          |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
+        list = history |> Enum.map fn {ts, link, file} ->
+          "<div class=\"text-center\">" <> (extract_links ts, link, file) <> "</div>"
+        end
         {:ok, req} = :cowboy_req.reply 200, [],
           "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
         {:ok, req, state}
@@ -64,6 +68,7 @@ defmodule WebApi.Handler do
         callback path, req, state
 
       _ ->
+        info "Unhandled request"
         callback "/", req, state
     end
   end

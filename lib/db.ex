@@ -86,11 +86,11 @@ defmodule DB do
   end
 
 
-  def add link do
+  def add link, file do
     Amnesia.transaction do
       selection = User.where name == Cfg.user
       user = selection |> Amnesia.Selection.values |> List.first
-      user |> User.add_history link
+      user |> User.add_history link, file
     end
   end
 
@@ -99,6 +99,7 @@ defmodule DB do
     Amnesia.transaction do
       selection = User.where name == Cfg.user
       user = selection |> Amnesia.Selection.values |> List.first
+      debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories}"
       # NOTE: slower but more expressie way:
       # (History.where user_id == user.id)
       # |> Amnesia.Selection.values
@@ -107,7 +108,7 @@ defmodule DB do
       user |> User.histories
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
         |> Enum.map fn entry ->
-        "#{entry.timestamp} - #{entry.content}"
+        {entry.timestamp, entry.content, entry.file}
       end
     end
   end

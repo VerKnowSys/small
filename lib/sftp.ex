@@ -155,11 +155,11 @@ defmodule Sftp do
   @doc """
   Adds clipboard items to persistent history
   """
-  def add_to_history do
+  def add_to_history local_file do
     to_history_entry = Clipboard.get
     to_history = String.strip Regex.replace ~r/\n/, to_history_entry, " "
-    debug "Putting content: '#{to_history}' to history"
-    DB.add to_history
+    debug "Putting content: '#{to_history}' to history of local file: #{local_file}"
+    DB.add to_history, local_file
   end
 
 
@@ -226,7 +226,7 @@ defmodule Sftp do
 
                 if (List.last QueueAgent.get_all) == element do
                   notice "Uploading last element, adding to history"
-                  add_to_history
+                  add_to_history local_file
                 end
 
                 case inner do
