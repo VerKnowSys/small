@@ -78,6 +78,24 @@ defmodule Cfg do
 
 
   @doc """
+  Gets webapi port for current mode
+  """
+  def webapi_port do
+    case System.get_env "MIX_ENV" do
+      "prod" ->
+        Application.get_env :small, :webapi_port
+
+      "test" ->
+        Application.get_env :small, :webapi_test_port
+
+      _ ->
+        Application.get_env :small, :webapi_dev_port
+
+    end
+  end
+
+
+  @doc """
   Returns user specific configuration from global module configuration
   """
   def config do
@@ -142,6 +160,8 @@ defmodule Cfg do
         :warn
     end
   end
+
+
 
 
 end
