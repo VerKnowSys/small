@@ -90,7 +90,7 @@ defmodule DB do
     Amnesia.transaction do
       selection = User.where name == Cfg.user
       user = selection |> Amnesia.Selection.values |> List.first
-      user |> User.add_history String.strip link
+      user |> User.add_history link
     end
   end
 

@@ -157,7 +157,7 @@ defmodule Sftp do
   """
   def add_to_history do
     to_history_entry = Clipboard.get
-    to_history = Regex.replace ~r/\n/, to_history_entry, " "
+    to_history = String.strip Regex.replace ~r/\n/, to_history_entry, " "
     debug "Putting content: '#{to_history}' to history"
     DB.add to_history
   end
