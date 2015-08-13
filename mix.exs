@@ -4,7 +4,7 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.6.1",
+      version: "0.6.2",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -52,7 +52,7 @@ defmodule Small.Mixfile do
 
   def applications do
     dev = [:exsync]
-    prod = [:timex, :amnesia, :exlager, :uuid, :fs, :logger]
+    prod = [:httpotion, :cowboy, :timex, :amnesia, :exlager, :uuid, :fs, :logger]
     case Mix.env do
       :prod ->
         prod
@@ -74,11 +74,13 @@ defmodule Small.Mixfile do
   defp deps do
     [
       { :uuid, "~> 1.0" },
-      { :fs, github: "VerKnowSys/fs", override: true },
+      { :fs, github: "VerKnowSys/fs" },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "khia/exlager" },
       { :amnesia, github: "meh/amnesia" },
-      { :timex, "~> 0.18.2" }
+      { :timex, "~> 0.18.2" },
+      { :cowboy, "~> 1.0.0" },
+      { :httpotion, github: "myfreeweb/httpotion" },
     ]
   end
 end
