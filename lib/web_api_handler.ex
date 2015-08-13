@@ -5,19 +5,7 @@ defmodule WebApi.Handler do
   @moduledoc """
   Provides handler for cowboy
   """
-  @ets_table :webapi_handler
-  @ets_key   :response
-  @default_response "Sync eM ALL"
 
-  def define_response response, timeout do
-    response  = response || @default_response
-    timeout = timeout || 0
-
-    # if (:ets.info @ets_table) == :undefined do
-    #   :ets.new @ets_table, [:set, :public, :named_table]
-    # end
-    # :ets.insert @ets_table, {@ets_key, {response, timeout}}
-  end
 
   def init {_any, :http}, req, [] do
     {:ok, req, :undefined}
@@ -30,8 +18,7 @@ defmodule WebApi.Handler do
   end
 
 
-  def handle req, state do
-    head = """
+  def head do """
 <head>
   <title>Small dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,25 +32,39 @@ defmodule WebApi.Handler do
   </style>
 </head>
 """
-    list = DB.get_history |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
-    debug "WebApi list: #{inspect list}"
-    {:ok, req} = :cowboy_req.reply 200, [],
-      "<html>" <> head <> "<body><div>" <> (Enum.join list, "<br/>") <> "</div></body></html>", req
-    {:ok, req, state}
   end
 
 
-  defp wait_for duration do
-    if duration > 0 do
-      current_pid = self
-      spawn fn ->
-        :timer.sleep duration
-        send current_pid, :completed
-      end
+  def callback path, req, state do
+    history = DB.get_history
+    case path do
+      "/" ->
+        list = history
+          |> (Stream.take 20)
+          |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
+        {:ok, req} = :cowboy_req.reply 200, [],
+          "<html>" <> head <> "<body><div>" <> (Enum.join list, "<br/>") <> "</div></body></html>", req
+        {:ok, req, state}
 
-      receive do
-        :completed -> nil  # do nothing
-      end
+      "/all" ->
+        list = history
+          |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
+        {:ok, req} = :cowboy_req.reply 200, [],
+          "<html>" <> head <> "<body><div>" <> (Enum.join list, "<br/>") <> "</div></body></html>", req
+        {:ok, req, state}
+    end
+  end
+
+
+  def handle req, state do
+    debug "Handling http request: #{inspect req}"
+    case req do
+      {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, _, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
+        info "Pid #{inspect pid} is handling request for: #{path}"
+        callback path, req, state
+
+      _ ->
+        callback "/", req, state
     end
   end
 

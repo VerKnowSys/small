@@ -4,7 +4,17 @@ defmodule WebApi do
   use GenServer
 
   @listener_name node
-  @default_port 8000
+
+
+  def default_port do
+    case System.get_env "MIX_ENV" do
+      "prod" ->
+        8000
+
+      "dev" ->
+        8001
+    end
+  end
 
 
   ## Client API
@@ -18,18 +28,16 @@ defmodule WebApi do
     Application.ensure_started :crypto
     Application.ensure_started :cowboy
 
-    path = "/"
-    # path = args[:path] || "/"
-    port = @default_port
-    WebApi.Handler.define_response "/", 1000
-
     dispatch = :cowboy_router.compile([
       {:_,
-        [{path, WebApi.Handler, []}]
+        [
+          {"/", WebApi.Handler, []},
+          {"/all", WebApi.Handler, []}
+        ]
       }
     ])
-    :cowboy.start_http "#{@listener_name}_#{port}", 10,
-        [ip: {127,0,0,1}, port: port], [{:env, [{:dispatch, dispatch}]}]
+    :cowboy.start_http "#{@listener_name}_#{default_port}", 10,
+        [ip: {127,0,0,1}, port: default_port], [{:env, [{:dispatch, dispatch}]}]
 
     {:ok, self}
   end
