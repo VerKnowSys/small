@@ -29,7 +29,7 @@ defmodule WebApi do
       }
     ])
     :cowboy.start_http "#{@listener_name}_#{port}", 10,
-        [{:port, port}], [{:env, [{:dispatch, dispatch}]}]
+        [ip: {127,0,0,1}, port: port], [{:env, [{:dispatch, dispatch}]}]
 
     {:ok, self}
   end
