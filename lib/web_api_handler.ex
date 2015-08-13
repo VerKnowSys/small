@@ -30,7 +30,7 @@ defmodule WebApi.Handler do
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <style>
     div.item { vertical-align: top; display: inline-block; text-align: center; }
-    img { background-color: grey; padding: 0.4em; margin-top: 1.5em; }
+    img { background-color: grey; padding: 0.5em; margin-top: 3em; margin-left: 2em; margin-right: 2em; }
     .caption { display: block; }
   </style>
 </head>

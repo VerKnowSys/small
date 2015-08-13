@@ -13,7 +13,7 @@ defmodule SmallApplication do
 
 
   def main _ do
-    notice "Starting database backend."
+    notice "Starting Mnesia Database Backend"
     DB.init_and_start
 
     content = "Launching SmallApplication v#{version}"
