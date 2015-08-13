@@ -22,6 +22,10 @@ defmodule SmallApplication do
     case SyncSupervisor.start_link do
       {:ok, pid} ->
         notice "SyncSupervisor started properly with pid: #{inspect pid}"
+        if config[:open_history_on_start] do
+          debug "Open on start enabled"
+          System.cmd "open", ["http://localhost:#{webapi_port}"]
+        end
 
       {:error, err} ->
         critical "SyncSupervisor error: #{inspect err}"

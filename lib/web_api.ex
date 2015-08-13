@@ -1,20 +1,10 @@
 defmodule WebApi do
   require Lager
   import Lager
+  import Cfg
   use GenServer
 
   @listener_name node
-
-
-  def default_port do
-    case System.get_env "MIX_ENV" do
-      "prod" ->
-        8000
-
-      "dev" ->
-        8001
-    end
-  end
 
 
   ## Client API
@@ -36,8 +26,8 @@ defmodule WebApi do
         ]
       }
     ])
-    :cowboy.start_http "#{@listener_name}_#{default_port}", 10,
-        [ip: {127,0,0,1}, port: default_port], [{:env, [{:dispatch, dispatch}]}]
+    :cowboy.start_http "#{@listener_name}_#{webapi_port}", 10,
+        [ip: {127,0,0,1}, port: webapi_port], [{:env, [{:dispatch, dispatch}]}]
 
     {:ok, self}
   end
