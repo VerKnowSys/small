@@ -27,7 +27,7 @@ defmodule WebApi.Handler do
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <style>
     div.item { vertical-align: top; display: inline-block; text-align: center; }
-    img { background-color: grey; padding: 0.4em; margin-top: 1em; }
+    img { background-color: grey; padding: 0.4em; margin-top: 1.5em; }
     .caption { display: block; }
   </style>
 </head>
@@ -43,14 +43,14 @@ defmodule WebApi.Handler do
           |> (Stream.take 20)
           |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
         {:ok, req} = :cowboy_req.reply 200, [],
-          "<html>" <> head <> "<body><div>" <> (Enum.join list, "<br/>") <> "</div></body></html>", req
+          "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
         {:ok, req, state}
 
       "/all" ->
         list = history
           |> Enum.map fn hist -> "<div class=\"text-center\">" <> (extract_links hist) <> "</div>" end
         {:ok, req} = :cowboy_req.reply 200, [],
-          "<html>" <> head <> "<body><div>" <> (Enum.join list, "<br/>") <> "</div></body></html>", req
+          "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
         {:ok, req, state}
     end
   end
