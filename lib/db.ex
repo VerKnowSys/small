@@ -84,9 +84,9 @@ defmodule DB do
   @doc """
   Adds link to user history
   """
-  def add link, file do
+  def add history do
     Amnesia.transaction do
-      user |> User.add_history link, file
+      user |> User.add_history history
     end
   end
 
@@ -123,7 +123,7 @@ defmodule DB do
 
   def get_history do
     Amnesia.transaction do
-      debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories}"
+      debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories |> Enum.take 5}"
       # NOTE: slower but more expressie way:
       # (History.where user_id == user.id)
       # |> Amnesia.Selection.values
@@ -132,7 +132,7 @@ defmodule DB do
       user |> User.histories
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
         |> Enum.map fn entry ->
-        %Database.History{user_id: user.id, timestamp: entry.timestamp, content: entry.content, file: entry.file}
+        %Database.History{user_id: entry.user_id, timestamp: entry.timestamp, content: entry.content, file: entry.file, uuid: entry.uuid}
       end
     end
   end

@@ -157,10 +157,9 @@ defmodule Sftp do
   Adds clipboard items to persistent history
   """
   def add_to_history local_file do
-    to_history_entry = Clipboard.get
-    to_history = String.strip Regex.replace ~r/\n/, to_history_entry, " "
+    to_history = String.strip Regex.replace ~r/\n/, Clipboard.get, " "
     debug "Putting content: '#{to_history}' to history of local file: #{local_file}"
-    DB.add to_history, local_file
+    DB.add %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: local_file, uuid: (UUID.uuid4 :hex)}
   end
 
 

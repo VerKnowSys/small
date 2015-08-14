@@ -2,7 +2,6 @@ defmodule Queue do
   use GenServer
   require Lager
   import Lager
-  import Cfg
 
   @name __MODULE__
 
@@ -34,7 +33,7 @@ defmodule Queue do
 
 
   @doc """
-  Gets state of all elements. Don't modify the state
+  Gets state of all elements.
   """
   def get_all do
     DB.get_queue
@@ -42,7 +41,7 @@ defmodule Queue do
 
 
   @doc """
-  Add a record to current state only if element not already on list
+  Add a record to current state (only if record not already on list)
   """
   def put record do
     DB.add_to_queue record
@@ -50,9 +49,9 @@ defmodule Queue do
 
 
   @doc """
-  Removes an element from current state.
+  Removes a record from current state.
   """
-  def remove element do
-    DB.remove_from_queue element
+  def remove record do
+    DB.remove_from_queue record
   end
 end

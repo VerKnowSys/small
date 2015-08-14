@@ -7,8 +7,8 @@ defdatabase Database do
   deftable User
 
 
-  deftable History, [:user_id, :content, :timestamp, :file], type: :bag do
-    @type t :: %History{user_id: integer, content: String.t, timestamp: String.t, file: String.t}
+  deftable History, [:user_id, :content, :timestamp, :file, :uuid], type: :bag do
+    @type t :: %History{user_id: integer, content: String.t, timestamp: String.t, file: String.t, uuid: String.t}
 
     # this defines a helper function to fetch the user from a History record
     def user self do
@@ -31,8 +31,8 @@ defdatabase Database do
     @type t :: %User{id: non_neg_integer, name: String.t}
 
 
-    def add_history self, content, file do
-      %History{user_id: self.id, content: content, timestamp: Timestamp.now, file: file} |> History.write
+    def add_history self, history do
+      history |> History.write
     end
 
 
