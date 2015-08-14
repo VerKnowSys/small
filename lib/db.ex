@@ -58,7 +58,8 @@ defmodule DB do
 
   def destroy do
     warning "Destroying database"
-    Database.destroy
+    list = Database.destroy
+    debug "Destroyed: #{inspect list}"
     destroy_schema
   end
 
