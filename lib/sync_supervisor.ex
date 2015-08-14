@@ -26,8 +26,8 @@ defmodule SyncSupervisor do
     children = [
       (worker Queue, [], [restart: :permanent]),
       (worker Small, [], [restart: :permanent]),
-      (worker WebApi, [], [restart: :transient]),
-      (worker SshSupervisor, [], [restart: :temporary]),
+      (worker WebApi, [], [restart: :permanent]),
+      (worker SshSupervisor, [], [restart: :permanent]),
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1000, max_seconds: 5]
   end
