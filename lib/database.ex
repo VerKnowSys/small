@@ -31,7 +31,7 @@ defdatabase Database do
     @type t :: %User{id: non_neg_integer, name: String.t}
 
 
-    def add_history self, history do
+    def add_history _self, history do
       history |> History.write
     end
 

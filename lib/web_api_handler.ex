@@ -47,7 +47,7 @@ defmodule WebApi.Handler do
     {:ok, req} = :cowboy_req.reply 200, [],
       "<html>" <> head <> "<body><div>" <>
       (collection
-        |> (Enum.map fn %Database.History{user_id: user_id, content: links, timestamp: ts, file: file, uuid: uuid} ->
+        |> (Enum.map fn %Database.History{user_id: _, content: links, timestamp: ts, file: file, uuid: uuid} ->
           links_list = links |> String.split " "
           "<div id=\"#{uuid}\" class=\"text-center\">" <> extract_links(ts, links_list, file) <> "</div>"
         end)
