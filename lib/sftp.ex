@@ -238,7 +238,10 @@ defmodule Sftp do
               else
                 error "Local file not found or not a regular file: #{local_file}!"
               end
-              Queue.remove %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+
+              record = %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+              debug "Removing from queue: #{inspect record}"
+              Queue.remove record
 
             :empty ->
               notice "Empty queue. Ignoring request"
