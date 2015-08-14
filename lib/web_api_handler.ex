@@ -12,12 +12,16 @@ defmodule WebApi.Handler do
   end
 
 
-  defp extract_links timestamp, link, file do
-    if String.ends_with? link, ["png", "jpg", "jpeg", "gif"] do
-      "<a href=\"#{link}\"><img src=\"#{link}\"></img><span class=\"caption\">#{timestamp} - #{file}</span></a>"
-    else
-      "<a href=\"#{link}\"><img src=\"http://findicons.com/icon/download/203385/text_x_xslfo/128/png\"><span class=\"caption\">#{timestamp} - #{file}</span></div></a>"
-    end
+  @spec extract_links(timestamp :: String.t, links :: String.t, file :: String.t) :: String.t
+  def extract_links timestamp, links, file do
+    links |> (Enum.map fn link ->
+      if String.ends_with? link, ["png", "jpg", "jpeg", "gif"] do
+        "<a href=\"#{link}\"><img src=\"#{link}\"></img><span class=\"caption\">#{timestamp} - #{file}</span></a>"
+      else
+        "<a href=\"#{link}\"><img src=\"http://findicons.com/icon/download/203385/text_x_xslfo/128/png\"><span class=\"caption\">#{timestamp} - #{file}</span></div></a>"
+      end
+    end)
+    |> Enum.join " "
   end
 
 
@@ -43,8 +47,9 @@ defmodule WebApi.Handler do
     {:ok, req} = :cowboy_req.reply 200, [],
       "<html>" <> head <> "<body><div>" <>
       (collection
-        |> (Enum.map fn {ts, link, file} ->
-          "<div class=\"text-center\">" <> extract_links(ts, link, file) <> "</div>"
+        |> (Enum.map fn {ts, links, file} ->
+          links_list = links |> String.split " "
+          "<div class=\"text-center\">" <> extract_links(ts, links_list, file) <> "</div>"
         end)
         |> Enum.join " ") <> "</div></body></html>", req
     {:ok, req, state}
