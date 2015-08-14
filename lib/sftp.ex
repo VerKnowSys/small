@@ -250,8 +250,6 @@ defmodule Sftp do
         {_elapsed, _} ->
           debug "Whole operation finished in: #{_elapsed/1000}ms"
       end
-    else
-      debug "No entries in queue"
     end
     {:reply, ssh_connection, ssh_connection}
   end
