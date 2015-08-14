@@ -22,7 +22,7 @@ defmodule Sftp do
 
 
   def do_exception do
-    GenServer.call __MODULE__, :exception, :infinity
+    GenServer.call __MODULE__, :do_exception, :infinity
   end
 
 
