@@ -24,6 +24,7 @@ defmodule SmallApplication do
         notice "SyncSupervisor started properly with pid: #{inspect pid}"
         if config[:open_history_on_start] do
           debug "Open on start enabled"
+          notice "Automatically opening http dashboard: http://localhost:#{webapi_port} in default browser."
           System.cmd "open", ["http://localhost:#{webapi_port}"]
         end
 
