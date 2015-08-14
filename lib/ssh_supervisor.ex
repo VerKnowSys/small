@@ -19,7 +19,7 @@ defmodule SshSupervisor do
   def init _params do
     notice "Starting SSH Supervisor"
     children = [
-      worker(Sftp, [], [restart: :transient])
+      worker(Sftp, [], [restart: :temporary])
     ]
     supervise children, [strategy: :one_for_one, max_restarts: 1_000_000, max_seconds: 5]
   end
