@@ -33,7 +33,7 @@ defmodule Small do
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
       record = {:add, file_path, remote_dest_file, random_uuid}
       debug "#{inspect record}"
-      QueueAgent.put record
+      Queue.put record
       Sftp.add
     else
       debug "File doesn't exists: #{file_path} after event #{inspect _event}. Skipped process_event"

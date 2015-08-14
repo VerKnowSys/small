@@ -168,11 +168,11 @@ defmodule Sftp do
   """
   def build_clipboard do
     clip_time = Timer.tc fn ->
-      first = QueueAgent.first
+      first = Queue.first
       cond do
-        (length QueueAgent.get_all) > 1 ->
+        (length Queue.get_all) > 1 ->
           debug "More than one entry found in QueueAgent, merging results"
-          QueueAgent.get_all
+          Queue.get_all
             |> (Enum.map fn elem ->
               {_, file_path, _, uuid} = elem
               config[:address] <> uuid <> "." <> List.last String.split file_path, "."
@@ -210,10 +210,10 @@ defmodule Sftp do
 
 
   def handle_call :add, _from, ssh_connection do
-    unless Enum.empty? QueueAgent.get_all do
+    unless Enum.empty? Queue.get_all do
       time = Timer.tc fn ->
         build_clipboard
-        for element <- QueueAgent.get_all do
+        for element <- Queue.get_all do
           case element do
             {:add, local_file, remote_dest_file, random_uuid} ->
               if File.exists?(local_file) and File.regular?(local_file) do
