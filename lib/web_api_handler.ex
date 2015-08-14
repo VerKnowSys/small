@@ -39,24 +39,26 @@ defmodule WebApi.Handler do
   end
 
 
-  def callback path, req, state do
+  def outer_route collection, req, state do
+    {:ok, req} = :cowboy_req.reply 200, [],
+      "<html>" <> head <> "<body><div>" <>
+      (collection
+        |> (Enum.map fn {ts, link, file} ->
+          "<div class=\"text-center\">" <> extract_links(ts, link, file) <> "</div>"
+        end)
+        |> Enum.join " ") <> "</div></body></html>", req
+    {:ok, req, state}
+  end
+
+
+  def route path, req, state do
     history = DB.get_history
     case path do
       "/" ->
-        list = history |> (Enum.take 10) |> Enum.map fn {ts, link, file} ->
-          "<div class=\"text-center\">" <> (extract_links ts, link, file) <> "</div>"
-        end
-        {:ok, req} = :cowboy_req.reply 200, [],
-          "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
-        {:ok, req, state}
+        history |> (Enum.take 10) |> outer_route req, state
 
       "/all" ->
-        list = history |> Enum.map fn {ts, link, file} ->
-          "<div class=\"text-center\">" <> (extract_links ts, link, file) <> "</div>"
-        end
-        {:ok, req} = :cowboy_req.reply 200, [],
-          "<html>" <> head <> "<body><div>" <> (Enum.join list, " ") <> "</div></body></html>", req
-        {:ok, req, state}
+        history |> outer_route req, state
     end
   end
 
@@ -66,11 +68,11 @@ defmodule WebApi.Handler do
     case req do
       {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, _, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
         info "Pid #{inspect pid} is handling request for: #{path}"
-        callback path, req, state
+        route path, req, state
 
       _ ->
         info "Unhandled request"
-        callback "/", req, state
+        route "/", req, state
     end
   end
 
