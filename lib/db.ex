@@ -132,7 +132,7 @@ defmodule DB do
       user |> User.histories
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
         |> Enum.map fn entry ->
-        {entry.timestamp, entry.content, entry.file}
+        %Database.History{user_id: user.id, timestamp: entry.timestamp, content: entry.content, file: entry.file}
       end
     end
   end
