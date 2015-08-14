@@ -25,44 +25,27 @@ defmodule DB do
     Amnesia.start
 
     case Database.create disk!: [node] do
-      [:ok, :ok, :ok] ->
+      [:ok, :ok, :ok, :ok] ->
         notice "Database created for node #{inspect node}"
         Amnesia.transaction do
           notice "Adding default user"
           %User{name: Cfg.user} |> User.write
         end
 
-      [error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}] ->
+      [error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}] ->
         debug "Database already created"
 
-      [error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}] ->
+      [error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}] ->
         warning "Found an issue with bad_type of requested - disk_only mode. Recovering.."
         destroy
         init_and_start
 
-      [error: err, error: err, error: err] ->
+      [error: err, error: err, error: err, error: err] ->
         critical "Database creation failure: #{inspect err}"
 
       err ->
         critical "Database creation failure: #{inspect err}"
     end
-
-    # time = Timer.tc fn ->
-    #   max = 50_000
-    #   info "Adding #{max} user records"
-    #   Amnesia.transaction do
-    #     for i <- 0..max do
-    #       user = %User{name: "John#{i}"} |> User.write
-    #       user |> User.add_history "History of user #{i}"
-    #     end
-    #   end
-    # end
-
-    # case time do
-    #   {_elapsed, _} ->
-    #     notice "Add user records done in: #{_elapsed/1000}ms"
-    #     :ok
-    # end
   end
 
 
@@ -86,19 +69,59 @@ defmodule DB do
   end
 
 
-  def add link, file do
+  @doc """
+  Helper to get user struct from Mnesia
+  """
+  def user do
     Amnesia.transaction do
       selection = User.where name == Cfg.user
-      user = selection |> Amnesia.Selection.values |> List.first
+      selection |> Amnesia.Selection.values |> List.first
+    end
+  end
+
+
+  @doc """
+  Adds link to user history
+  """
+  def add link, file do
+    Amnesia.transaction do
       user |> User.add_history link, file
+    end
+  end
+
+
+  @doc """
+  Gets current queue state from Mnesia
+  """
+  def get_queue do
+    Amnesia.transaction do
+      queue = user |> User.queue
+      case queue do
+        nil ->
+          []
+        _any ->
+          queue
+      end
+    end
+  end
+
+
+  def add_to_queue record do
+    Amnesia.transaction do
+      user |> User.add_to_queue record
+    end
+  end
+
+
+  def remove_from_queue record do
+    Amnesia.transaction do
+      user |> User.remove_from_queue record
     end
   end
 
 
   def get_history do
     Amnesia.transaction do
-      selection = User.where name == Cfg.user
-      user = selection |> Amnesia.Selection.values |> List.first
       debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories}"
       # NOTE: slower but more expressie way:
       # (History.where user_id == user.id)
