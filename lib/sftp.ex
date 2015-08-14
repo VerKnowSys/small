@@ -174,7 +174,7 @@ defmodule Sftp do
           debug "More than one entry found in QueueAgent, merging results"
           Queue.get_all
             |> (Enum.map fn elem ->
-              {_, file_path, _, uuid} = elem
+              %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = elem
               config[:address] <> uuid <> "." <> List.last String.split file_path, "."
             end)
             |> Enum.join("\n")
@@ -182,7 +182,7 @@ defmodule Sftp do
 
         first != :empty ->
           case first do
-            {_, file_path, _, uuid} ->
+            %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
               debug "Single entry found in QueueAgent, copying to clipboard"
               extension = if (String.contains? file_path, "."), do: "." <> (List.last String.split file_path, "."), else: ""
               Clipboard.put config[:address] <> uuid <> extension
@@ -215,7 +215,7 @@ defmodule Sftp do
         build_clipboard
         for element <- Queue.get_all do
           case element do
-            {:add, local_file, remote_dest_file, random_uuid} ->
+            %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
               if File.exists?(local_file) and File.regular?(local_file) do
                 extension = if (String.contains? local_file, "."), do: "." <> (List.last String.split local_file, "."), else: ""
                 remote_dest = remote_dest_file <> extension
@@ -224,7 +224,8 @@ defmodule Sftp do
                   send_file ssh_connection, local_file, remote_dest
                 end
 
-                if (List.last QueueAgent.get_all) == element do
+                debug "Comparing #{inspect List.last Queue.get_all} and #{inspect element}"
+                if (List.last Queue.get_all) == element do
                   notice "Uploading last element, adding to history"
                   add_to_history local_file
                 end
@@ -236,7 +237,7 @@ defmodule Sftp do
               else
                 error "Local file not found or not a regular file: #{local_file}!"
               end
-              QueueAgent.remove {:add, local_file, remote_dest_file, random_uuid}
+              Queue.remove %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
 
             :empty ->
               notice "Empty queue. Ignoring request"
@@ -248,6 +249,8 @@ defmodule Sftp do
         {_elapsed, _} ->
           debug "Whole operation finished in: #{_elapsed/1000}ms"
       end
+    else
+      debug "No entries in queue"
     end
     {:reply, ssh_connection, ssh_connection}
   end

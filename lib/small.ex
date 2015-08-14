@@ -31,7 +31,7 @@ defmodule Small do
       debug "Handling event: #{inspect _event} for path #{file_path}"
       random_uuid = UUID.uuid3 nil, file_path, :hex
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-      record = {:add, file_path, remote_dest_file, random_uuid}
+      record = %Database.Queue{user_id: DB.user.id, local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
       debug "#{inspect record}"
       Queue.put record
       Sftp.add

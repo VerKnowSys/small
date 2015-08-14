@@ -4,7 +4,7 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.6.4",
+      version: "0.8.0",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
