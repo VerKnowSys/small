@@ -1,7 +1,6 @@
 defmodule SshSupervisor do
   use Supervisor
 
-  import Cfg
   require Lager
   import Lager
 
