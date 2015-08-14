@@ -75,9 +75,8 @@ defmodule WebApi.Handler do
         info "Pid #{inspect pid} is handling request for: #{path}"
         route path, req, state
 
-      _ ->
-        info "Unhandled request"
-        route "/", req, state
+      _a ->
+        {:ok, req, state}
     end
   end
 
