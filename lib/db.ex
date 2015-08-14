@@ -84,7 +84,7 @@ defmodule DB do
   @doc """
   Adds link to user history
   """
-  def add history do
+  def add_history history do
     Amnesia.transaction do
       user |> User.add_history history
     end
