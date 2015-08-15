@@ -33,8 +33,9 @@ defmodule Small do
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
       record = %Database.Queue{user_id: DB.user.id, local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
       debug "Event queue record: #{inspect record}"
+      info "Putting record to queue"
       Queue.put record
-      Sftp.add
+      # Sftp.add
     else
       debug "File doesn't exists: #{file_path} after event #{inspect _event}. Skipped process_event"
     end

@@ -35,6 +35,7 @@ defmodule Sftp do
   ## Callbacks (Server API)
   def init :ok do
     notice "Launching Sftp client"
+    Timer.sleep 2000
     SSH.start
     connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       [user: String.to_char_list(config[:username]),
@@ -171,7 +172,7 @@ defmodule Sftp do
       first = Queue.first
       cond do
         (length Queue.get_all) > 1 ->
-          debug "More than one entry found in QueueAgent, merging results"
+          info "More than one entry found in QueueAgent, merging results"
           Queue.get_all
             |> (Enum.map fn elem ->
               %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = elem
@@ -183,7 +184,7 @@ defmodule Sftp do
         first != :empty ->
           case first do
             %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
-              debug "Single entry found in QueueAgent, copying to clipboard"
+              info "Single entry found in QueueAgent, copying to clipboard"
               extension = if (String.contains? file_path, "."), do: "." <> (List.last String.split file_path, "."), else: ""
               Clipboard.put config[:address] <> uuid <> extension
 
