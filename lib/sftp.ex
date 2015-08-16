@@ -17,7 +17,7 @@ defmodule Sftp do
 
 
   def add do
-    GenServer.call __MODULE__, :add, :infinity
+    GenServer.cast __MODULE__, :add
   end
 
 
@@ -212,7 +212,7 @@ defmodule Sftp do
   end
 
 
-  def handle_call :add, _from, ssh_connection do
+  def handle_cast :add, ssh_connection do
     unless Enum.empty? Queue.get_all do
       time = Timer.tc fn ->
         build_clipboard
@@ -256,7 +256,7 @@ defmodule Sftp do
           debug "Whole operation finished in: #{_elapsed/1000}ms"
       end
     end
-    {:reply, ssh_connection, ssh_connection}
+    {:noreply, ssh_connection}
   end
 
 end
