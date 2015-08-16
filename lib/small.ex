@@ -35,7 +35,7 @@ defmodule Small do
       debug "Event queue record: #{inspect record}"
       info "Putting record to queue"
       Queue.put record
-      # Sftp.add
+      Sftp.add
     else
       debug "File doesn't exists: #{file_path} after event #{inspect _event}. Skipped process_event"
     end
