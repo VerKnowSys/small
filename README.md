@@ -16,6 +16,23 @@ small - Sync 'eM ALL!
 * https://github.com/VerKnowSys/fs
 
 
+## FEATURES:
+
+* Supervised "Let it crash" architecture
+* Stream file of any size to remote through SFTP (ssh)
+* Persistent Queue and History (mnesia disk only backend by default)
+* Basic Web History (localhost:8000)
+* Asynchronous (when possible)
+* Automatically merge multiple results in clipboard
+* Remote management through Elixir/ Erlang console. By default Small runs as "smallENV" - where ENV is one of modes: test, dev, prod (`epmd -names` to see available applications)
+
+
+## WEAK SIDES:
+
+* Still poorly handles TCP timeouts after longer machine sleep.
+* Currently works only under Mac OSX 10.9.x or higher
+
+
 ## WARNING:
 
 You'll need to put bin/reattach-to-user-namespace binary to /usr/local/bin for OSX Notifications to work properly in tmux session (used in bin/launcher).
