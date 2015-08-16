@@ -21,9 +21,9 @@ defmodule Sftp do
   end
 
 
-  def do_exception do
-    GenServer.call __MODULE__, :do_exception, :infinity
-  end
+  # def do_exception do
+  #   GenServer.call __MODULE__, :do_exception, :infinity
+  # end
 
 
   def launch_interval_check do
@@ -85,8 +85,7 @@ defmodule Sftp do
   end
 
 
-  @spec send_file(ssh_connection :: String.t, local_file :: String.t, remote_dest_file :: String.t) :: any
-  def send_file ssh_connection, local_file, remote_dest_file do
+  def handle_cast {:send_file, local_file, remote_dest_file}, ssh_connection do
     debug "Starting ssh channel.."
     a_channel = SFTP.start_channel ssh_connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout]
     case a_channel do
@@ -153,6 +152,13 @@ defmodule Sftp do
         SSH.stop
         notification "Error creating SFTP channel: #{inspect err}!", :error
     end
+    {:noreply, ssh_connection}
+  end
+
+
+  @spec send_file(local_file :: String.t, remote_dest_file :: String.t) :: any
+  def send_file local_file, remote_dest_file do
+    GenServer.cast __MODULE__, {:send_file, local_file, remote_dest_file}
   end
 
 
@@ -207,9 +213,9 @@ defmodule Sftp do
   end
 
 
-  def handle_call :do_exception, _from, _ssh_connection do
-    raise "An exception!"
-  end
+  # def handle_call :do_exception, _from, _ssh_connection do
+  #   raise "An exception!"
+  # end
 
 
   def handle_cast :add, ssh_connection do
@@ -224,7 +230,7 @@ defmodule Sftp do
                 remote_dest = remote_dest_file <> extension
                 notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
                 inner = Timer.tc fn ->
-                  send_file ssh_connection, local_file, remote_dest
+                  send_file local_file, remote_dest
                 end
 
                 debug "Comparing #{inspect List.last Queue.get_all} and #{inspect element}"
