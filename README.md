@@ -19,7 +19,8 @@ small - Sync 'eM ALL!
 ## FEATURES:
 
 * Supervised "Let it crash" architecture
-* Stream file of any size to remote through SFTP (ssh)
+* SSH Public Key authentication only (with encrypted keys support)
+* Stream file of any size to remote through SFTP (SSH)
 * Persistent Queue and History (mnesia disk only backend by default)
 * Basic Web History (localhost:8000)
 * Asynchronous (when possible)
