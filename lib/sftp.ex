@@ -144,7 +144,9 @@ defmodule Sftp do
             SFTP.stop_channel channel
 
           {:error, err} ->
-            error "Error opening file for writing: #{inspect err}"
+            SSH.stop
+            an_error = "Error opening write handle of remote file: #{inspect err}"
+            notification an_error, :error
         end
 
       {:error, err} ->
