@@ -46,7 +46,7 @@ defmodule Sftp do
   end
 
 
-  def stream_file_to_remote channel, handle, local_file, local_size do
+  defp stream_file_to_remote channel, handle, local_file, local_size do
     try do
       notice "Streaming file of size: #{size_kib local_size}KiB to remote server.."
       chunks = div local_size, sftp_buffer_size
@@ -67,6 +67,63 @@ defmodule Sftp do
   end
 
 
+  defp sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel do
+    case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
+      {:ok, handle} ->
+        case File.stat local_file do
+          {:ok, file_info} ->
+            case file_info do
+              %File.Stat{access: _, atime: _, ctime: _, gid: _, inode: _, links: _, major_device: _, minor_device: _, mode: _, mtime: _, size: local_size, type: :regular, uid: _} ->
+                debug "Checking remote file #{remote_dest_file}"
+                case remote_handle do
+                  {:ok, remote_file_info} ->
+                    debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
+                    case remote_file_info do
+                      {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
+                        debug "Local size: #{local_size}KiB, remote size: #{size}KiB"
+                        cond do
+                          size > 0 ->
+                            if size != local_size do
+                              info "Found non empty remote file. Uploading file to remote"
+                              stream_file_to_remote channel, handle, local_file, local_size
+                            else
+                              info "Remote file size equals local file size. File already uploaded. File upload skipped."
+                            end
+
+                          size == 0 ->
+                            debug "Remote file empty"
+                            stream_file_to_remote channel, handle, local_file, local_size
+                        end
+
+                      {:error, :no_such_file} ->
+                        debug "No remote file"
+                        stream_file_to_remote channel, handle, local_file, local_size
+                    end
+
+                  {:error, reason} ->
+                    debug "No remote file: #{remote_dest_file}, reason: #{reason}"
+                    stream_file_to_remote channel, handle, local_file, local_size
+                end
+            end
+
+          {_, reason} ->
+            error "Error reading local file stats of file: #{local_file}: #{inspect reason}"
+        end
+
+        debug "Closing file handle"
+        SFTP.close channel, handle
+        debug "Closing channel: #{inspect channel}"
+        SFTP.stop_channel channel
+        debug "Closing SSH connection"
+        SSH.close connection
+
+      {:error, err} ->
+        an_error = "Error opening write handle of remote file: #{inspect err}"
+        notification an_error, :error
+    end
+  end
+
+
   defp process_ssh_connection connection, local_file, remote_dest_file do
     debug "Starting ssh channel for connection: #{inspect connection} for local file: #{local_file}"
     case SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout] do
@@ -74,60 +131,7 @@ defmodule Sftp do
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
-
-        case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
-          {:ok, handle} ->
-            case File.stat local_file do
-              {:ok, file_info} ->
-                case file_info do
-                  %File.Stat{access: _, atime: _, ctime: _, gid: _, inode: _, links: _, major_device: _, minor_device: _, mode: _, mtime: _, size: local_size, type: :regular, uid: _} ->
-                    debug "Checking remote file #{remote_dest_file}"
-                    case remote_handle do
-                      {:ok, remote_file_info} ->
-                        debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
-                        case remote_file_info do
-                          {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
-                            debug "Local size: #{local_size}KiB, remote size: #{size}KiB"
-                            cond do
-                              size > 0 ->
-                                if size != local_size do
-                                  info "Found non empty remote file. Uploading file to remote"
-                                  stream_file_to_remote channel, handle, local_file, local_size
-                                else
-                                  info "Remote file size equals local file size. File already uploaded. File upload skipped."
-                                end
-
-                              size == 0 ->
-                                debug "Remote file empty"
-                                stream_file_to_remote channel, handle, local_file, local_size
-                            end
-
-                          {:error, :no_such_file} ->
-                            debug "No remote file"
-                            stream_file_to_remote channel, handle, local_file, local_size
-                        end
-
-                      {:error, reason} ->
-                        debug "No remote file: #{remote_dest_file}, reason: #{reason}"
-                        stream_file_to_remote channel, handle, local_file, local_size
-                    end
-                end
-
-              {_, reason} ->
-                error "Error reading local file stats of file: #{local_file}: #{inspect reason}"
-            end
-
-            debug "Closing file handle"
-            SFTP.close channel, handle
-            debug "Closing channel: #{inspect channel}"
-            SFTP.stop_channel channel
-            debug "Closing SSH connection"
-            SSH.close connection
-
-          {:error, err} ->
-            an_error = "Error opening write handle of remote file: #{inspect err}"
-            notification an_error, :error
-        end
+        sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel
 
       {:error, err} ->
         notification "Error creating SFTP channel: #{inspect err}!", :error
