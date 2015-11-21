@@ -6,7 +6,7 @@ small - Sync 'eM ALL!
 * OSX 10.x (required)
 * Erlang OTP 18.x (required)
 * Elixir 1.0.x (required)
-* Sofin 0.80.x (optional)
+* Sofin 0.84.x (optional)
 * Zsh 5.x (optional)
 * Tmux 1.x (optional)
 
@@ -26,12 +26,6 @@ small - Sync 'eM ALL!
 * Asynchronous (when possible)
 * Automatically merge multiple results in clipboard
 * Remote management through Elixir/ Erlang console. By default Small runs as "smallENV" - where ENV is one of modes: test, dev, prod (`epmd -names` to see available applications)
-
-
-## WEAK SIDES:
-
-* Still poorly handles TCP timeouts after longer machine sleep.
-* Currently works only under Mac OSX 10.9.x or higher
 
 
 ## WARNING:
@@ -73,6 +67,13 @@ bin/run
 bin/console prod
 ```
 
+```
+# Launch Small in console mode:
+bin/console
+
+> SyncSupervisor.start_link
+> ...
+```
 
 ## Autostart for user
 
