@@ -81,7 +81,7 @@ defmodule Sftp do
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
-        sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel
+        connection |> sftp_open_and_process_upload local_file, remote_handle, remote_dest_file, channel
 
       {:error, err} ->
         notification "Error creating SFTP channel: #{inspect err}!", :error
