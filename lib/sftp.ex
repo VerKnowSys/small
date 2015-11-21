@@ -41,73 +41,25 @@ defmodule Sftp do
   end
 
 
-  def size_kib size_in_bytes do
-    Float.round size_in_bytes / 1024, 2
-  end
-
-
-  defp stream_file_to_remote channel, handle, local_file, local_size do
-    try do
-      notice "Streaming file of size: #{size_kib local_size}KiB to remote server.."
-      chunks = div local_size, sftp_buffer_size
-      debug "Chunks: #{chunks}"
-      (File.stream! local_file, [:read], sftp_buffer_size)
-        |> Enum.with_index
-        |> (Enum.each fn {chunk, index} ->
-          chunks_percent = if chunks == 0, do: 100.0, else: index * 100 / chunks
-          percent = Float.round chunks_percent, 2
-          IO.write "\rProgress: #{percent}% "
-          SFTP.write channel, handle, chunk, sftp_write_timeout
-        end)
-      notification "Uploaded successfully.", :upload
-    catch
-      x ->
-        notification "Error streaming file #{local_file}: #{inspect x}!", :error
-    end
-  end
-
-
   defp sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel do
     case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
       {:ok, handle} ->
-        case File.stat local_file do
-          {:ok, file_info} ->
-            case file_info do
-              %File.Stat{access: _, atime: _, ctime: _, gid: _, inode: _, links: _, major_device: _, minor_device: _, mode: _, mtime: _, size: local_size, type: :regular, uid: _} ->
-                debug "Checking remote file #{remote_dest_file}"
-                case remote_handle do
-                  {:ok, remote_file_info} ->
-                    debug "Remote file info insight: #{inspect remote_file_info} of file: #{remote_dest_file}"
-                    case remote_file_info do
-                      {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
-                        debug "Local size: #{local_size}KiB, remote size: #{size}KiB"
-                        cond do
-                          size > 0 ->
-                            if size != local_size do
-                              info "Found non empty remote file. Uploading file to remote"
-                              stream_file_to_remote channel, handle, local_file, local_size
-                            else
-                              info "Remote file size equals local file size. File already uploaded. File upload skipped."
-                            end
-
-                          size == 0 ->
-                            debug "Remote file empty"
-                            stream_file_to_remote channel, handle, local_file, local_size
-                        end
-
-                      {:error, :no_such_file} ->
-                        debug "No remote file"
-                        stream_file_to_remote channel, handle, local_file, local_size
-                    end
-
-                  {:error, reason} ->
-                    debug "No remote file: #{remote_dest_file}, reason: #{reason}"
-                    stream_file_to_remote channel, handle, local_file, local_size
-                end
+        local_size = Utils.read_size_of_file local_file
+        remote_size = Utils.remote_file_size remote_handle
+        debug "Local file: #{local_file} (#{local_size})"
+        debug "Remote file: #{remote_dest_file} (#{remote_size})"
+        cond do
+          remote_size > 0 ->
+            if remote_size != local_size do
+              info "Found non empty remote file. Uploading file to remote"
+              Utils.stream_file_to_remote channel, handle, local_file, local_size
+            else
+              info "Remote file size equal locals. File upload skipped."
             end
 
-          {_, reason} ->
-            error "Error reading local file stats of file: #{local_file}: #{inspect reason}"
+          remote_size == 0 ->
+            debug "Remote file empty"
+            Utils.stream_file_to_remote channel, handle, local_file, local_size
         end
 
         debug "Closing file handle"
