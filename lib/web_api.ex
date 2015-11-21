@@ -14,20 +14,25 @@ defmodule WebApi do
   end
 
 
-  def init :ok do
-    Application.ensure_started :crypto
-    Application.ensure_started :cowboy
-
-    dispatch = :cowboy_router.compile([
+  defp routes do
+    [
       {:_,
         [
           {"/", WebApi.Handler, []},
           {"/all", WebApi.Handler, []}
         ]
       }
-    ])
-    :cowboy.start_http "#{@listener_name}_#{webapi_port}", 10,
-        [ip: {127,0,0,1}, port: webapi_port], [{:env, [{:dispatch, dispatch}]}]
+    ]
+  end
+
+
+  def init :ok do
+    # Application.ensure_started :crypto
+    Application.ensure_started :cowboy
+
+    dispatch = :cowboy_router.compile routes
+    "#{@listener_name}_#{webapi_port}"
+      |> :cowboy.start_http 10, [ip: {127,0,0,1}, port: webapi_port], [{:env, [{:dispatch, dispatch}]}]
 
     {:ok, self}
   end
