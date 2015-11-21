@@ -26,16 +26,17 @@ defmodule Sftp do
   # end
 
 
-  # def launch_interval_check do
-  #   info "Starting queue check with check interval: #{interval}ms"
-  #   Timer.apply_interval interval, Sftp, :add, []
-  # end
+  def launch_interval_check do
+    info "Starting queue check with check interval: #{interval}ms"
+    Timer.apply_interval interval, Sftp, :add, []
+  end
 
 
   ## Callbacks (Server API)
   def init :ok do
     notice "Starting Sftp module"
     SSH.start
+    launch_interval_check
     {:ok, self}
   end
 
@@ -51,7 +52,8 @@ defmodule Sftp do
       chunks = div local_size, sftp_buffer_size
       debug "Chunks: #{chunks}"
       (File.stream! local_file, [:read], sftp_buffer_size)
-        |> Enum.with_index |> (Enum.each fn {chunk, index} ->
+        |> Enum.with_index
+        |> (Enum.each fn {chunk, index} ->
           chunks_percent = if chunks == 0, do: 100.0, else: index * 100 / chunks
           percent = Float.round chunks_percent, 2
           IO.write "\rProgress: #{percent}% "
@@ -65,27 +67,15 @@ defmodule Sftp do
   end
 
 
-  def handle_cast {:send_file, local_file, remote_dest_file}, _ do
-    debug "Starting ssh connection.."
-    {:ok, connection} = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
-      [user: String.to_char_list(config[:username]),
-       user_interaction: false,
-       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
-       silently_accept_hosts: true,
-       # connect_timeout: ssh_connection_timeout,
-       # idle_time: ssh_connection_timeout
-      ], ssh_connection_timeout
-
-    debug "Starting ssh channel for connection: #{inspect connection}"
-    a_channel = SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout]
-    case a_channel do
+  defp process_ssh_connection connection, local_file, remote_dest_file do
+    debug "Starting ssh channel for connection: #{inspect connection} for local file: #{local_file}"
+    case SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout] do
       {:ok, channel} ->
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
 
-        a_handle = SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout
-        case a_handle do
+        case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
           {:ok, handle} ->
             case File.stat local_file do
               {:ok, file_info} ->
@@ -117,8 +107,8 @@ defmodule Sftp do
                             stream_file_to_remote channel, handle, local_file, local_size
                         end
 
-                      {:error, _reason} ->
-                        debug "No remote file: #{remote_dest_file}, reason: #{_reason}"
+                      {:error, reason} ->
+                        debug "No remote file: #{remote_dest_file}, reason: #{reason}"
                         stream_file_to_remote channel, handle, local_file, local_size
                     end
                 end
@@ -142,75 +132,31 @@ defmodule Sftp do
       {:error, err} ->
         notification "Error creating SFTP channel: #{inspect err}!", :error
     end
-    {:noreply, connection}
   end
 
 
-  @spec send_file(local_file :: String.t, remote_dest_file :: String.t) :: any
-  def send_file local_file, remote_dest_file do
-    GenServer.cast __MODULE__, {:send_file, local_file, remote_dest_file}
-  end
+  def handle_cast {:send_file, local_file, remote_dest_file}, _ do
+    debug "Starting ssh connection.."
+    case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
+      [
+        user: String.to_char_list(config[:username]),
+        user_interaction: false,
+        rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
+        silently_accept_hosts: true,
+        # connect_timeout: ssh_connection_timeout,
+        # idle_time: ssh_connection_timeout
+      ], ssh_connection_timeout) do
 
+      {:ok, connection} ->
+        debug "Processing connection with pid: #{inspect connection}"
+        connection |> process_ssh_connection local_file, remote_dest_file
 
-  @doc """
-  Adds clipboard items to persistent history
-  """
-  def add_to_history local_file do
-    to_history = String.strip Regex.replace ~r/\n/, Clipboard.get, " "
-    debug "Putting content: '#{to_history}' to history of local file: #{local_file}"
-    DB.add_history %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: local_file, uuid: (UUID.uuid4 :hex)}
-  end
-
-
-  defp create_queue_string collection do
-    (Enum.map collection, fn an_elem ->
-      %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = an_elem
-      config[:address] <> uuid <> "." <> List.last String.split file_path, "."
-    end)
-    |> Enum.join "\n"
-  end
-
-
-  @doc """
-  Creates content which will be copied to clipboard as http links
-  """
-  def build_clipboard do
-    clip_time = Timer.tc fn ->
-      first = Queue.first
-      cond do
-        (length Queue.get_all) > 1 ->
-          info "More than one entry found in QueueAgent, merging results"
-          Queue.get_all
-            |> create_queue_string
-            |> Clipboard.put
-
-        first != :empty ->
-          case first do
-            %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
-              info "Single entry found in QueueAgent, copying to clipboard"
-              extension = if (String.contains? file_path, "."), do: "." <> (List.last String.split file_path, "."), else: ""
-              Clipboard.put config[:address] <> uuid <> extension
-
-            :empty ->
-              debug "Skipping copying to clipboard, empty queue"
-          end
-
-        true ->
-          debug "Clipboard build skipped"
-
-      end
+      {:error, cause} ->
+        error "Error caused by: #{inspect cause}"
     end
-    case clip_time do
-      {elapsed, _} ->
-        debug "Clipboard routine done in: #{elapsed/1000}ms"
-        :ok
-    end
+
+    {:noreply, self}
   end
-
-
-  # def handle_call :do_exception, _from, _ssh_connection do
-  #   raise "An exception!"
-  # end
 
 
   def handle_cast :add, _ do
@@ -259,5 +205,67 @@ defmodule Sftp do
     end
     {:noreply, []}
   end
+
+
+  @spec send_file(local_file :: String.t, remote_dest_file :: String.t) :: any
+  def send_file local_file, remote_dest_file do
+    GenServer.cast __MODULE__, {:send_file, local_file, remote_dest_file}
+  end
+
+
+  @doc """
+  Adds clipboard items to persistent history
+  """
+  def add_to_history local_file do
+    to_history = String.strip Regex.replace ~r/\n/, Clipboard.get, " "
+    debug "Putting content: '#{to_history}' to history of local file: #{local_file}"
+    DB.add_history %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: local_file, uuid: (UUID.uuid4 :hex)}
+  end
+
+
+  defp create_queue_string collection do
+    (Enum.map collection, fn an_elem ->
+      case an_elem do
+        %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
+          config[:address] <> uuid <> "." <> List.last String.split file_path, "."
+
+        _ -> # :empty
+          ""
+      end
+    end)
+    |> Enum.join "\n"
+  end
+
+
+  @doc """
+  Creates content which will be copied to clipboard as http links
+  """
+  def build_clipboard do
+    clip_time = Timer.tc fn ->
+      first = Queue.first
+      cond do
+        (length Queue.get_all) > 1 ->
+          info "More than one entry found in QueueAgent, merging results"
+          Queue.get_all
+            |> create_queue_string
+            |> Clipboard.put
+
+        first ->
+          (create_queue_string [first])
+            |> Clipboard.put
+
+      end
+    end
+    case clip_time do
+      {elapsed, _} ->
+        debug "Clipboard routine done in: #{elapsed/1000}ms"
+        :ok
+    end
+  end
+
+
+  # def handle_call :do_exception, _from, _ssh_connection do
+  #   raise "An exception!"
+  # end
 
 end
