@@ -149,7 +149,13 @@ defmodule Sftp do
 
       {:ok, connection} ->
         debug "Processing connection with pid: #{inspect connection}"
-        connection |> process_ssh_connection local_file, remote_dest_file
+        time = Timer.tc fn ->
+          connection |> process_ssh_connection local_file, remote_dest_file
+        end
+        case time do
+          {elapsed, _} ->
+            debug "process_ssh_connection finished in: #{elapsed/1000}ms"
+        end
 
       {:error, cause} ->
         error "Error caused by: #{inspect cause}"
@@ -170,9 +176,7 @@ defmodule Sftp do
                 extension = if (String.contains? local_file, "."), do: "." <> (List.last String.split local_file, "."), else: ""
                 remote_dest = remote_dest_file <> extension
                 notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
-                inner = Timer.tc fn ->
-                  send_file local_file, remote_dest
-                end
+                send_file local_file, remote_dest
 
                 debug "Comparing #{inspect List.last Queue.get_all} and #{inspect element}"
                 if (List.last Queue.get_all) == element do
@@ -180,10 +184,6 @@ defmodule Sftp do
                   add_to_history local_file
                 end
 
-                case inner do
-                  {elapsed, _} ->
-                    info "Sftp file send elapsed: #{elapsed/1000}ms"
-                end
               else
                 error "Local file not found or not a regular file: #{local_file}!"
               end
