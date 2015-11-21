@@ -33,6 +33,7 @@ defmodule SmallApplication do
     end
 
     Timer.sleep :infinity
+    {:ok, self}
   end
 
 
