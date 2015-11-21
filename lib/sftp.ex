@@ -159,11 +159,12 @@ defmodule Sftp do
   end
 
 
-  defp create_queue_string collection do
+  @spec create_queue_string(List.t) :: String.t
+  def create_queue_string(collection) when is_list(collection) do
     (Enum.map collection, fn an_elem ->
       case an_elem do
         %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
-          config[:address] <> uuid <> "." <> List.last String.split file_path, "."
+          config[:address] <> uuid <> Utils.file_extension file_path
 
         _ -> # :empty
           ""
@@ -171,6 +172,7 @@ defmodule Sftp do
     end)
     |> Enum.join "\n"
   end
+  def create_queue_string(_), do: ""
 
 
   @doc """
@@ -178,19 +180,9 @@ defmodule Sftp do
   """
   def build_clipboard do
     clip_time = Timer.tc fn ->
-      first = Queue.first
-      cond do
-        (length Queue.get_all) > 1 ->
-          info "More than one entry found in QueueAgent, merging results"
-          Queue.get_all
-            |> create_queue_string
-            |> Clipboard.put
-
-        first ->
-          (create_queue_string [first])
-            |> Clipboard.put
-
-      end
+      Queue.get_all
+        |> create_queue_string
+        |> Clipboard.put
     end
     case clip_time do
       {elapsed, _} ->
