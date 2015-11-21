@@ -9,7 +9,7 @@ defmodule DB do
   use Amnesia
 
 
-  def init_and_start do
+  def create_amnesia_schema do
     case Amnesia.Schema.create do
       :ok ->
         notice "Amnesia Schema created"
@@ -20,17 +20,22 @@ defmodule DB do
       {:error, {_, {err, a_node}}} ->
         critical "Amnesia schema cannot be created for a_node: #{a_node} cause: #{inspect err}"
     end
+  end
 
-    notice "Starting Amnesia"
-    Amnesia.start
 
+  defp commit_creation a_node do
+    notice "Database created for node #{inspect a_node}"
+    Amnesia.transaction do
+      notice "Adding default user"
+      %User{name: Cfg.user} |> User.write
+    end
+  end
+
+
+  defp create_node do
     case Database.create disk!: [node] do
       [:ok, :ok, :ok, :ok] ->
-        notice "Database created for node #{inspect node}"
-        Amnesia.transaction do
-          notice "Adding default user"
-          %User{name: Cfg.user} |> User.write
-        end
+        commit_creation node
 
       [error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}] ->
         debug "Database already created"
@@ -40,12 +45,16 @@ defmodule DB do
         destroy
         init_and_start
 
-      [error: err, error: err, error: err, error: err] ->
-        critical "Database creation failure: #{inspect err}"
-
       err ->
         critical "Database creation failure: #{inspect err}"
     end
+  end
+
+
+  def init_and_start do
+    create_amnesia_schema
+    Amnesia.start
+    create_node
   end
 
 
