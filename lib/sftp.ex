@@ -48,18 +48,11 @@ defmodule Sftp do
         remote_size = Utils.remote_file_size remote_handle
         debug "Local file: #{local_file} (#{local_size})"
         debug "Remote file: #{remote_dest_file} (#{remote_size})"
-        cond do
-          remote_size > 0 ->
-            if remote_size != local_size do
-              info "Found non empty remote file. Uploading file to remote"
-              Utils.stream_file_to_remote channel, handle, local_file, local_size
-            else
-              info "Remote file size equal locals. File upload skipped."
-            end
-
-          remote_size == 0 ->
-            debug "Remote file empty"
-            Utils.stream_file_to_remote channel, handle, local_file, local_size
+        if (remote_size != local_size) or (remote_size <= 0) do
+          info "Found non empty remote file. Uploading file to remote"
+          Utils.stream_file_to_remote channel, handle, local_file, local_size
+        else
+          info "Remote file size equal locals. File upload skipped."
         end
 
         debug "Closing file handle"
@@ -92,7 +85,6 @@ defmodule Sftp do
 
 
   def handle_cast {:send_file, local_file, remote_dest_file}, _ do
-    debug "Starting ssh connection.."
     case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       [
         user: String.to_char_list(config[:username]),
@@ -121,45 +113,35 @@ defmodule Sftp do
   end
 
 
+  defp process_element element do
+    case element do
+      %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
+        if (File.exists? local_file) and (File.regular? local_file) do
+          local_file |> send_file remote_dest_file <> Utils.file_extension local_file
+          if (List.last Queue.get_all) == element do
+            local_file |> add_to_history
+          end
+        else
+          error "Local file not found or not a regular file: #{local_file}!"
+        end
+
+        Queue.remove %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+
+      :empty ->
+        notice "Empty queue. Ignoring request"
+    end
+  end
+
+
   def handle_cast :add, _ do
     unless Enum.empty? Queue.get_all do
-      time = Timer.tc fn ->
-        build_clipboard
-        for element <- Queue.get_all do
-          case element do
-            %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
-              if File.exists?(local_file) and File.regular?(local_file) do
-                extension = if (String.contains? local_file, "."), do: "." <> (List.last String.split local_file, "."), else: ""
-                remote_dest = remote_dest_file <> extension
-                notice "Handling synchronous task to put file: #{local_file} to remote: #{config[:hostname]}:#{remote_dest}"
-                send_file local_file, remote_dest
-
-                debug "Comparing #{inspect List.last Queue.get_all} and #{inspect element}"
-                if (List.last Queue.get_all) == element do
-                  notice "Uploading last element, adding to history"
-                  add_to_history local_file
-                end
-
-              else
-                error "Local file not found or not a regular file: #{local_file}!"
-              end
-
-              record = %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
-              debug "Removing from queue: #{inspect record}"
-              Queue.remove record
-
-            :empty ->
-              notice "Empty queue. Ignoring request"
-          end
+      build_clipboard
+      Queue.get_all
+        |> Enum.map fn element ->
+          element |> process_element
         end
-      end
-
-      case time do
-        {elapsed, _} ->
-          debug "Whole operation finished in: #{elapsed/1000}ms"
-      end
     end
-    {:noreply, []}
+    {:noreply, self}
   end
 
 
@@ -174,7 +156,6 @@ defmodule Sftp do
   """
   def add_to_history local_file do
     to_history = String.strip Regex.replace ~r/\n/, Clipboard.get, " "
-    debug "Putting content: '#{to_history}' to history of local file: #{local_file}"
     DB.add_history %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: local_file, uuid: (UUID.uuid4 :hex)}
   end
 
