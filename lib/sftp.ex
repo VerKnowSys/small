@@ -162,6 +162,15 @@ defmodule Sftp do
   end
 
 
+  defp create_queue_string collection do
+    (Enum.map collection, fn an_elem ->
+      %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = an_elem
+      config[:address] <> uuid <> "." <> List.last String.split file_path, "."
+    end)
+    |> Enum.join "\n"
+  end
+
+
   @doc """
   Creates content which will be copied to clipboard as http links
   """
@@ -172,11 +181,7 @@ defmodule Sftp do
         (length Queue.get_all) > 1 ->
           info "More than one entry found in QueueAgent, merging results"
           Queue.get_all
-            |> (Enum.map fn an_elem ->
-              %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = an_elem
-              config[:address] <> uuid <> "." <> List.last String.split file_path, "."
-            end)
-            |> Enum.join("\n")
+            |> create_queue_string
             |> Clipboard.put
 
         first != :empty ->
