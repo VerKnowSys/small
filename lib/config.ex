@@ -162,6 +162,15 @@ defmodule Cfg do
   end
 
 
-
+  def ssh_opts do
+    [
+      user: (String.to_char_list config[:username]),
+      user_interaction: false,
+      rsa_pass_phrase: (String.to_char_list config[:ssh_key_pass]),
+      silently_accept_hosts: true,
+      connect_timeout: ssh_connection_timeout,
+      idle_time: ssh_connection_timeout
+    ]
+  end
 
 end
