@@ -172,8 +172,8 @@ defmodule Sftp do
         (length Queue.get_all) > 1 ->
           info "More than one entry found in QueueAgent, merging results"
           Queue.get_all
-            |> (Enum.map fn elem ->
-              %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = elem
+            |> (Enum.map fn an_elem ->
+              %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = an_elem
               config[:address] <> uuid <> "." <> List.last String.split file_path, "."
             end)
             |> Enum.join("\n")

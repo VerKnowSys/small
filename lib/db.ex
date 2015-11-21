@@ -14,11 +14,11 @@ defmodule DB do
       :ok ->
         notice "Amnesia Schema created"
 
-      {:error, {_, {:already_exists, node}}} ->
-        debug "Amnesia schema already created for node: #{node}"
+      {:error, {_, {:already_exists, a_node}}} ->
+        debug "Amnesia schema already created for node: #{a_node}"
 
-      {:error, {_, {err, node}}} ->
-        critical "Amnesia schema cannot be created for node: #{node} cause: #{inspect err}"
+      {:error, {_, {err, a_node}}} ->
+        critical "Amnesia schema cannot be created for a_node: #{a_node} cause: #{inspect err}"
     end
 
     notice "Starting Amnesia"
