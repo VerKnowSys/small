@@ -54,7 +54,6 @@ defmodule Sftp do
         else
           info "Remote file size equal locals. File upload skipped."
         end
-
         debug "Closing file handle"
         SFTP.close channel, handle
         debug "Closing channel: #{inspect channel}"
@@ -86,14 +85,7 @@ defmodule Sftp do
 
   def handle_cast {:send_file, local_file, remote_dest_file}, _ do
     case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
-      [
-        user: String.to_char_list(config[:username]),
-        user_interaction: false,
-        rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
-        silently_accept_hosts: true,
-        # connect_timeout: ssh_connection_timeout,
-        # idle_time: ssh_connection_timeout
-      ], ssh_connection_timeout) do
+      ssh_opts, ssh_connection_timeout) do
 
       {:ok, connection} ->
         debug "Processing connection with pid: #{inspect connection}"

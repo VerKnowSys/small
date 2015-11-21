@@ -69,7 +69,6 @@ defmodule WebApi.Handler do
 
 
   def handle req, state do
-    debug "Handling http request: #{inspect req}"
     case req do
       {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, _, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
         info "Pid #{inspect pid} is handling request for: #{path}"
