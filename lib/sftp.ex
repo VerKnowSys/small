@@ -26,36 +26,17 @@ defmodule Sftp do
   # end
 
 
-  def launch_interval_check do
-    info "Starting queue check with check interval: #{interval}ms"
-    Timer.apply_interval interval, Sftp, :add, []
-  end
+  # def launch_interval_check do
+  #   info "Starting queue check with check interval: #{interval}ms"
+  #   Timer.apply_interval interval, Sftp, :add, []
+  # end
 
 
   ## Callbacks (Server API)
   def init :ok do
-    notice "Launching Sftp client"
-    Timer.sleep 2000
+    notice "Starting Sftp module"
     SSH.start
-    connection = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
-      [user: String.to_char_list(config[:username]),
-       user_interaction: false,
-       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
-       silently_accept_hosts: true,
-       # connect_timeout: ssh_connection_timeout,
-       # idle_time: ssh_connection_timeout
-      ], ssh_connection_timeout
-
-    case connection do
-      {:ok, conn} ->
-        notice "Connected to SSH server"
-        {:ok, _} = launch_interval_check
-        {:ok, conn}
-
-      {:error, err} ->
-        error "Error connecting to SSH: #{inspect err}"
-        {:error, err}
-    end
+    {:ok, self}
   end
 
 
@@ -79,15 +60,24 @@ defmodule Sftp do
       notification "Uploaded successfully.", :upload
     catch
       x ->
-        SSH.stop
         notification "Error streaming file #{local_file}: #{inspect x}!", :error
     end
   end
 
 
-  def handle_cast {:send_file, local_file, remote_dest_file}, ssh_connection do
-    debug "Starting ssh channel.."
-    a_channel = SFTP.start_channel ssh_connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout]
+  def handle_cast {:send_file, local_file, remote_dest_file}, _ do
+    debug "Starting ssh connection.."
+    {:ok, connection} = SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
+      [user: String.to_char_list(config[:username]),
+       user_interaction: false,
+       rsa_pass_phrase: String.to_char_list(config[:ssh_key_pass]),
+       silently_accept_hosts: true,
+       # connect_timeout: ssh_connection_timeout,
+       # idle_time: ssh_connection_timeout
+      ], ssh_connection_timeout
+
+    debug "Starting ssh channel for connection: #{inspect connection}"
+    a_channel = SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout]
     case a_channel do
       {:ok, channel} ->
         remote_dest_file = remote_dest_file |> String.to_char_list
@@ -141,18 +131,18 @@ defmodule Sftp do
             SFTP.close channel, handle
             debug "Closing channel: #{inspect channel}"
             SFTP.stop_channel channel
+            debug "Closing SSH connection"
+            SSH.close connection
 
           {:error, err} ->
-            SSH.stop
             an_error = "Error opening write handle of remote file: #{inspect err}"
             notification an_error, :error
         end
 
       {:error, err} ->
-        SSH.stop
         notification "Error creating SFTP channel: #{inspect err}!", :error
     end
-    {:noreply, ssh_connection}
+    {:noreply, connection}
   end
 
 
@@ -172,6 +162,15 @@ defmodule Sftp do
   end
 
 
+  defp create_queue_string collection do
+    (Enum.map collection, fn an_elem ->
+      %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = an_elem
+      config[:address] <> uuid <> "." <> List.last String.split file_path, "."
+    end)
+    |> Enum.join "\n"
+  end
+
+
   @doc """
   Creates content which will be copied to clipboard as http links
   """
@@ -182,11 +181,7 @@ defmodule Sftp do
         (length Queue.get_all) > 1 ->
           info "More than one entry found in QueueAgent, merging results"
           Queue.get_all
-            |> (Enum.map fn elem ->
-              %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} = elem
-              config[:address] <> uuid <> "." <> List.last String.split file_path, "."
-            end)
-            |> Enum.join("\n")
+            |> create_queue_string
             |> Clipboard.put
 
         first != :empty ->
@@ -206,8 +201,8 @@ defmodule Sftp do
       end
     end
     case clip_time do
-      {_elapsed, _} ->
-        debug "Clipboard routine done in: #{_elapsed/1000}ms"
+      {elapsed, _} ->
+        debug "Clipboard routine done in: #{elapsed/1000}ms"
         :ok
     end
   end
@@ -218,7 +213,7 @@ defmodule Sftp do
   # end
 
 
-  def handle_cast :add, ssh_connection do
+  def handle_cast :add, _ do
     unless Enum.empty? Queue.get_all do
       time = Timer.tc fn ->
         build_clipboard
@@ -258,11 +253,11 @@ defmodule Sftp do
       end
 
       case time do
-        {_elapsed, _} ->
-          debug "Whole operation finished in: #{_elapsed/1000}ms"
+        {elapsed, _} ->
+          debug "Whole operation finished in: #{elapsed/1000}ms"
       end
     end
-    {:noreply, ssh_connection}
+    {:noreply, []}
   end
 
 end

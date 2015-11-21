@@ -23,7 +23,7 @@ config :small, :config,
       username: "dmilith",
       hostname: "verknowsys.com",
       ssh_port: 60022,
-      address: "http://s.verknowsys.com/",
+      address: "http://ół.pl/",
       remote_path: "/home/dmilith/Web/Public/Sshots/",
       ssh_key_pass: "",
       notifications: [
@@ -42,7 +42,7 @@ config :small, :config,
         error: true,
         error_sound: "Sosumi"
       ],
-      open_history_on_start: true
+      open_history_on_start: false
     ],
     "michal" => [
       username: "michal",
@@ -81,8 +81,8 @@ config :lager,
       {:alert,     "\e[1;44m" },
       {:emergency, "\e[1;41m" }
     ],
-    crash_log: "#{project_dir}/log/crash.log",
-    error_logger_hwm: 30, # max 30 messages/s
+    # crash_log: "#{project_dir}/log/crash.log",
+    # error_logger_hwm: 30, # max 30 messages/s
     # handlers: [
     #   lager_console_backend: :notice,
     #   lager_file_backend: [

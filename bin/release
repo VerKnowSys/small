@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export MIX_ENV="prod"
+bin/clean
+mix do deps.get, deps.compile, compile, escript.build
