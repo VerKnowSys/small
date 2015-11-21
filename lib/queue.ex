@@ -52,6 +52,7 @@ defmodule Queue do
   Removes a record from current state.
   """
   def remove record do
+    debug "Removing record from queue: #{inspect record}"
     DB.remove_from_queue record
   end
 end
