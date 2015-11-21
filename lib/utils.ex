@@ -9,8 +9,8 @@ defmodule Utils do
   alias :timer, as: Timer
 
 
-  @spec read_size_of_file(file_path :: String.t) :: integer
-  def read_size_of_file file_path do
+  @spec read_size_of_file(String.t) :: integer
+  def read_size_of_file(file_path) when is_binary(file_path) do
     case File.stat file_path do
       {:ok, file_info} ->
         case file_info do
@@ -26,22 +26,29 @@ defmodule Utils do
         0
     end
   end
+  def read_size_of_file(_), do: 0
 
 
-  def size_kib size_in_bytes do
-    Float.round size_in_bytes / 1024, 2
-  end
+  @spec size_kib(integer) :: integer
+  def size_kib(size_in_bytes) when is_number(size_in_bytes), do: Float.round size_in_bytes / 1024, 2
+  def size_kib(_), do: 0
 
 
-  def file_extension abs_path do
+  @spec size_kib(String.t) :: integer
+  def file_extension(abs_path) when is_binary(abs_path) do
     if String.contains? abs_path, "." do
       "." <> (List.last String.split abs_path, ".")
     else
       ""
     end
   end
+  def file_extension(_), do: ""
 
 
+  @doc """
+    Example usage:
+      remote_file_size :ssh_sftp.read_file_info a_ssh_channel, a_remote_dest_file
+  """
   def remote_file_size remote_handle do
     case remote_handle do
       {:ok, remote_file_info} ->
