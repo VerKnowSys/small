@@ -36,7 +36,13 @@ defmodule Sftp do
   def init :ok do
     notice "Starting Sftp module"
     SSH.start
-    launch_interval_check
+    case launch_interval_check do
+      {:ok, pid} ->
+        debug "Internal check spawned: #{inspect pid}"
+
+      {:error, error} ->
+        error "Internal check spawn failed with error: #{inspect error}"
+    end
     {:ok, self}
   end
 
