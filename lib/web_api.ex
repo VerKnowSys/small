@@ -4,7 +4,7 @@ defmodule WebApi do
   import Cfg
   use GenServer
 
-  @listener_name node
+  @node_name __MODULE__
 
 
   ## Client API
@@ -28,10 +28,15 @@ defmodule WebApi do
 
   def init :ok do
     # Application.ensure_started :crypto
-    Application.ensure_started :cowboy
+    case Application.ensure_started :cowboy do
+      {:error, cause} ->
+        error "An error occured when ensuring started Cowboy app. Cause: #{inspect cause}"
+      :ok ->
+        debug "Ensuring Cowboy started"
+    end
 
     dispatch = :cowboy_router.compile routes
-    "#{@listener_name}_#{webapi_port}"
+    "#{@node_name}_#{webapi_port}"
       |> :cowboy.start_http 10, [ip: {127,0,0,1}, port: webapi_port], [{:env, [{:dispatch, dispatch}]}]
 
     {:ok, self}
@@ -43,12 +48,4 @@ defmodule WebApi do
   end
 
 
-  # def handle_info {_pid, {:webapi}, {config_key, config_value}}, state do
-  #   {:noreply, state}
-  # end
-
-  # def stop, do: stop(@default_port)
-  # def stop(port) do
-  #   :cowboy.stop_listener("#{@listener_name}_#{port}")
-  # end
 end
