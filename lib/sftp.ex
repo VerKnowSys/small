@@ -89,6 +89,19 @@ defmodule Sftp do
   end
 
 
+  def handle_cast :add, _ do
+    queue = Queue.get_all
+    unless Enum.empty? queue do
+      build_clipboard
+      queue
+        |> Enum.map fn element ->
+          element |> process_element
+        end
+    end
+    {:noreply, self}
+  end
+
+
   def handle_cast {:send_file, local_file, remote_dest_file}, _ do
     case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
       ssh_opts, ssh_connection_timeout) do
@@ -128,18 +141,6 @@ defmodule Sftp do
       :empty ->
         notice "Empty queue. Ignoring request"
     end
-  end
-
-
-  def handle_cast :add, _ do
-    unless Enum.empty? Queue.get_all do
-      build_clipboard
-      Queue.get_all
-        |> Enum.map fn element ->
-          element |> process_element
-        end
-    end
-    {:noreply, self}
   end
 
 
