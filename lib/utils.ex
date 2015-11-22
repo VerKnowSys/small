@@ -89,4 +89,9 @@ defmodule Utils do
   end
 
 
+  def binary_to_string(content) when is_binary(content) do
+    inspect content, binaries: :as_strings
+  end
+
+
 end
