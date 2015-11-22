@@ -41,8 +41,12 @@ defmodule Small do
 
   def handle_info {_pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> IO.iodata_to_binary
-    debug "Handling event for path: #{path}"
-    process_event event, path
+    if Regex.match? ~r/.*-[a-zA-Z]{4,}$/, path do # handle temporary/ uwanted files
+      debug "#{path} matches temp file name! Skipping"
+    else
+      debug "Handling event for path: #{path}"
+      process_event event, path
+    end
     {:noreply, state}
   end
 
