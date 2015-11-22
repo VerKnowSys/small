@@ -8,7 +8,7 @@ defmodule Queue do
 
   ## Client API
   def start_link opts \\ [] do
-    GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
+    GenServer.start_link @name, :ok, [name: @name] ++ opts
   end
 
 
@@ -44,7 +44,7 @@ defmodule Queue do
   Add a record to current state (only if record not already on list)
   """
   def put record do
-    debug "Putting record to queue: #{inspect record}"
+    info "Putting record to queue: #{inspect record}"
     DB.add_to_queue record
   end
 
@@ -53,7 +53,7 @@ defmodule Queue do
   Removes a record from current state.
   """
   def remove record do
-    debug "Removing record from queue: #{inspect record}"
+    info "Removing record from queue: #{inspect record}"
     DB.remove_from_queue record
   end
 end
