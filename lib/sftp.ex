@@ -117,7 +117,6 @@ defmodule Sftp do
         debug "Processing connection with pid: #{inspect connection}"
         time = Timer.tc fn ->
           connection |> process_ssh_connection local_file, remote_dest_file
-          local_file |> add_to_history
         end
         case time do
           {elapsed, _} ->
@@ -140,7 +139,8 @@ defmodule Sftp do
         else
           error "Local file not found or not a regular file: #{local_file}!"
         end
-        Queue.remove %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+      %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+        |> add_to_history |> Queue.remove
 
       :empty ->
         notice "Empty queue. Ignoring request"
@@ -157,14 +157,17 @@ defmodule Sftp do
   @doc """
   Adds clipboard items to persistent history
   """
-  def add_to_history local_file do
-    to_history = String.strip Regex.replace ~r/\n/, Clipboard.get, " "
-    a_history = %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: local_file, uuid: (UUID.uuid4 :hex)}
+  def add_to_history queue do
+    to_history = config[:address] <> queue.uuid <> Utils.file_extension queue.local_file
+    a_history = %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: queue.local_file, uuid: (UUID.uuid4 :hex)}
     if (DB.get_history
       |> (Enum.filter fn element ->
-        String.contains? to_history, element.content
+        String.contains? element.content, to_history
       end)
       |> Enum.count) == 0, do: DB.add_history a_history
+
+    # pass queue structure further:
+    queue
   end
 
 
