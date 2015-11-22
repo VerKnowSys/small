@@ -27,7 +27,7 @@ defmodule Small do
 
 
   def process_event event, file_path do
-    if (File.exists? file_path) do
+    if File.exists? file_path do
       debug "Handling event: #{inspect event} for path #{file_path}"
       random_uuid = UUID.uuid3 nil, file_path, :hex
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
