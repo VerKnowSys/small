@@ -14,8 +14,14 @@ defmodule SyncSupervisor do
   def start_link do
     notice "Setting initial log level"
     log_level get_initial_log_level
-    info "Performing configuration check"
+    notice "Performing configuration check"
     config_check
+    File.mkdir_p Cfg.project_dir
+    notice "Setting default Mnesia directory to #{Cfg.project_dir}"
+    Cfg.set_default_mnesia_dir Cfg.project_dir
+    notice "Setting default project directory to #{Cfg.project_dir <> "/.."}"
+    File.cd Cfg.project_dir <> "/.."
+
     Supervisor.start_link __MODULE__, [], [name: __MODULE__]
   end
 

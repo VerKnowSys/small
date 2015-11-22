@@ -4,6 +4,18 @@ defmodule Cfg do
 
   alias :lager, as: LagerBackend
 
+
+  defp app_env do
+    case System.get_env "MIX_ENV" do
+      "" ->
+        "dev"
+      a ->
+        a
+    end
+  end
+  def project_dir, do: System.get_env("HOME") <> "/Library/Small/" <> app_env
+
+
   @doc """
   Returns application version
   """
@@ -81,7 +93,7 @@ defmodule Cfg do
   Gets webapi port for current mode
   """
   def webapi_port do
-    case System.get_env "MIX_ENV" do
+    case app_env do
       "prod" ->
         Application.get_env :small, :webapi_port
 
@@ -171,6 +183,11 @@ defmodule Cfg do
       # connect_timeout: ssh_connection_timeout,
       # idle_time: ssh_connection_timeout
     ]
+  end
+
+
+  def set_default_mnesia_dir data_dir do
+    :application.set_env :mnesia, :dir, to_char_list data_dir
   end
 
 end
