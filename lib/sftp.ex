@@ -129,9 +129,7 @@ defmodule Sftp do
       %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
         if (File.exists? local_file) and (File.regular? local_file) do
           local_file |> send_file remote_dest_file <> Utils.file_extension local_file
-          if (List.last Queue.get_all) == element do
-            local_file |> add_to_history
-          end
+          local_file |> add_to_history
         else
           error "Local file not found or not a regular file: #{local_file}!"
         end
