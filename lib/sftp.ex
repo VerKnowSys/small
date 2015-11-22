@@ -135,14 +135,13 @@ defmodule Sftp do
   defp process_element element do
     case element do
       %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
+        a_queue = %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
         if (File.exists? local_file) and (File.regular? local_file) and (not Regex.match? ~r/.*-[a-zA-Z]{4,}$/, local_file) do
           local_file |> send_file remote_dest_file <> Utils.file_extension local_file
-          %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
-            |> add_to_history |> Queue.remove
+          a_queue |> add_to_history |> Queue.remove
         else
           debug "Local file not found or not a regular file: #{local_file}. Skipping."
-          %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
-            |> Queue.remove
+          a_queue |> Queue.remove
         end
 
       :empty ->
