@@ -21,9 +21,9 @@ defmodule Sftp do
   end
 
 
-  # def do_exception do
-  #   GenServer.call __MODULE__, :do_exception, :infinity
-  # end
+  def do_exception do
+    GenServer.call __MODULE__, :do_exception, :infinity
+  end
 
 
   def launch_interval_check do
@@ -192,8 +192,8 @@ defmodule Sftp do
   end
 
 
-  # def handle_call :do_exception, _from, _ssh_connection do
-  #   raise "An exception!"
-  # end
+  def handle_call :do_exception, _from, _ssh_connection do
+    raise "An exception!"
+  end
 
 end
