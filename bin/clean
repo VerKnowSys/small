@@ -1,4 +1,5 @@
 #!/bin/sh
 
+killall beam.smp
 rm -rf deps _build mix.lock
 
