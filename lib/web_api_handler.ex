@@ -64,7 +64,6 @@ defmodule WebApi.Handler do
 
   def route path, args, req, state do
     history = DB.get_history
-    info "Handling request for path: #{path}" <> unless (String.empty? args), do: "/?#{args}"
     debug "Request details: #{inspect req}"
     case path do
       "/" ->
