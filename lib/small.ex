@@ -40,8 +40,8 @@ defmodule Small do
 
 
   def handle_info {_pid, {:fs, :file_event}, {path, event}}, state do
+    path = path |> IO.iodata_to_binary
     debug "Handling event for path: #{path}"
-    path = path |> List.to_string
     process_event event, path
     {:noreply, state}
   end
