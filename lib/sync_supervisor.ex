@@ -21,8 +21,8 @@ defmodule SyncSupervisor do
 
 
   # supervisor callback
-  def init _params do
-    debug "Supervisor params: #{inspect _params}"
+  def init params do
+    debug "Supervisor params: #{inspect params}"
     children = [
       (worker Queue, [], [restart: :permanent]),
       (worker Sftp, [], [restart: :permanent]),

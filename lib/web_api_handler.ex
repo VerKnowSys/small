@@ -77,8 +77,7 @@ defmodule WebApi.Handler do
 
   def handle req, state do
     case req do
-      {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, args, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
-        info "Pid #{inspect pid} is handling request for: #{path}"
+      {:http_req, _, :ranch_tcp, :keepalive, _pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, args, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
         route path, args, req, state
 
       _a ->
