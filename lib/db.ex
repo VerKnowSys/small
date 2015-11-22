@@ -52,6 +52,7 @@ defmodule DB do
 
 
   def init_and_start do
+    File.mkdir_p Cfg.project_dir
     create_amnesia_schema
     Amnesia.start
     create_node
