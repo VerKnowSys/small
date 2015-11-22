@@ -37,7 +37,7 @@ defmodule Utils do
   @spec size_kib(String.t) :: integer
   def file_extension(abs_path) when is_binary(abs_path) do
     if String.contains? abs_path, "." do
-      "." <> (List.last String.split abs_path, ".")
+      "." <> List.last String.split abs_path, "."
     else
       ""
     end
