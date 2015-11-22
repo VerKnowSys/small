@@ -64,7 +64,8 @@ defmodule WebApi.Handler do
 
   def route path, args, req, state do
     history = DB.get_history
-    debug "REQ: #{inspect req}"
+    info "Handling request for path: #{path}" <> unless (String.empty? args), do: "/?#{args}"
+    debug "Request details: #{inspect req}"
     case path do
       "/" ->
         history |> (Enum.take history_amount args) |> outer_route req, state
