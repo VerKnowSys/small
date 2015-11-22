@@ -54,11 +54,18 @@ defmodule Sftp do
         remote_size = Utils.remote_file_size remote_handle
         debug "Local file: #{local_file} (#{local_size})"
         debug "Remote file: #{remote_dest_file} (#{remote_size})"
-        if (remote_size != local_size) or (remote_size <= 0) do
-          info "Found non empty remote file. Uploading file to remote"
-          Utils.stream_file_to_remote channel, handle, local_file, local_size
-        else
-          info "Remote file size equal locals. File upload skipped."
+        cond do
+          remote_size != local_size ->
+            info "Found non empty remote file. Uploading file to remote"
+            Utils.stream_file_to_remote channel, handle, local_file, local_size
+
+          remote_size <= 0 ->
+            info "Found an empty remote file. Uploading file to remote"
+            Utils.stream_file_to_remote channel, handle, local_file, local_size
+
+          remote_size == local_size ->
+            notice "Found file of same size already uploaded. Skipping"
+
         end
         debug "Closing file handle"
         SFTP.close channel, handle
