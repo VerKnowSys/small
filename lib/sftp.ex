@@ -50,7 +50,7 @@ defmodule Sftp do
   defp sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel do
     case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
       {:ok, handle} ->
-        local_size = Utils.read_size_of_file local_file
+        local_size = Utils.local_file_size local_file
         remote_size = Utils.remote_file_size remote_handle
         debug "Local file: #{local_file} (#{local_size})"
         debug "Remote file: #{remote_dest_file} (#{remote_size})"

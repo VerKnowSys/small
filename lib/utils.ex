@@ -9,8 +9,8 @@ defmodule Utils do
   alias :timer, as: Timer
 
 
-  @spec read_size_of_file(String.t) :: integer
-  def read_size_of_file(file_path) when is_binary(file_path) do
+  @spec local_file_size(String.t) :: integer
+  def local_file_size(file_path) when is_binary(file_path) do
     case File.stat file_path do
       {:ok, file_info} ->
         case file_info do
@@ -26,7 +26,7 @@ defmodule Utils do
         0
     end
   end
-  def read_size_of_file(_), do: 0
+  def local_file_size(_), do: 0
 
 
   @spec size_kib(integer) :: integer
