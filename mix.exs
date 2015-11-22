@@ -76,7 +76,7 @@ defmodule Small.Mixfile do
       { :uuid, "~> 1.0" },
       { :fs, github: "VerKnowSys/fs" },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
-      { :exlager, github: "khia/exlager" },
+      { :exlager, github: "VerKnowSys/exlager" },
       { :amnesia, github: "meh/amnesia" },
       { :timex, "~> 0.18.2" },
       { :cowboy, "~> 1.0.0" },
