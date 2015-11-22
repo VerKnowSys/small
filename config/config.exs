@@ -1,16 +1,14 @@
 use Mix.Config
 
-project_dir = "/Projects/small"
-
 # path to be watched for file events:
 config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
 # absolute path to events listener executable
-config :fs, :events_helper, to_char_list "#{project_dir}/deps/fs/priv/mac_listener"
+config :fs, :events_helper, to_char_list "/usr/local/bin/mac_listener"
 
 config :small, :webapi_port, 8000
 config :small, :webapi_dev_port, 8001
 config :small, :webapi_test_port, 8002
-config :small, :user_helper, "#{project_dir}/bin/reattach-to-user-namespace"
+config :small, :user_helper, "/usr/local/bin/reattach-to-user-namespace"
 config :small, :sftp_write_timeout, 10_000
 config :small, :sftp_open_channel_timeout, 5_000
 config :small, :sftp_start_channel_timeout, 5_000
