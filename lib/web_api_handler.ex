@@ -56,11 +56,18 @@ defmodule WebApi.Handler do
   end
 
 
-  def route path, req, state do
+  @spec history_amount(String.t | integer) :: integer
+  defp history_amount(input) when is_binary(input), do: history_amount Integer.parse input
+  defp history_amount(input) when is_number(input) and input > 10, do: input
+  defp history_amount(_), do: 10
+
+
+  def route path, args, req, state do
     history = DB.get_history
+    debug "REQ: #{inspect req}"
     case path do
       "/" ->
-        history |> (Enum.take 10) |> outer_route req, state
+        history |> (Enum.take history_amount args) |> outer_route req, state
 
       "/all" ->
         history |> outer_route req, state
@@ -70,9 +77,9 @@ defmodule WebApi.Handler do
 
   def handle req, state do
     case req do
-      {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, _, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
+      {:http_req, _, :ranch_tcp, :keepalive, pid, "GET", :"HTTP/1.1", {{_, _, _, _}, _}, _, _, _, path, _, args, _, [], _, [{"connection", ["keep-alive"]}], _, [], _, "", _, _, _, [], "", _} ->
         info "Pid #{inspect pid} is handling request for: #{path}"
-        route path, req, state
+        route path, args, req, state
 
       _a ->
         {:ok, req, state}
