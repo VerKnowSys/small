@@ -44,6 +44,7 @@ defmodule Queue do
   Add a record to current state (only if record not already on list)
   """
   def put record do
+    debug "Putting record to queue: #{inspect record}"
     DB.add_to_queue record
   end
 
