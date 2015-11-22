@@ -33,10 +33,14 @@ defmodule WebApi.Handler do
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <style>
-    div.item { vertical-align: top; display: inline-block; text-align: center; }
+    article.item { vertical-align: top; display: block; text-align: center; }
     img { background-color: grey; padding: 0.5em; margin-top: 3em; margin-left: 2em; margin-right: 2em; }
     .caption { display: block; }
+    .count { display: block; margin: 0.5em; font-weight: bold; text-align: center; }
+    pre.count { margin: 2em; }
+    pre.count span { font-size: 1.6em; }
     body { background-color: #e1e1e1; }
+    footer { display: block; margin: 1.6em; margin-top: 3.2em; text-align: center; }
   </style>
 </head>
 """
@@ -44,14 +48,15 @@ defmodule WebApi.Handler do
 
 
   def outer_route collection, req, state do
+    size = collection |> Enum.count
     {:ok, req} = :cowboy_req.reply 200, [],
-      "<html>" <> head <> "<body><div>" <>
+      "<html>" <> head <> "<body><pre class=\"count\"><span>small</span> history of: #{size}</pre></div><div>" <>
       (collection
         |> (Enum.map fn %Database.History{user_id: _, content: links, timestamp: ts, file: file, uuid: uuid} ->
           links_list = links |> String.split " "
-          "<div id=\"#{uuid}\" class=\"text-center\">" <> extract_links(ts, links_list, file) <> "</div>"
+          "<article id=\"#{uuid}\" class=\"text-center\">" <> (extract_links ts, links_list, file) <> "</article>"
         end)
-        |> Enum.join " ") <> "</div></body></html>", req
+        |> Enum.join " ") <> "</div><footer>Released under BSD license in 2015 by <a href=\"http://verknowsys.com/\">Versatile Knowledge Systems</a>.</footer></body></html>", req
     {:ok, req, state}
   end
 
