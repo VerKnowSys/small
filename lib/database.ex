@@ -7,7 +7,7 @@ defdatabase Database do
   deftable User
 
 
-  deftable History, [:user_id, :content, :timestamp, :file, :uuid], type: :bag do
+  deftable History, [:user_id, :content, :timestamp, :file, :uuid], type: :bag, index: [:content, :timestamp] do
     @type t :: %History{user_id: integer, content: String.t, timestamp: String.t, file: String.t, uuid: String.t}
 
     # this defines a helper function to fetch the user from a History record
