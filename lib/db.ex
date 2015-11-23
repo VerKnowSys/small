@@ -133,7 +133,7 @@ defmodule DB do
 
   def get_history do
     Amnesia.transaction do
-      debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories |> Enum.take 5}"
+      # debug "get_history - user: #{inspect user}, histories: #{inspect user |> User.histories |> Enum.take 5}"
       # NOTE: slower but more expressie way:
       # (History.where user_id == user.id)
       # |> Amnesia.Selection.values

@@ -1,4 +1,4 @@
-small - Sync 'eM ALL!
+small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
 =========
 
 ## REQUIREMENTS:
