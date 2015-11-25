@@ -73,15 +73,15 @@ defmodule Small.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      { :uuid, "~> 1.0" },
+      { :uuid, "1.1.1" },
       { :fs, github: "VerKnowSys/fs" },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "VerKnowSys/exlager" },
       { :amnesia, github: "meh/amnesia" },
-      { :timex, "~> 0.18.2" },
-      { :cowboy, "~> 1.0.0" },
+      { :timex, "0.18.2" },
+      { :cowboy, "1.0.0" },
       { :httpotion, github: "myfreeweb/httpotion" },
-      { :credo, "~> 0.1.0", only: :dev }
+      { :credo, "0.1.9", only: :dev }
     ]
   end
 end
