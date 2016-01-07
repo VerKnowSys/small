@@ -29,7 +29,7 @@ defmodule Clipboard do
   def get do
     case System.cmd "pbpaste", [] do
       {result, 0} ->
-        result
+        IO.iodata_to_binary result
 
       {_, reason} ->
         {:error, "Clipboard error: #{inspect reason}"}
