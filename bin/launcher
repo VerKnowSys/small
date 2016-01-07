@@ -11,6 +11,6 @@ else
     test -d ${PROJECT_DIR}/deps || (MIX_ENV=prod mix do deps.get, deps.compile, compile, escript.build)
     if [ "$?" = "0" ]; then
         # iex --name \"${PROJECT_NAME}\" --sname \"${PROJECT_NAME}\" --cookie \"${PROJECT_NAME}\" -S mix
-        tmux new -s ${PROJECT_NAME} -c ${PROJECT_DIR} -n ${PROJECT_NAME} -d "MIX_ENV=prod ${PROJECT_DIR}/small"
+        tmux new -s ${PROJECT_NAME} -c ${PROJECT_DIR} -n ${PROJECT_NAME} -d "LANG=pl_PL.UTF-8 MIX_ENV=prod ${PROJECT_DIR}/small"
     fi
 fi
