@@ -5,8 +5,8 @@ small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
 
 * OSX 10.x (required)
 * Erlang OTP 18.x (required)
-* Elixir 1.0.x (required)
-* Sofin 0.84.x (optional)
+* Elixir 1.2.x (required)
+* Sofin 0.96.x (optional)
 * Zsh 5.x (optional)
 * Tmux 1.x (optional)
 
