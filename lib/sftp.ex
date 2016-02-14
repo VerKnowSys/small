@@ -93,7 +93,7 @@ defmodule Sftp do
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
-        connection |> sftp_open_and_process_upload local_file, remote_handle, remote_dest_file, channel
+        connection |> (sftp_open_and_process_upload local_file, remote_handle, remote_dest_file, channel)
 
       {:error, err} ->
         notification "Error creating SFTP channel: #{inspect err}!", :error
@@ -106,9 +106,9 @@ defmodule Sftp do
     unless Enum.empty? queue do
       build_clipboard
       queue
-        |> Enum.map fn element ->
+        |> (Enum.map fn element ->
           element |> process_element
-        end
+        end)
     end
     {:noreply, self}
   end
@@ -121,7 +121,7 @@ defmodule Sftp do
       {:ok, connection} ->
         debug "Processing connection with pid: #{inspect connection}"
         time = Timer.tc fn ->
-          connection |> process_ssh_connection local_file, remote_dest_file
+          connection |> (process_ssh_connection local_file, remote_dest_file)
         end
         case time do
           {elapsed, _} ->
@@ -141,7 +141,7 @@ defmodule Sftp do
       %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
         a_queue = %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
         if (File.exists? local_file) and (File.regular? local_file) and (not Regex.match? ~r/.*-[a-zA-Z]{4,}$/, local_file) do
-          local_file |> send_file remote_dest_file <> Utils.file_extension local_file
+          local_file |> (send_file remote_dest_file <> Utils.file_extension local_file)
           a_queue |> add_to_history |> Queue.remove
         else
           debug "Local file not found or not a regular file: #{local_file}. Skipping."
