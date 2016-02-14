@@ -29,7 +29,7 @@ small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
 
 ## WARNING:
 
-You'll need to put bin/reattach-to-user-namespace binary to /usr/local/bin for OSX Notifications to work properly in tmux session (used in bin/launcher).
+You'll need to run bin/install first, for OSX Notifications to work properly (background tmux session issue).
 
 
 ## USAGE:
