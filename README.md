@@ -24,7 +24,6 @@ small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
 * Persistent Queue and History (mnesia disk only backend by default)
 * Basic Web History (localhost:8000)
 * Asynchronous (when possible)
-* Automatically merge multiple results in clipboard
 * Remote management through Elixir/ Erlang console. By default Small runs as "smallENV" - where ENV is one of modes: test, dev, prod (`epmd -names` to see available applications)
 
 
