@@ -56,8 +56,7 @@ defmodule Sftp do
       {:ok, handle} ->
         local_size = Utils.local_file_size local_file
         remote_size = Utils.remote_file_size remote_handle
-        debug "Local file: #{local_file} (#{local_size})"
-        debug "Remote file: #{remote_dest_file} (#{remote_size})"
+        debug "Local file: #{local_file} (#{local_size}); Remote file: #{remote_dest_file} (#{remote_size})"
         cond do
           remote_size <= 0 ->
             info "Found an empty remote file. Uploading file to remote"
@@ -69,19 +68,15 @@ defmodule Sftp do
 
           remote_size == local_size ->
             notice "Found file of same size already uploaded. Skipping"
-            # Utils.stream_file_to_remote channel, handle, local_file, local_size
 
         end
-        debug "Closing file handle"
+        debug "Closing file handle, channel and ssh connection"
         SFTP.close channel, handle
-        debug "Closing channel: #{inspect channel}"
         SFTP.stop_channel channel
-        debug "Closing SSH connection"
         SSH.close connection
 
       {:error, err} ->
-        an_error = "Error opening write handle of remote file: #{inspect err}"
-        notification an_error, :error
+        notification "Error opening write handle of remote file: #{inspect err}", :error
     end
   end
 
