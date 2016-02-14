@@ -76,4 +76,7 @@ bin/console
 
 ## Autostart for user
 
-`cp $(pwd)/LaunchAgents/com.verknowsys.SyncEmAll.plist ~/Library/LaunchAgents/`
+```
+# there's /Projects/small directory hardcoded in this xml file.
+cp $(pwd)/LaunchAgents/com.verknowsys.SyncEmAll.plist ~/Library/LaunchAgents/
+`
