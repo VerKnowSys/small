@@ -7,10 +7,21 @@ tmux has-session -t small 2> /dev/null
 if [ "$?" = "0" ]; then
     tmux attach -t small
 else
-    cd ${PROJECT_DIR}
-    test -d ${PROJECT_DIR}/deps || (MIX_ENV=prod mix do deps.get, deps.compile, compile, escript.build)
-    if [ "$?" = "0" ]; then
-        # iex --name \"${PROJECT_NAME}\" --sname \"${PROJECT_NAME}\" --cookie \"${PROJECT_NAME}\" -S mix
-        tmux new -s ${PROJECT_NAME} -c ${PROJECT_DIR} -n ${PROJECT_NAME} -d "LANG=pl_PL.UTF-8 MIX_ENV=prod ${PROJECT_DIR}/small"
+    if [ -d "${PROJECT_DIR}" ]; then
+        cd ${PROJECT_DIR}
+        bin/install
+        test -d ${PROJECT_DIR}/deps || (MIX_ENV=prod mix do deps.get, deps.compile, compile, escript.build)
+        if [ "$?" = "0" ]; then
+            tmux new -s ${PROJECT_NAME} -c ~ -n ${PROJECT_NAME} -d "LANG=pl_PL.UTF-8 MIX_ENV=prod /usr/local/bin/small"
+        fi
+    else
+        if [ -x "/usr/local/bin/small" -a \
+             -x "/usr/local/bin/reattach-to-user-namespace" -a \
+             -x "/usr/local/bin/mac_listener" ]; then
+            tmux new -s ${PROJECT_NAME} -c ~ -n ${PROJECT_NAME} -d "LANG=pl_PL.UTF-8 MIX_ENV=prod /usr/local/bin/small"
+        else
+            echo "No project dir, no Small installation found. Install Small first!"
+            exit 1
+        fi
     fi
 fi
