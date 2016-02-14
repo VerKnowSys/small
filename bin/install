@@ -8,5 +8,5 @@ export MIX_ENV
 
 LOCAL_DEST="/usr/local/bin"
 for entry in small deps/fs/priv/mac_listener bin/reattach-to-user-namespace; do
-    install ${entry} ${LOCAL_DEST}
+    install -v ${entry} ${LOCAL_DEST}
 done
