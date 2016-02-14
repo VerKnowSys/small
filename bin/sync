@@ -1,0 +1,5 @@
+#!/bin/sh
+
+git push --all git@github.com:dmilith/small.git
+git push --all git@bitbucket.org:verknowsys/small.git
+
