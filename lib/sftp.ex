@@ -34,10 +34,6 @@ defmodule Sftp do
 
   ## Callbacks (Server API)
   def init :ok do
-    if DB.user == :badarg do
-      warning "Database backend seems to be uninitialized yet. Initializing.."
-      DB.init_and_start
-    end
     notice "Starting Sftp module"
     SSH.start
     case launch_interval_check do
