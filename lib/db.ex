@@ -16,10 +16,13 @@ defmodule DB do
         notice "Amnesia Schema created"
 
       {:error, {_, {:already_exists, a_node}}} ->
-        debug "Amnesia schema already created for node: #{a_node}"
+        notice "Amnesia schema already created for node: #{a_node}"
 
       {:error, {_, {err, a_node}}} ->
         critical "Amnesia schema cannot be created for a_node: #{a_node} cause: #{inspect err}"
+
+      _ ->
+        notice "Wildcard!!"
     end
   end
 
