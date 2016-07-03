@@ -52,7 +52,7 @@ defmodule Small.Mixfile do
 
   def applications do
     dev = [:exsync, :credo]
-    prod = [:httpotion, :cowboy, :timex, :amnesia, :exlager, :uuid, :fs, :logger]
+    prod = [:tzdata, :httpotion, :cowboy, :timex, :amnesia, :exlager, :uuid, :fs, :logger]
     case Mix.env do
       :prod ->
         prod
@@ -74,6 +74,7 @@ defmodule Small.Mixfile do
   defp deps do
     [
       { :uuid, "1.1.1" },
+      { :tzdata, "0.1.8", override: :true },
       { :fs, github: "VerKnowSys/fs" },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "VerKnowSys/exlager" },
