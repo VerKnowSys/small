@@ -101,7 +101,7 @@ defmodule DB do
   """
   def add_history history do
     Amnesia.transaction do
-      user |> User.add_history history
+      user |> (User.add_history history)
     end
   end
 
@@ -124,14 +124,14 @@ defmodule DB do
 
   def add_to_queue record do
     Amnesia.transaction do
-      user |> User.add_to_queue record
+      user |> (User.add_to_queue record)
     end
   end
 
 
   def remove_from_queue record do
     Amnesia.transaction do
-      user |> User.remove_from_queue record
+      user |> (User.remove_from_queue record)
     end
   end
 
@@ -146,9 +146,9 @@ defmodule DB do
       # or:
       user |> User.histories
         |> (Enum.sort fn e1, e2 -> e1.timestamp > e2.timestamp end)
-        |> Enum.map fn entry ->
-        %Database.History{user_id: entry.user_id, timestamp: entry.timestamp, content: entry.content, file: entry.file, uuid: entry.uuid}
-      end
+        |> (Enum.map fn entry ->
+                %Database.History{user_id: entry.user_id, timestamp: entry.timestamp, content: entry.content, file: entry.file, uuid: entry.uuid}
+              end)
     end
   end
 
