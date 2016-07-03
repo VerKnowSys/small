@@ -13,7 +13,9 @@ defmodule Cfg do
         a
     end
   end
+  def env, do: app_env
   def project_dir, do: System.get_env("HOME") <> "/Library/Small/" <> app_env
+  def mnesia_dumps_dir, do: System.get_env("HOME") <> "/Library/Small/.mnesia-dumps-#{env}/"
 
 
   @doc """
