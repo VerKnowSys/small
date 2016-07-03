@@ -17,6 +17,7 @@ defmodule SyncSupervisor do
     notice "Performing configuration check"
     config_check
     File.mkdir_p Cfg.project_dir
+    File.mkdir_p Cfg.mnesia_dumps_dir
     notice "Setting default Mnesia directory to #{Cfg.project_dir}"
     Cfg.set_default_mnesia_dir Cfg.project_dir
     notice "Setting default project directory to #{Cfg.project_dir <> "/.."}"

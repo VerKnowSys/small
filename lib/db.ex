@@ -63,6 +63,10 @@ defmodule DB do
     Amnesia.start
     debug "Schema dump:\n#{Amnesia.Schema.print}"
     create_node
+    File.mkdir_p Cfg.mnesia_dumps_dir
+    dump_name = "#{Cfg.mnesia_dumps_dir}/aMnesia-#{Timestamp.now}"
+    notice "Dumping database to backup file: #{dump_name}"
+    Amnesia.dump "#{dump_name}"
   end
 
 
