@@ -5,7 +5,7 @@ defmodule Small.Mixfile do
     [
       app: :small,
       version: "0.10.1",
-      elixir: "~> 1.2",
+      elixir: "~> 1.3",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps,
@@ -79,7 +79,7 @@ defmodule Small.Mixfile do
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "VerKnowSys/exlager" },
       { :amnesia, github: "meh/amnesia" },
-      { :timex, "0.18.2" },
+      { :timex, "1.0.2" },
       { :cowboy, "1.0.0" },
       { :httpotion, github: "myfreeweb/httpotion" },
       { :credo, "0.1.9", only: :dev }
