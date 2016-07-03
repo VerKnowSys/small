@@ -13,14 +13,14 @@ defmodule SmallApplication do
 
 
   def main _ do
-    notice "Starting Mnesia Database Backend"
-    DB.init_and_start
-
     content = "Launching SmallApplication v#{version}"
     notice content
     notification content, :start
     case SyncSupervisor.start_link do
       {:ok, pid} ->
+        notice "Initializing Mnesia backend"
+        DB.init_and_start
+
         notice "SyncSupervisor started properly with pid: #{inspect pid}"
         if config[:open_history_on_start] do
           debug "Open on start enabled"
