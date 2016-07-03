@@ -127,7 +127,7 @@ defmodule Cfg do
       :address,
       :remote_path
     ]
-    |> Enum.each fn e ->
+    |> (Enum.each fn e ->
       cond do
         config[e] == nil ->
           raise "Missing configuration value: #{e}!"
@@ -141,7 +141,7 @@ defmodule Cfg do
         true ->
           debug "Config check passed for #{e}[#{config[e]}]"
       end
-    end
+    end)
   end
 
 

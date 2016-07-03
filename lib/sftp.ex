@@ -183,7 +183,7 @@ defmodule Sftp do
           ""
       end
     end)
-    |> Enum.join "\n"
+    |> (Enum.join "\n")
   end
   def create_queue_string(_), do: ""
 
