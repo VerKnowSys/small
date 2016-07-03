@@ -52,6 +52,14 @@ defmodule Cfg do
 
 
   @doc """
+  Returns interval between database dumps to disk. Default: 6h
+  """
+  def dump_interval do
+    Application.get_env :small, :mnesia_autodump_interval
+  end
+
+
+  @doc """
   Returns ssh connection timeout
   """
   def ssh_connection_timeout do
