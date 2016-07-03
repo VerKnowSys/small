@@ -41,9 +41,9 @@ defmodule DB do
         debug "Database already created"
 
       [error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}] ->
-        warning "Found an issue with bad_type of requested - disk_only mode. Recovering.."
-        destroy
-        init_and_start
+        critical "Found an issue with bad_type of requested - disk_only mode. Recovering.."
+        # destroy
+        # init_and_start
 
       err ->
         critical "Database creation failure: #{inspect err}"
