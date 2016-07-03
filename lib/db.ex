@@ -36,7 +36,7 @@ defmodule DB do
   end
 
 
-  defp create_node do
+  defp create_node_if_necessary do
     case Database.create disk!: [node] do
       [:ok, :ok, :ok, :ok] ->
         debug "Creating node: #{inspect node}"
@@ -62,10 +62,15 @@ defmodule DB do
     create_amnesia_schema
     Amnesia.start
     debug "Schema dump:\n#{Amnesia.Schema.print}"
-    create_node
+    create_node_if_necessary
+  end
+
+
+  def dump_mnesia do
     File.mkdir_p Cfg.mnesia_dumps_dir
-    dump_name = "#{Cfg.mnesia_dumps_dir}/aMnesia-#{Timestamp.now}"
-    notice "Dumping database to backup file: #{dump_name}"
+    tstamp = Timestamp.now |> (String.replace ~r/[:. ]/, "-")
+    dump_name = "#{Cfg.mnesia_dumps_dir}/aMnesia-#{tstamp}" <> ".smadmp"
+    notice "Dumping database to file: #{dump_name}"
     Amnesia.dump "#{dump_name}"
   end
 

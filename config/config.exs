@@ -19,6 +19,7 @@ config :small, :sftp_start_channel_timeout, 5_000
 config :small, :sftp_buffer_size, 131_072
 config :small, :fs_check_interval, 2_000
 config :small, :ssh_connection_timeout, 10_000
+config :small, :mnesia_autodump_interval, 21_600_000 # 6h
 config :small, :config,
   %{
     "dmilith" => [
