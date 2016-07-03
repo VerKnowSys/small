@@ -1,10 +1,13 @@
 use Mix.Config
 
+mix_env = System.get_env("MIX_ENV")
+mix_home = System.get_env("HOME")
+
 # path to be watched for file events:
-config :fs, :path, System.get_env("HOME") <> "/Pictures/Screenshots"
+config :fs, :path, mix_home <> "/Pictures/Screenshots"
 # absolute path to events listener executable
 config :fs, :events_helper, to_char_list "/usr/local/bin/mac_listener"
-config :mnesia, :dir, (to_char_list System.get_env("HOME") <> "/Library/Small/" <> System.get_env("MIX_ENV"))
+config :mnesia, :dir, (to_char_list mix_home <> "/Library/Small/" <> mix_env)
 
 config :small, :webapi_port, 8000
 config :small, :webapi_dev_port, 8001
@@ -90,3 +93,4 @@ config :lager,
     #   ]
     # ],
   ]
+
