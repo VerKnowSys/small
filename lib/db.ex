@@ -10,6 +10,7 @@ defmodule DB do
 
 
   def create_amnesia_schema do
+    Amnesia.stop
     case Amnesia.Schema.create do
       :ok ->
         notice "Amnesia Schema created"
