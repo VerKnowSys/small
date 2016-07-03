@@ -39,10 +39,11 @@ defmodule DB do
   defp create_node do
     case Database.create disk!: [node] do
       [:ok, :ok, :ok, :ok] ->
+        debug "Creating node: #{inspect node}"
         commit_creation node
 
       [error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}, error: {:already_exists, _}] ->
-        debug "Database already created"
+        debug "Database already created."
 
       [error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}, error: {:bad_type, _, :disc_only_copies, _}] ->
         critical "Found an issue with bad_type of requested - disk_only mode. Recovering.."
@@ -60,6 +61,7 @@ defmodule DB do
     File.mkdir_p Cfg.project_dir
     create_amnesia_schema
     Amnesia.start
+    debug "Schema dump:\n#{Amnesia.Schema.print}"
     create_node
   end
 

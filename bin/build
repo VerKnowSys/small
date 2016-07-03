@@ -6,4 +6,9 @@ if [ -z "${MIX_ENV}" ]; then
 fi
 export MIX_ENV
 
-mix do deps.compile, compile, escript.build
+if [ "${1}" = "q" ]; then
+    MIX_ENV=dev
+    mix do compile
+else
+    mix do deps.compile, compile, escript.build
+fi

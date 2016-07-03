@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT_DIR="/Projects/small"
+PROJECT_DIR="/Projects/Small"
 PROJECT_NAME="small"
 
 tmux has-session -t small 2> /dev/null
