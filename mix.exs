@@ -80,9 +80,9 @@ defmodule Small.Mixfile do
       { :exlager, github: "VerKnowSys/exlager" },
       { :amnesia, github: "meh/amnesia" },
       { :timex, "1.0.2" },
-      { :cowboy, "1.0.0" },
+      { :cowboy, "1.0.4" },
       { :httpotion, github: "myfreeweb/httpotion" },
-      { :credo, "0.1.9", only: :dev }
+      { :credo, "0.4.5", only: :dev }
     ]
   end
 end
