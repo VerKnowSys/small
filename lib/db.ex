@@ -66,10 +66,19 @@ defmodule DB do
   end
 
 
-  def dump_mnesia do
+  def dump_mnesia param \\ "" do
     File.mkdir_p Cfg.mnesia_dumps_dir
-    tstamp = Timestamp.now |> (String.replace ~r/[:. ]/, "-")
-    dump_name = "#{Cfg.mnesia_dumps_dir}/aMnesia-#{tstamp}" <> ".smadmp"
+    case param do
+      "" ->
+        dump_db_file Timestamp.now |> (String.replace ~r/[:. ]/, "-")
+      a_name ->
+        dump_db_file a_name
+    end
+  end
+
+
+  def dump_db_file tstamp do
+    dump_name = "#{Cfg.mnesia_dumps_dir}mnesia-db.#{tstamp}.erl"
     notice "Dumping database to file: #{dump_name}"
     Amnesia.dump "#{dump_name}"
   end
