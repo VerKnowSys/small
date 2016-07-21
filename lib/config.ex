@@ -52,6 +52,14 @@ defmodule Cfg do
 
 
   @doc """
+  Returns default amount of history elements to load if not specified through http param
+  """
+  def amount_history_load do
+    Application.get_env :small, :amount_history_load
+  end
+
+
+  @doc """
   Returns interval between database dumps to disk. Default: 6h
   """
   def dump_interval do

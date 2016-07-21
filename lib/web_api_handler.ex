@@ -63,8 +63,8 @@ defmodule WebApi.Handler do
 
   @spec history_amount(String.t | integer) :: integer
   defp history_amount(input) when is_binary(input), do: history_amount Integer.parse input
-  defp history_amount(input) when is_number(input) and input > 10, do: input
-  defp history_amount(_), do: 10
+  defp history_amount(input) when is_number(input), do: input
+  defp history_amount(_), do: amount_history_load
 
 
   def route path, args, req, state do

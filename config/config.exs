@@ -9,6 +9,7 @@ config :fs, :path, mix_home <> "/Pictures/Screenshots"
 config :fs, :events_helper, to_char_list "/usr/local/bin/mac_listener"
 config :mnesia, :dir, (to_char_list mix_home <> "/Library/Small/" <> mix_env)
 
+config :small, :amount_history_load, 16
 config :small, :webapi_port, 8000
 config :small, :webapi_dev_port, 8001
 config :small, :webapi_test_port, 8002
