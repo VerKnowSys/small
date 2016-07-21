@@ -1,7 +1,7 @@
 use Mix.Config
 
-mix_env = System.get_env("MIX_ENV")
-mix_home = System.get_env("HOME")
+mix_env = System.get_env("MIX_ENV") || "dev"
+mix_home = System.get_env("HOME") || "/tmp"
 
 # path to be watched for file events:
 config :fs, :path, mix_home <> "/Pictures/Screenshots"
