@@ -13,7 +13,7 @@ defmodule SmallApplication do
 
 
   def launch_periodic_dump do
-    info "Calling for aMnesia database dump!"
+    notice "Initializing periodic dumper"
     Timer.apply_interval dump_interval, DB, :dump_mnesia, []
   end
 
@@ -24,23 +24,23 @@ defmodule SmallApplication do
     notification content, :start
     case SyncSupervisor.start_link do
       {:ok, pid} ->
-        notice "Initializing Mnesia backend"
+        notice "Initializing Mnesia backend and backing up current db state.."
         DB.init_and_start
+        DB.dump_mnesia "current"
 
-        notice "Invoking periodic dumper.."
-        case launch_periodic_dump do
-          {:ok, pid} ->
-            debug "Periodic dump spawned: #{inspect pid}"
-
-          {:error, error} ->
-            error "Periodic dump spawn failed with error: #{inspect error}"
-        end
-
-        notice "SyncSupervisor started properly with pid: #{inspect pid}"
         if config[:open_history_on_start] do
           debug "Open on start enabled"
           notice "Automatically opening http dashboard: http://localhost:#{webapi_port} in default browser."
           System.cmd "open", ["http://localhost:#{webapi_port}"]
+        end
+
+        case launch_periodic_dump do
+          {:ok, pd_pid} ->
+            debug "Periodic dump spawned in background (triggered each #{dump_interval/360} hours)"
+            notice "SyncSupervisor started properly with pid: #{inspect pid}"
+
+          {:error, error} ->
+            error "Periodic dump spawn failed with error: #{inspect error}"
         end
 
       {:error, err} ->
