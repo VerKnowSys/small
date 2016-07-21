@@ -18,7 +18,7 @@ defmodule SmallApplication do
   end
 
 
-  def main _ do
+  def main param do
     content = "Launching SmallApplication v#{version}"
     notice content
     notification content, :start
@@ -47,7 +47,12 @@ defmodule SmallApplication do
         critical "SyncSupervisor error: #{inspect err}"
     end
 
-    Timer.sleep :infinity
+    if param == "stay" do
+      warning "Eternal watch skipped on demand."
+    else
+      notice "Starting an eternal watch.."
+      Timer.sleep :infinity
+    end
     {:ok, self}
   end
 
