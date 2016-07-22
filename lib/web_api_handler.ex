@@ -57,7 +57,7 @@ defmodule WebApi.Handler do
           links_list = links |> (String.split " ")
           "<article id=\"#{uuid}\" class=\"text-center\">" <> (extract_links ts, links_list, file) <> "</article>"
         end)
-        |> (Enum.join " ")) <> "</div><footer>Released under BSD license in 2015 by <a href=\"http://verknowsys.com/\">Versatile Knowledge Systems</a>.</footer></body></html>", req
+        |> (Enum.join " ")) <> "</div><footer><pre class=\"count\">Sync eM ALL - version: #{version} - © 2015-2016 - Daniel (@dmilith) Dettlaff</pre></footer></body></html>", req
     {:ok, req, state}
   end
 
