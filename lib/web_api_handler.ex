@@ -1,6 +1,7 @@
 defmodule WebApi.Handler do
   require Lager
   import Lager
+  import Cfg
 
   @moduledoc """
   Provides handler for cowboy
@@ -69,13 +70,24 @@ defmodule WebApi.Handler do
 
   def route path, args, req, state do
     history = DB.get_history
-    debug "Request details: #{inspect req}"
+    debug "PATH: #{inspect path}\nARGS: #{inspect args}\nREQ: #{inspect req}\nSTATE: #{inspect state}, HISTORY: #{inspect history}"
+
     case path do
       "/" ->
+        debug "Loading history of #{history_amount args} elements (default)"
         history |> (Enum.take history_amount args) |> (outer_route req, state)
 
-      "/all" ->
-        history |> (outer_route req, state)
+      _ ->
+        amount = path |> String.replace_leading "/", ""
+        case Integer.parse amount do
+          :error ->
+            notice "#{amount} - is not a number! Loading whole history.."
+            history |> (outer_route req, state)
+
+          {amount, _} ->
+            notice "Loading history of #{amount} elements."
+            history |> (Enum.take history_amount amount) |> (outer_route req, state)
+        end
     end
   end
 
