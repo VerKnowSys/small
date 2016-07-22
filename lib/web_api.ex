@@ -18,8 +18,7 @@ defmodule WebApi do
     [
       {:_,
         [
-          {"/", WebApi.Handler, []},
-          {"/all", WebApi.Handler, []}
+          {:_, WebApi.Handler, []},
         ]
       }
     ]
