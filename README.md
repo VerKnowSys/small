@@ -1,12 +1,12 @@
-small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
+small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor/ replacement.
 =========
 
 ## REQUIREMENTS:
 
-* OSX 10.x (required)
-* Erlang OTP 18.x (required)
-* Elixir 1.2.x (required)
-* Sofin 0.96.x (optional)
+* OSX 10.x (not really required)
+* Erlang OTP 18.x-19.x (required)
+* Elixir 1.3.x (required)
+* Sofin 0.90-1.0.x (optional)
 * Zsh 5.x (optional)
 * Tmux 1.x (optional)
 
@@ -18,12 +18,13 @@ small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor.
 
 ## FEATURES:
 
-* Supervised "Let it crash" architecture
+* Supervised "Let it crash" architecture with basic self healing.
 * SSH Public Key authentication only (with encrypted keys support)
-* Stream file of any size to remote through SFTP (SSH)
+* Stream file of any size to remote through SFTP (SSH) channels
 * Persistent Queue and History (mnesia disk only backend by default)
-* Basic Web History (localhost:8000)
-* Asynchronous (when possible)
+* Support for text database dumping (erl tuple format) with auto dump each 6 hours (by default)
+* Basic Web History (localhost:8000) with ability to specify custom number of elements to show (localhost:8000/123)
+* Asynchronous by design (whenever possible)
 * Remote management through Elixir/ Erlang console. By default Small runs as "smallENV" - where ENV is one of modes: test, dev, prod (`epmd -names` to see available applications)
 
 
