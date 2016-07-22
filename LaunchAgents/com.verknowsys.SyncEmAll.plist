@@ -13,7 +13,7 @@
 	<array>
 		<string>/Software/Zsh/exports/zsh</string>
 		<string>-c</string>
-		<string>/Projects/small/bin/launcher</string>
+		<string>/Projects/Small/bin/launcher</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
