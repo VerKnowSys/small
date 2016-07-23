@@ -5,6 +5,14 @@ defmodule Cfg do
   alias :lager, as: LagerBackend
 
 
+  defp data_dir_base do
+    case :os.type() do
+      {:unix, :darwin} -> "/Library/Small/"
+      {:unix, _}       -> "/.small/"
+    end
+  end
+
+
   defp app_env do
     case System.get_env "MIX_ENV" do
       "" ->
@@ -14,8 +22,8 @@ defmodule Cfg do
     end
   end
   def env, do: app_env
-  def project_dir, do: System.get_env("HOME") <> "/Library/Small/" <> app_env
-  def mnesia_dumps_dir, do: System.get_env("HOME") <> "/Library/Small/.mnesia-dumps-#{env}/"
+  def project_dir, do: System.get_env("HOME") <> data_dir_base <> env
+  def mnesia_dumps_dir, do: System.get_env("HOME") <> data_dir_base <> ".mnesia-dumps-#{env}/"
 
 
   @doc """
