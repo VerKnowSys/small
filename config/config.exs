@@ -7,7 +7,12 @@ mix_home = System.get_env("HOME") || "/tmp"
 config :fs, :path, mix_home <> "/Pictures/Screenshots"
 # absolute path to events listener executable
 config :fs, :events_helper, to_char_list "/usr/local/bin/mac_listener"
-config :mnesia, :dir, (to_char_list mix_home <> "/Library/Small/" <> mix_env)
+config :mnesia, :dir, (to_char_list mix_home <> (
+  case :os.type() do
+    {:unix, :darwin} -> "/Library/Small/"
+    {:unix, _}       -> "/.small/"
+  end
+) <> mix_env)
 
 config :small, :amount_history_load, 16
 config :small, :webapi_port, 8000
