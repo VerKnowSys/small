@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. bin/loader
+. bin/load_phantom
+
+if [ -z "${1}" ]; then
+    eval "mix do compile, test"
+else
+    res="$(find ./test/ -iname "${1}*.exs" 2>/dev/null)"
+    if [ -n "${res}" ]; then
+        eval "mix do test ${res}"
+    else
+        eval "mix do test ${*}"
+    fi
+fi
