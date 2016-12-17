@@ -1,9 +1,11 @@
 #!/bin/sh
 
-MIX_ENV="$1"
-if [ -z "${MIX_ENV}" ]; then
-    MIX_ENV=dev
-fi
-export MIX_ENV
+. bin/loader
 
-iex --sname "small${MIX_ENV}" --name "small${MIX_ENV}" -S mix
+
+eval "mix compile" && \
+iex \
+    --name "Small-${MIX_ENV}-${UUID}" \
+    --sname "Small-${MIX_ENV}-${UUID}" \
+    --cookie "Small-${MIX_ENV}" \
+    -S mix

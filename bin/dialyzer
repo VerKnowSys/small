@@ -1,9 +1,7 @@
 #!/bin/sh
 
-MIX_ENV="$1"
-if [ -z "${MIX_ENV}" ]; then
-    MIX_ENV=dev
-fi
-export MIX_ENV
+. bin/loader
 
-mix do compile, dialyzer | perl -p0e 's/.*?Proceeding with analysis...//s' | perl -p0e 's/Unknown functions:.*//s'
+eval "mix do compile, dialyzer" | \
+    perl -p0e 's/.*?Proceeding with analysis...//s' | \
+    perl -p0e 's/Unknown functions:.*//s'

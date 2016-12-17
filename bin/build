@@ -1,14 +1,18 @@
 #!/bin/sh
 
-MIX_ENV="$1"
-if [ -z "${MIX_ENV}" ]; then
-    MIX_ENV=dev
-fi
-export MIX_ENV
 
-if [ "${1}" = "q" ]; then
-    MIX_ENV=dev
-    mix do compile
-else
-    mix do deps.compile, compile, escript.build
+. bin/loader
+
+eval "mix do compile, escript.build"
+
+if [ ! -d "doc" ] && [ "${MIX_ENV}" = "prod" ]; then
+    printf "%s\n" "Building doc/"
+    eval "mix docs"
 fi
+
+if [ "${MIX_ENV}" != "prod" ]; then
+    set +e
+    eval "mix credo"
+    exit
+fi
+
