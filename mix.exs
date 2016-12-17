@@ -52,7 +52,7 @@ defmodule Small.Mixfile do
 
   def applications do
     dev = [:exsync, :credo]
-    prod = [:tzdata, :httpotion, :cowboy, :timex, :amnesia, :exlager, :uuid, :fs, :logger]
+    prod = [:logger, :exlager, :ex_doc, :tzdata, :httpotion, :cowboy, :timex, :amnesia, :uuid, :fs]
     case Mix.env do
       :prod ->
         prod
@@ -82,7 +82,8 @@ defmodule Small.Mixfile do
       { :timex, "1.0.2" },
       { :cowboy, "1.0.4" },
       { :httpotion, github: "myfreeweb/httpotion" },
-      { :credo, "0.4.5", only: :dev }
+      { :credo, "0.4.5", only: :dev },
+      { :ex_doc, "~> 0.14" },
     ]
   end
 end
