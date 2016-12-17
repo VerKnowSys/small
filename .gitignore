@@ -6,3 +6,4 @@ mix.lock
 small
 log
 Mnesia*
+/doc
