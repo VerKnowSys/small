@@ -10,9 +10,9 @@ if [ ! -d "doc" ] && [ "${MIX_ENV}" = "prod" ]; then
     eval "mix docs"
 fi
 
-if [ "${MIX_ENV}" != "prod" ]; then
-    set +e
-    eval "mix credo"
-    exit
-fi
+# if [ "${MIX_ENV}" != "prod" ]; then
+#     set +e
+#     eval "mix credo"
+#     exit
+# fi
 
