@@ -75,7 +75,7 @@ defmodule Small.Mixfile do
     [
       { :uuid, "1.1.1" },
       { :tzdata, "0.1.8", override: :true },
-      { :fs, github: "VerKnowSys/fs" },
+      { :fs, github: "synrc/fs", tag: "2.12.0", override: true },
       { :exsync, github: "VerKnowSys/exsync", only: :dev },
       { :exlager, github: "VerKnowSys/exlager" },
       { :amnesia, github: "meh/amnesia" },
