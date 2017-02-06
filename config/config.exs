@@ -32,7 +32,7 @@ config :small, :config,
       username: "dmilith",
       hostname: "verknowsys.com",
       ssh_port: 60022,
-      address: "http://ół.pl/",
+      address: "http://s.verknowsys.com/",
       remote_path: "/home/dmilith/Web/Public/Sshots/",
       ssh_key_pass: "",
       notifications: [
