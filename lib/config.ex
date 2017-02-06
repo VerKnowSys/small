@@ -15,7 +15,7 @@ defmodule Cfg do
 
   defp app_env do
     case System.get_env "MIX_ENV" do
-      "" ->
+      nil ->
         "dev"
       a ->
         a
