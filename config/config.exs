@@ -55,10 +55,10 @@ config :small, :config,
     ],
     "michal" => [
       username: "michal",
-      hostname: "phoebe.tallica.pl",
+      hostname: "luna.tallica.pl",
       ssh_port: 60022,
       address: "http://s.tallica.pl/",
-      remote_path: "/Users/michal/Screenshots/",
+      remote_path: "/home/michal/Screenshots/",
       ssh_key_pass: "",
       notifications: [start: true, clipboard: true, upload: true, error: true],
       sounds: [
