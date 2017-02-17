@@ -117,14 +117,14 @@ defmodule Cfg do
   """
   def webapi_port do
     case app_env do
-      "prod" ->
-        Application.get_env :small, :webapi_port
+      "dev" ->
+        Application.get_env :small, :webapi_dev_port
 
       "test" ->
         Application.get_env :small, :webapi_test_port
 
       _ ->
-        Application.get_env :small, :webapi_dev_port
+        Application.get_env :small, :webapi_port
 
     end
   end
