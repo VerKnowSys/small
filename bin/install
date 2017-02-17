@@ -1,12 +1,6 @@
 #!/bin/sh
 
-MIX_ENV="$1"
-if [ -z "${MIX_ENV}" ]; then
-    MIX_ENV=dev
-fi
-export MIX_ENV
-
 LOCAL_DEST="/usr/local/bin"
-for entry in small bin/mac_listener bin/reattach-to-user-namespace; do
+for entry in small bin/mac_listener; do
     install -v ${entry} ${LOCAL_DEST}
 done
