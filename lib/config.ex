@@ -13,12 +13,12 @@ defmodule Cfg do
   defp app_env do
     case System.get_env "MIX_ENV" do
       nil ->
-        "dev"
+        "prod"
       a ->
         a
     end
   end
-  def env, do: app_env
+  def env, do: app_env()
   def project_dir, do: System.get_env("HOME") <> data_dir_base <> env
   def mnesia_dumps_dir, do: System.get_env("HOME") <> data_dir_base <> ".mnesia-dumps-#{env}/"
 
@@ -116,7 +116,7 @@ defmodule Cfg do
   Gets webapi port for current mode
   """
   def webapi_port do
-    case app_env do
+    case app_env() do
       "dev" ->
         Application.get_env :small, :webapi_dev_port
 
