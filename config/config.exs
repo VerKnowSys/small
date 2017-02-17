@@ -3,6 +3,9 @@ use Mix.Config
 mix_env = System.get_env("MIX_ENV") || "dev"
 mix_home = System.get_env("HOME") || "/tmp"
 
+# Logger
+config :logger, :console, format: "$time $message\n"
+
 # path to be watched for file events:
 config :fs, :path, mix_home <> "/Pictures/Screenshots"
 # absolute path to events listener executable
@@ -76,28 +79,28 @@ config :small, :config,
   }
 
 
-config :exlager, level: :debug
-config :lager,
-  [
-    colored: true,
-    colors: [
-      {:debug,     "\e[1;36m" },
-      {:info,      "\e[0;38m" },
-      {:notice,    "\e[1;37m" },
-      {:warning,   "\e[1;33m" },
-      {:error,     "\e[1;31m" },
-      {:critical,  "\e[1;35m" },
-      {:alert,     "\e[1;44m" },
-      {:emergency, "\e[1;41m" }
-    ],
-    # crash_log: "#{project_dir}/log/crash.log",
-    # error_logger_hwm: 30, # max 30 messages/s
-    # handlers: [
-    #   lager_console_backend: :notice,
-    #   lager_file_backend: [
-    #     file: "error.log",
-    #     level: :error,
-    #   ]
-    # ],
-  ]
+# config :exlager, level: :debug
+# config :lager,
+#   [
+#     colored: true,
+#     colors: [
+#       {:debug,     "\e[1;36m" },
+#       {:info,      "\e[0;38m" },
+#       {:notice,    "\e[1;37m" },
+#       {:warning,   "\e[1;33m" },
+#       {:error,     "\e[1;31m" },
+#       {:critical,  "\e[1;35m" },
+#       {:alert,     "\e[1;44m" },
+#       {:emergency, "\e[1;41m" }
+#     ],
+#     # crash_log: "#{project_dir}/log/crash.log",
+#     # error_logger_hwm: 30, # max 30 messages/s
+#     # handlers: [
+#     #   lager_console_backend: :notice,
+#     #   lager_file_backend: [
+#     #     file: "error.log",
+#     #     level: :error,
+#     #   ]
+#     # ],
+#   ]
 
