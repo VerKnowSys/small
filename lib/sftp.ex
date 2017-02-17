@@ -5,6 +5,9 @@ defmodule Sftp do
   import Cfg
   import Notification
 
+  alias Database.Queue
+  alias Database.History
+
   alias :ssh, as: SSH
   alias :ssh_sftp, as: SFTP
   alias :timer, as: Timer
@@ -93,7 +96,7 @@ defmodule Sftp do
 
 
   def handle_cast :add, _ do
-    queue = Queue.get_all
+    queue = DB.get_queue
     unless Enum.empty? queue do
       build_clipboard
       queue
@@ -129,14 +132,14 @@ defmodule Sftp do
 
   defp process_element element do
     case element do
-      %Database.Queue{user_id: _, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
-        a_queue = %Database.Queue{user_id: DB.user.id, local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
+      %Queue{local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid} ->
+        a_queue = %Queue{local_file: local_file, remote_file: remote_dest_file, uuid: random_uuid}
         if (File.exists? local_file) and (File.regular? local_file) and (not Regex.match? ~r/.*-[a-zA-Z]{4,}$/, local_file) do
           local_file |> (send_file remote_dest_file <> Utils.file_extension local_file)
-          a_queue |> add_to_history |> Queue.remove
+          a_queue |> add_to_history |> DB.remove_from_queue
         else
-          debug "Local file not found or not a regular file: #{local_file}. Skipping."
-          a_queue |> Queue.remove
+          Logger.debug "Local file not found or not a regular file: #{local_file}. Skipping."
+          a_queue |> DB.remove_from_queue
         end
 
       :empty ->
@@ -156,7 +159,7 @@ defmodule Sftp do
   """
   def add_to_history queue do
     to_history = config[:address] <> queue.uuid <> Utils.file_extension queue.local_file
-    a_history = %Database.History{user_id: DB.user.id, content: to_history, timestamp: Timestamp.now, file: queue.local_file, uuid: (UUID.uuid4 :hex)}
+    a_history = %History{content: to_history, timestamp: Timestamp.now_unix(), file: queue.local_file, uuid: (UUID.uuid4 :hex)}
     if (DB.get_history
       |> (Enum.filter fn element ->
         String.contains? element.content, to_history
@@ -172,7 +175,7 @@ defmodule Sftp do
   def create_queue_string(collection) when is_list(collection) do
     (Enum.map collection, fn an_elem ->
       case an_elem do
-        %Database.Queue{user_id: _, local_file: file_path, remote_file: _, uuid: uuid} ->
+        %Queue{local_file: file_path, remote_file: _, uuid: uuid} ->
           config[:address] <> uuid <> Utils.file_extension file_path
 
         _ -> # :empty
@@ -189,13 +192,13 @@ defmodule Sftp do
   """
   def build_clipboard do
     clip_time = Timer.tc fn ->
-      Queue.get_all
+      DB.get_queue
         |> create_queue_string
         |> Clipboard.put
     end
     case clip_time do
       {elapsed, _} ->
-        debug "Clipboard routine done in: #{elapsed/1000}ms"
+        Logger.debug "Clipboard routine done in: #{elapsed/1000}ms"
         :ok
     end
   end

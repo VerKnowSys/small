@@ -31,29 +31,4 @@ defmodule Queue do
     end
   end
 
-
-  @doc """
-  Gets state of all elements.
-  """
-  def get_all do
-    DB.get_queue
-  end
-
-
-  @doc """
-  Add a record to current state (only if record not already on list)
-  """
-  def put record do
-    info "Putting record to queue: #{inspect record}"
-    DB.add_to_queue record
-  end
-
-
-  @doc """
-  Removes a record from current state.
-  """
-  def remove record do
-    info "Removing record from queue: #{inspect record}"
-    DB.remove_from_queue record
-  end
 end
