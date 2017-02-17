@@ -1,6 +1,5 @@
 defmodule Notification do
-  require Lager
-  import Lager
+  require Logger
   import Cfg
 
 
@@ -47,7 +46,7 @@ defmodule Notification do
   """
   def notification message, type do
     if config[:notifications][type] do
-      debug "Notification of type #{inspect type} with result: #{inspect config[:notifications][type]}"
+      Logger.debug "Notification of type #{inspect type} with result: #{inspect config[:notifications][type]}"
       if config[:sounds][type] do
         Notification.send message, config[:sounds][(String.to_atom (Atom.to_string type) <> "_sound")]
       else

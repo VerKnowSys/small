@@ -1,7 +1,6 @@
 defmodule Queue do
   use GenServer
-  require Lager
-  import Lager
+  require Logger
 
   @name __MODULE__
 
@@ -13,7 +12,7 @@ defmodule Queue do
 
 
   def init :ok do
-    notice "Launching Persistent Queue"
+    Logger.info "Launching Persistent Queue"
     {:ok, self}
   end
 

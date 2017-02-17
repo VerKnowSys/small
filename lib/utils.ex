@@ -1,6 +1,5 @@
 defmodule Utils do
-  require Lager
-  import Lager
+  require Logger
   import Cfg
   import Notification
 
@@ -22,7 +21,7 @@ defmodule Utils do
         end
 
       {:error, err} ->
-        error "Error: #{inspect err}."
+        Logger.error "Error: #{inspect err}."
         0
     end
   end
@@ -52,7 +51,7 @@ defmodule Utils do
   def remote_file_size remote_handle do
     case remote_handle do
       {:ok, remote_file_info} ->
-        debug "Remote file info insight: #{inspect remote_file_info}"
+        Logger.debug "Remote file info insight: #{inspect remote_file_info}"
         case remote_file_info do
           {:file_info, size, :regular, _, _, _, _, _, _, _, _, _, _, _} ->
             size
@@ -62,7 +61,7 @@ defmodule Utils do
         end
 
       {:error, err} ->
-        debug "No remote file. Error: #{inspect err}"
+        Logger.debug "No remote file. Error: #{inspect err}"
         0
       end
   end
@@ -70,9 +69,9 @@ defmodule Utils do
 
   def stream_file_to_remote channel, handle, local_file, local_size do
     try do
-      notice "Streaming file of size: #{size_kib local_size}KiB to remote server.."
+      Logger.info "Streaming file of size: #{size_kib local_size}KiB to remote server.."
       chunks = div local_size, sftp_buffer_size
-      debug "Chunks: #{chunks}"
+      Logger.debug "Chunks: #{chunks}"
       (File.stream! local_file, [:read], sftp_buffer_size)
         |> Enum.with_index
         |> (Enum.each fn {chunk, index} ->

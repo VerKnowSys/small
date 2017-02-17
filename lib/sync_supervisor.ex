@@ -2,8 +2,7 @@ defmodule SyncSupervisor do
   use Supervisor
 
   import Cfg
-  require Lager
-  import Lager
+  require Logger
 
 
   def start :normal, [] do
@@ -12,15 +11,15 @@ defmodule SyncSupervisor do
 
 
   def start_link do
-    notice "Setting initial log level"
+    Logger.info "Setting initial log level"
     log_level get_initial_log_level
-    notice "Performing configuration check"
+    Logger.info "Performing configuration check"
     config_check
     File.mkdir_p Cfg.project_dir
     File.mkdir_p Cfg.mnesia_dumps_dir
-    notice "Setting default Mnesia directory to #{Cfg.project_dir}"
+    Logger.info "Setting default Mnesia directory to #{Cfg.project_dir}"
     Cfg.set_default_mnesia_dir Cfg.project_dir
-    notice "Setting default project directory to #{Cfg.project_dir <> "/.."}"
+    Logger.info "Setting default project directory to #{Cfg.project_dir <> "/.."}"
     File.cd Cfg.project_dir <> "/.."
 
     Supervisor.start_link __MODULE__, [], [name: __MODULE__]
@@ -29,7 +28,7 @@ defmodule SyncSupervisor do
 
   # supervisor callback
   def init params do
-    debug "Supervisor params: #{inspect params}"
+    Logger.debug "Supervisor params: #{inspect params}"
     children = [
       (worker Queue, [], [restart: :permanent]),
       (worker WebApi, [], [restart: :permanent]),

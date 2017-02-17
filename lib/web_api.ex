@@ -1,6 +1,5 @@
 defmodule WebApi do
-  require Lager
-  import Lager
+  require Logger
   import Cfg
   use GenServer
 
@@ -9,7 +8,7 @@ defmodule WebApi do
 
   ## Client API
   def start_link opts \\ [] do
-    notice "Launching Small WebApi"
+    Logger.info "Launching Small WebApi"
     GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
@@ -29,9 +28,9 @@ defmodule WebApi do
     # Application.ensure_started :crypto
     case Application.ensure_started :cowboy do
       {:error, cause} ->
-        error "An error occured when ensuring started Cowboy app. Cause: #{inspect cause}"
+        Logger.error "An error occured when ensuring started Cowboy app. Cause: #{inspect cause}"
       :ok ->
-        debug "Ensuring Cowboy started"
+        Logger.debug "Ensuring Cowboy started"
     end
 
     dispatch = :cowboy_router.compile routes

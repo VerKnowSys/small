@@ -1,6 +1,5 @@
 defmodule WebApi.Handler do
-  require Lager
-  import Lager
+  require Logger
   import Cfg
 
   @moduledoc """
@@ -53,7 +52,7 @@ defmodule WebApi.Handler do
     {:ok, req} = :cowboy_req.reply 200, [],
       "<html>" <> head <> "<body><pre class=\"count\"><span>small</span> history of: #{size}</pre></div><div>" <>
       (collection
-        |> (Enum.map fn %Database.History{user_id: _, content: links, timestamp: ts, file: file, uuid: uuid} ->
+        |> (Enum.map fn %Database.History{content: links, timestamp: ts, file: file, uuid: uuid} ->
           links_list = links |> (String.split " ")
           "<article id=\"#{uuid}\" class=\"text-center\">" <> (extract_links ts, links_list, file) <> "</article>"
         end)
@@ -70,22 +69,22 @@ defmodule WebApi.Handler do
 
   def route path, args, req, state do
     history = DB.get_history
-    debug "PATH: #{inspect path}\nARGS: #{inspect args}\nREQ: #{inspect req}\nSTATE: #{inspect state}, HISTORY: #{inspect history}"
+    Logger.debug "PATH: #{inspect path}\nARGS: #{inspect args}\nREQ: #{inspect req}\nSTATE: #{inspect state}, HISTORY: #{inspect history}"
 
     case path do
       "/" ->
-        debug "Loading history of #{history_amount args} elements (default)"
+        Logger.debug "Loading history of #{history_amount args} elements (default)"
         history |> (Enum.take history_amount args) |> (outer_route req, state)
 
       _ ->
         amount = path |> String.replace_leading "/", ""
         case Integer.parse amount do
           :error ->
-            notice "#{amount} - is not a number! Loading whole history.."
+            Logger.info "#{amount} - is not a number! Loading whole history.."
             history |> (outer_route req, state)
 
           {amount, _} ->
-            notice "Loading history of #{amount} elements."
+            Logger.info "Loading history of #{amount} elements."
             history |> (Enum.take history_amount amount) |> (outer_route req, state)
         end
     end

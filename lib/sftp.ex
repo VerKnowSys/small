@@ -1,7 +1,6 @@
 defmodule Sftp do
   use GenServer
-  require Lager
-  import Lager
+  require Logger
   import Cfg
   import Notification
 
@@ -30,21 +29,21 @@ defmodule Sftp do
 
 
   def launch_interval_check do
-    info "Starting queue check with check interval: #{interval}ms"
+    Logger.info "Starting queue check with check interval: #{interval}ms"
     Timer.apply_interval interval, Sftp, :add, []
   end
 
 
   ## Callbacks (Server API)
   def init :ok do
-    notice "Starting Sftp module"
+    Logger.info "Starting Sftp module"
     SSH.start
     case launch_interval_check do
       {:ok, pid} ->
-        debug "Internal check spawned: #{inspect pid}"
+        Logger.debug "Internal check spawned: #{inspect pid}"
 
       {:error, error} ->
-        error "Internal check spawn failed with error: #{inspect error}"
+        Logger.error "Internal check spawn failed with error: #{inspect error}"
     end
     {:ok, self}
   end
@@ -55,21 +54,21 @@ defmodule Sftp do
       {:ok, handle} ->
         local_size = Utils.local_file_size local_file
         remote_size = Utils.remote_file_size remote_handle
-        debug "Local file: #{local_file} (#{local_size}); Remote file: #{remote_dest_file} (#{remote_size})"
+        Logger.debug "Local file: #{local_file} (#{local_size}); Remote file: #{remote_dest_file} (#{remote_size})"
         cond do
           remote_size <= 0 ->
-            info "Found an empty remote file. Uploading file to remote"
+            Logger.info "Found an empty remote file. Uploading file to remote"
             Utils.stream_file_to_remote channel, handle, local_file, local_size
 
           remote_size != local_size ->
-            info "Local and remote files are different. Uploading file to remote"
+            Logger.info "Local and remote files are different. Uploading file to remote"
             Utils.stream_file_to_remote channel, handle, local_file, local_size
 
           remote_size == local_size ->
-            notice "Found file of same size already uploaded. Skipping"
+            Logger.info "Found file of same size already uploaded. Skipping"
 
         end
-        debug "Closing file handle, channel and ssh connection"
+        Logger.debug "Closing file handle, channel and ssh connection"
         SFTP.close channel, handle
         SFTP.stop_channel channel
         SSH.close connection
@@ -81,12 +80,12 @@ defmodule Sftp do
 
 
   defp process_ssh_connection connection, local_file, remote_dest_file do
-    debug "Starting ssh channel for connection: #{inspect connection} for local file: #{local_file}"
+    Logger.debug "Starting ssh channel for connection: #{inspect connection} for local file: #{local_file}"
     case SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout] do
       {:ok, channel} ->
         remote_dest_file = remote_dest_file |> String.to_char_list
         remote_handle = SFTP.read_file_info channel, remote_dest_file
-        debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
+        Logger.debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
         connection |> (sftp_open_and_process_upload local_file, remote_handle, remote_dest_file, channel)
 
       {:error, err} ->
@@ -113,17 +112,17 @@ defmodule Sftp do
       ssh_opts, ssh_connection_timeout) do
 
       {:ok, connection} ->
-        debug "Processing connection with pid: #{inspect connection}"
+        Logger.debug "Processing connection with pid: #{inspect connection}"
         time = Timer.tc fn ->
           connection |> (process_ssh_connection local_file, remote_dest_file)
         end
         case time do
           {elapsed, _} ->
-            debug "process_ssh_connection finished in: #{elapsed/1000}ms"
+            Logger.debug "process_ssh_connection finished in: #{elapsed/1000}ms"
         end
 
       {:error, cause} ->
-        error "Error caused by: #{inspect cause}"
+        Logger.error "Error caused by: #{inspect cause}"
     end
 
     {:noreply, self}
@@ -143,7 +142,7 @@ defmodule Sftp do
         end
 
       :empty ->
-        notice "Empty queue. Ignoring request"
+        Logger.info "Empty queue. Ignoring request"
     end
   end
 

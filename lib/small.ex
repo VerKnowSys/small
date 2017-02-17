@@ -1,6 +1,5 @@
 defmodule Small do
-  require Lager
-  import Lager
+  require Logger
   use GenServer
   import Cfg
 
@@ -9,32 +8,32 @@ defmodule Small do
 
   ## Client API
   def start_link opts \\ [] do
-    notice "Launching Small Filesystem Handler"
+    Logger.info "Launching Small Filesystem Handler"
     GenServer.start_link __MODULE__, :ok, [name: __MODULE__] ++ opts
   end
 
 
   def init :ok do
-    FS.subscribe
-    notice "Filesystem events watcher initialized"
+    FS.subscribe()
+    Logger.info "Filesystem events watcher initialized"
     {:ok, self}
   end
 
 
   def start :normal, [] do
-    start_link
+    start_link()
   end
 
 
   def process_event event, file_path do
     if File.exists? file_path do
-      debug "Handling event: #{inspect event} for path #{file_path}"
+      Logger.debug "Handling event: #{inspect event} for path #{file_path}"
       random_uuid = UUID.uuid3 nil, file_path, :hex
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-      Queue.put %Database.Queue{user_id: DB.user.id, local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
+      Queue.put %Database.Queue{local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
       Sftp.add
     else
-      debug "File doesn't exists: #{file_path} after event #{inspect event}. Skipped process_event"
+      Logger.debug "File doesn't exists: #{file_path} after event #{inspect event}. Skipped process_event"
     end
   end
 
@@ -42,9 +41,9 @@ defmodule Small do
   def handle_info {_pid, {:fs, :file_event}, {path, event}}, state do
     path = path |> IO.iodata_to_binary
     if Regex.match? ~r/.*-[a-zA-Z]{4,}$/, path do # handle temporary/ uwanted files
-      debug "#{path} matches temp file name! Skipping"
+      Logger.debug "#{path} matches temp file name! Skipping"
     else
-      debug "Handling event for path: #{path}"
+      Logger.debug "Handling event for path: #{path}"
       process_event event, path
     end
     {:noreply, state}
