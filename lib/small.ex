@@ -30,7 +30,7 @@ defmodule Small do
       Logger.debug "Handling event: #{inspect event} for path #{file_path}"
       random_uuid = UUID.uuid3 nil, file_path, :hex
       remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
-      Queue.put %Database.Queue{local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
+      DB.add_to_queue %Database.Queue{local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
       Sftp.add
     else
       Logger.debug "File doesn't exists: #{file_path} after event #{inspect event}. Skipped process_event"
