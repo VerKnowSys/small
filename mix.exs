@@ -4,12 +4,12 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.11.3",
+      version: "0.12.0",
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
-      deps: deps,
-      escript: escript,
+      deps: deps(),
+      escript: escript(),
       dialyzer: [
         paths: [
           "_build/dev/lib/small/ebin",
@@ -18,24 +18,14 @@ defmodule Small.Mixfile do
     ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type `mix help compile.app` for more information
+
   def application do
-    [
-      applications: applications,
-      # mod: {SyncSupervisor, []}
-    ]
+    [extra_applications: [:logger, :uuid, :fs, :amnesia, :cowboy]]
   end
 
 
   defp mixenv do
     Atom.to_string Mix.env
-  end
-
-
-  def default_emu_args do
-    "-smp enable -sname small#{mixenv}"
   end
 
 
@@ -45,21 +35,22 @@ defmodule Small.Mixfile do
       embed_elixir: true,
       language: :elixir,
       force: true,
-      emu_args: default_emu_args
+      emu_args: "-smp enable -sname small#{mixenv()}",
+      comment: "ServeD",
     ]
   end
 
 
-  def applications do
-    dev = [:exsync, :credo]
-    prod = [:logger, :exlager, :ex_doc, :tzdata, :httpotion, :cowboy, :timex, :amnesia, :uuid, :fs]
-    case Mix.env do
-      :prod ->
-        prod
-      _ ->
-        dev ++ prod
-    end
-  end
+  # def applications do
+  #   dev = [:exsync, :credo]
+  #   prod = [:logger, :exlager, :ex_doc, :tzdata, :httpotion, :cowboy, :timex, :amnesia, :uuid, :fs]
+  #   case Mix.env do
+  #     :prod ->
+  #       prod
+  #     _ ->
+  #       dev ++ prod
+  #   end
+  # end
 
 
   # Dependencies can be Hex packages:
@@ -73,17 +64,19 @@ defmodule Small.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      { :uuid, "1.1.1" },
-      { :tzdata, "0.1.8", override: :true },
+      # { :exlager, github: "VerKnowSys/exlager" },
+      # { :httpotion, github: "myfreeweb/httpotion" },
+      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
+      # { :tzdata, "~> 0.5" }, # , override: :true
+      # { :timex, "~> 1.0" },
+
       { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
-      { :exsync, github: "VerKnowSys/exsync", only: :dev },
-      { :exlager, github: "VerKnowSys/exlager" },
-      { :amnesia, github: "meh/amnesia" },
-      { :timex, "1.0.2" },
-      { :cowboy, "1.0.4" },
-      { :httpotion, github: "myfreeweb/httpotion" },
-      { :credo, "0.4.5", only: :dev },
-      { :ex_doc, "~> 0.14" },
+      { :amnesia, github: "meh/amnesia", branch: "master" },
+
+      { :uuid, "~> 1.1" },
+      { :cowboy, "~> 1.0" },
+      { :credo, "~> 0.6", only: :dev },
+      { :ex_doc, "~> 0.14", only: :prod },
     ]
   end
 end
