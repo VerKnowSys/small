@@ -62,6 +62,17 @@ Below's an example of the configuration used by me:
 ]
 ```
 
+I also use it with Nginx configuration on my server:
+
+```nginx
+server {
+   listen 80;
+   server_name s.verknowsys.com;
+   root /home/dmilith/Web/Public/SyncFiles/;
+   autoindex off;
+}
+```
+
 
 ## USAGE:
 
