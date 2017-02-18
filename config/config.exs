@@ -28,54 +28,6 @@ config :small, :sftp_buffer_size, 131_072
 config :small, :fs_check_interval, 2_000
 config :small, :ssh_connection_timeout, 10_000
 config :small, :mnesia_autodump_interval, 21_600_000 # 6h
-config :small, :config,
-  %{
-    "dmilith" => [
-      username: "dmilith",
-      hostname: "verknowsys.com",
-      ssh_port: 60022,
-      address: "http://s.verknowsys.com/",
-      remote_path: "/home/dmilith/Web/Public/Sshots/",
-      ssh_key_pass: "",
-      notifications: [
-        start: true,
-        clipboard: true,
-        upload: true,
-        error: true
-      ],
-      sounds: [
-        start: false,
-        start_sound: "Glass",
-        clipboard: false,
-        clipboard_sound: "Tink",
-        upload: true,
-        upload_sound: "Hero",
-        error: true,
-        error_sound: "Sosumi"
-      ],
-      open_history_on_start: false
-    ],
-    "michal" => [
-      username: "michal",
-      hostname: "luna.tallica.pl",
-      ssh_port: 60022,
-      address: "http://s.tallica.pl/",
-      remote_path: "/home/michal/Screenshots/",
-      ssh_key_pass: "",
-      notifications: [start: true, clipboard: true, upload: true, error: true],
-      sounds: [
-        start: false,
-        start_sound: "Glass",
-        clipboard: false,
-        clipboard_sound: "Tink",
-        upload: true,
-        upload_sound: "Hero",
-        error: true,
-        error_sound: "Sosumi",
-      ],
-      open_history_on_start: true
-    ]
-  }
 
 
 # config :exlager, level: :debug
