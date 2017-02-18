@@ -1,11 +1,12 @@
-small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor/ replacement.
+small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor written in Elixir.
 =========
+
 
 ## REQUIREMENTS:
 
-* OSX 10.x (not really required)
-* Erlang OTP 18.x-19.x (required)
-* Elixir 1.4.x (required)
+* Erlang OTP 18+ (required)
+* Elixir 1.4+ (required)
+* macOS 10.10+ (not really required, but I don't use/test other workstation platforms. Also `bin/mac_listener` has to be replaced with some Linux equivalent like [inotify-tools](https://github.com/rvoicilas/inotify-tools/wiki). Feel free to add support for it if You like!)
 
 
 ## USED INTERNALY:
@@ -18,8 +19,8 @@ small - Sync 'eM ALL - [Syndir](https://github.com/VerKnowSys/Syndir) successor/
 * Supervised "Let it crash" architecture with basic self healing.
 * SSH Public Key authentication only (with encrypted keys support)
 * Stream file of any size to remote through SFTP (SSH) channels
-* Persistent Queue and History (mnesia disk only backend by default)
-* Support for text database dumping (erl tuple format) with auto dump each 6 hours (by default)
+* Persistent Queue and History (aMnesia disk only backend by default)
+* Support for text database dumping/ loading (erl tuple format) with auto dump each 6 hours (by default)
 * Basic Web History (localhost:8000) with ability to specify custom number of elements to show (localhost:8000/123)
 * Asynchronous by design (whenever possible)
 * Remote management through Elixir/ Erlang console. By default Small runs as "smallENV" - where ENV is one of modes: test, dev, prod (`epmd -names` to see available applications)
@@ -98,3 +99,9 @@ bin/console
 # there's /Projects/small directory hardcoded in this xml file.
 cp $(pwd)/LaunchAgents/com.verknowsys.SyncEmAll.plist ~/Library/LaunchAgents/
 `
+
+
+## ROADMAP (Work In Progress):
+
+1. Distributed History, including multi-workstation sync.
+2. Decentralised/ Distributed configuration.
