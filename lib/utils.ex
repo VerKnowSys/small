@@ -93,4 +93,12 @@ defmodule Utils do
   end
 
 
+  @doc """
+  Read file from file position of open file handle up to 512KiB
+  """
+  def read_file open_file_handle do
+    String.strip IO.read open_file_handle, 512_000 # XXX: hardcoded
+  end
+
+
 end
