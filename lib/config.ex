@@ -142,8 +142,7 @@ defmodule Cfg do
     case File.open default_config_file(), [:utf8] do
       {:ok, file} ->
         a_conf_file_string = Utils.read_file file
-        {a_config, []} = Code.eval_string a_conf_file_string
-        Logger.debug "USER CONFIG: #{inspect a_config}"
+        {a_config, _} = Code.eval_string a_conf_file_string
         File.close file
         a_config
 
