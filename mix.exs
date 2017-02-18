@@ -66,13 +66,14 @@ defmodule Small.Mixfile do
     [
       # { :exlager, github: "VerKnowSys/exlager" },
       # { :httpotion, github: "myfreeweb/httpotion" },
-      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
       # { :tzdata, "~> 0.5" }, # , override: :true
       # { :timex, "~> 1.0" },
 
       { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
       { :amnesia, github: "meh/amnesia", branch: "master" },
+      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
 
+      { :exsync, "~> 0.1", only: :dev },
       { :uuid, "~> 1.1" },
       { :cowboy, "~> 1.0" },
       { :credo, "~> 0.6", only: :dev },
