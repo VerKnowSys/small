@@ -69,7 +69,7 @@ I also use it with Nginx configuration on my server:
 server {
    listen 80;
    server_name s.verknowsys.com;
-   root /home/dmilith/Web/Public/SyncFiles/;
+   root /home/dmilith/Web/Public/Sshots/;
    autoindex off;
 }
 ```
