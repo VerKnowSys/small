@@ -109,7 +109,7 @@ defmodule Sftp do
 
   def handle_cast {:send_file, local_file, remote_dest_file}, _ do
     case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
-      ssh_opts, ssh_connection_timeout) do
+      ssh_opts(), ssh_connection_timeout()) do
 
       {:ok, connection} ->
         Logger.debug "Processing connection with pid: #{inspect connection}"

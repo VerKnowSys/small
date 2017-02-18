@@ -18,6 +18,7 @@ defmodule SmallApplication do
 
 
   def main param do
+    Cfg.config_check()
     content = "Launching SmallApplication v#{version}"
     Logger.info content
     notification content, :start
