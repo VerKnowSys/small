@@ -189,12 +189,6 @@ defmodule Cfg do
 
 
   def log_level level \\ :debug do
-    env = System.get_env "MIX_ENV"
-    if env do
-      Logger.info "Changing log level to: #{level} for environment: #{env}"
-    else
-      Logger.info "Changing log level to: #{level}"
-    end
     Logger.configure [level: level]
     Logger.configure_backend :console, [level: level]
   end
@@ -203,14 +197,11 @@ defmodule Cfg do
   def get_initial_log_level do
     result = System.get_env "MIX_ENV"
     cond do
-      result == "dev" ->
+      result == "dev" || result == "" || result == nil ->
         :debug
 
-      result == nil ->
-        :info
-
       result == "prod" ->
-        :notice
+        :info
 
       result == "test" ->
         :warn
