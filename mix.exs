@@ -71,6 +71,7 @@ defmodule Small.Mixfile do
 
       { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
       { :amnesia, github: "meh/amnesia", branch: "master" },
+      { :exquisite, github: "VerKnowSys/exquisite", branch: "master", override: true },
       # { :exsync, github: "VerKnowSys/exsync", only: :dev },
 
       { :exsync, "~> 0.1", only: :dev },
