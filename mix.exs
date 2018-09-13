@@ -4,8 +4,8 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.12.1",
-      elixir: "~> 1.4",
+      version: "0.13.0",
+      elixir: "~> 1.7",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -69,15 +69,18 @@ defmodule Small.Mixfile do
       # { :tzdata, "~> 0.5" }, # , override: :true
       # { :timex, "~> 1.0" },
 
-      { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
-      { :amnesia, github: "meh/amnesia", branch: "master" },
-      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
-
-      { :exsync, "~> 0.1", only: :dev },
       { :uuid, "~> 1.1" },
       { :cowboy, "~> 1.0" },
+
+      { :amnesia, github: "meh/amnesia", branch: "master" },
+      { :exquisite, github: "meh/exquisite", branch: "master", override: true },
+      { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
+
       { :credo, "~> 0.6", only: :dev },
-      { :ex_doc, "~> 0.14", only: :prod },
+
+      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
+      # { :exsync, "~> 0.1", only: :dev },
+      # { :ex_doc, "~> 0.14", only: :prod },
     ]
   end
 end
