@@ -9,12 +9,15 @@
 	</dict>
 	<key>Label</key>
 	<string>Launch SyncEmAll</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/Software/Zsh/exports/zsh</string>
-		<string>-c</string>
-		<string>/usr/local/bin/small</string>
-	</array>
+	<key>Program</key>
+	<string>/usr/local/bin/small_wrapper</string>
+	<key>EnvironmentVariables</key>
+	  <dict>
+	    <key>PATH</key>
+	    <string>/usr/local/sbin:/usr/bin:/bin:/usr/local/bin</string>
+	    <key>HOME</key>
+	    <string>/Users/dmilith</string>
+	  </dict>
 	<key>RunAtLoad</key>
 	<true/>
 </dict>
