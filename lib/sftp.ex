@@ -29,8 +29,8 @@ defmodule Sftp do
 
 
   def launch_interval_check do
-    Logger.info "Starting queue check with check interval: #{interval}ms"
-    Timer.apply_interval interval, Sftp, :add, []
+    Logger.info "Starting queue check with check interval: #{interval()}ms"
+    Timer.apply_interval interval(), Sftp, :add, []
   end
 
 
@@ -38,19 +38,19 @@ defmodule Sftp do
   def init :ok do
     Logger.info "Starting Sftp module"
     SSH.start
-    case launch_interval_check do
+    case launch_interval_check() do
       {:ok, pid} ->
         Logger.debug "Internal check spawned: #{inspect pid}"
 
       {:error, error} ->
         Logger.error "Internal check spawn failed with error: #{inspect error}"
     end
-    {:ok, self}
+    {:ok, self()}
   end
 
 
   defp sftp_open_and_process_upload connection, local_file, remote_handle, remote_dest_file, channel do
-    case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout do
+    case SFTP.open channel, remote_dest_file, [:write], sftp_open_channel_timeout() do
       {:ok, handle} ->
         local_size = Utils.local_file_size local_file
         remote_size = Utils.remote_file_size remote_handle
@@ -81,9 +81,9 @@ defmodule Sftp do
 
   defp process_ssh_connection connection, local_file, remote_dest_file do
     Logger.debug "Starting ssh channel for connection: #{inspect connection} for local file: #{local_file}"
-    case SFTP.start_channel connection, [blocking: false, pull_interval: 2, timeout: sftp_start_channel_timeout] do
+    case SFTP.start_channel connection, [blocking: false, pull_interval: 20, timeout: sftp_start_channel_timeout()] do
       {:ok, channel} ->
-        remote_dest_file = remote_dest_file |> String.to_char_list
+        remote_dest_file = remote_dest_file |> String.to_charlist
         remote_handle = SFTP.read_file_info channel, remote_dest_file
         Logger.debug "Started channel: #{inspect channel} for file: #{remote_dest_file}"
         connection |> (sftp_open_and_process_upload local_file, remote_handle, remote_dest_file, channel)
@@ -97,18 +97,18 @@ defmodule Sftp do
   def handle_cast :add, _ do
     queue = DB.get_queue
     unless Enum.empty? queue do
-      build_clipboard
+      build_clipboard()
       queue
         |> (Enum.map fn element ->
           element |> process_element
         end)
     end
-    {:noreply, self}
+    {:noreply, self()}
   end
 
 
   def handle_cast {:send_file, local_file, remote_dest_file}, _ do
-    case (SSH.connect String.to_char_list(config[:hostname]), config[:ssh_port],
+    case (SSH.connect String.to_charlist(config()[:hostname]), config()[:ssh_port],
       ssh_opts(), ssh_connection_timeout()) do
 
       {:ok, connection} ->
@@ -125,7 +125,7 @@ defmodule Sftp do
         Logger.error "Error caused by: #{inspect cause}"
     end
 
-    {:noreply, self}
+    {:noreply, self()}
   end
 
 
@@ -157,7 +157,7 @@ defmodule Sftp do
   Adds clipboard items to persistent history
   """
   def add_to_history queue do
-    to_history = config[:address] <> queue.uuid <> Utils.file_extension queue.local_file
+    to_history = config()[:address] <> queue.uuid <> Utils.file_extension queue.local_file
     a_history = %History{content: to_history, timestamp: Timestamp.now_unix(), file: queue.local_file, uuid: (UUID.uuid4 :hex)}
     if (DB.get_history
       |> (Enum.filter fn element ->
@@ -175,7 +175,7 @@ defmodule Sftp do
     (Enum.map collection, fn an_elem ->
       case an_elem do
         %Queue{local_file: file_path, remote_file: _, uuid: uuid} ->
-          config[:address] <> uuid <> Utils.file_extension file_path
+          config()[:address] <> uuid <> Utils.file_extension file_path
 
         _ -> # :empty
           ""

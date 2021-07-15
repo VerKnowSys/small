@@ -20,7 +20,7 @@ defmodule Small.Mixfile do
 
 
   def application do
-    [extra_applications: [:logger, :uuid, :fs, :amnesia, :cowboy]]
+    [extra_applications: [:logger, :uuid, :fs, :amnesia, :cowboy, :ssh]]
   end
 
 

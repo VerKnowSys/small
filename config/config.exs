@@ -21,9 +21,9 @@ config :small, :amount_history_load, 16
 config :small, :webapi_port, 8000
 config :small, :webapi_dev_port, 8001
 config :small, :webapi_test_port, 8002
-config :small, :sftp_write_timeout, 10_000
-config :small, :sftp_open_channel_timeout, 5_000
-config :small, :sftp_start_channel_timeout, 5_000
+config :small, :sftp_write_timeout, 15_000
+config :small, :sftp_open_channel_timeout, 15_000
+config :small, :sftp_start_channel_timeout, 15_000
 config :small, :sftp_buffer_size, 131_072
 config :small, :fs_check_interval, 2_000
 config :small, :ssh_connection_timeout, 10_000

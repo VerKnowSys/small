@@ -172,17 +172,17 @@ defmodule Cfg do
     ]
     |> (Enum.each fn e ->
       cond do
-        config[e] == nil ->
+        config()[e] == nil ->
           raise "Missing configuration value: #{e}!"
 
-        config[e] == "" ->
+        config()[e] == "" ->
           raise "Required configuration value: #{e} is empty!"
 
-        config[e] == 0 ->
+        config()[e] == 0 ->
           raise "Required configuration value: #{e} is zero!"
 
         true ->
-          Logger.debug "Config check passed for #{e}[#{config[e]}]"
+          Logger.debug "Config check passed for #{e}[#{config()[e]}]"
       end
     end)
   end
