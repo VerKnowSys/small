@@ -12,7 +12,7 @@ defmodule Clipboard do
   """
   @spec put(text :: String.t) :: :ok | :error
   def put text do
-    case System.cmd "sh", ["-c", "echo \"$0\" | pbcopy", "#{text}"] do
+    case System.cmd "sh", ["-c", "echo \"$0\" | tr -d '\n' | pbcopy", "#{text}"] do
       {_result, 0} ->
         notification "Link copied to clipboard", :clipboard
         :ok
