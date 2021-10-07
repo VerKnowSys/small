@@ -1,6 +1,16 @@
 #!/bin/sh
 
-LOCAL_DEST="/usr/local/bin"
+case "$(uname -m)" in
+    arm64)
+        _prefix="/opt/homebrew"
+        ;;
+
+    x86_64)
+        _prefix="/usr/local"
+        ;;
+esac
+
+LOCAL_DEST="${_prefix}/bin"
 for entry in small bin/mac_listener; do
     install -v ${entry} ${LOCAL_DEST}
 done
