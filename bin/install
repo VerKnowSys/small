@@ -11,6 +11,16 @@ case "$(uname -m)" in
 esac
 
 LOCAL_DEST="${_prefix}/bin"
-for entry in small bin/mac_listener; do
+for entry in small bin/mac_listener bin/small_wrapper; do
     install -v ${entry} ${LOCAL_DEST}
 done
+
+sed -i '' -e "s|PREFIX|${_prefix}|" "LaunchAgents/com.verknowsys.SyncEmAll.plist"
+install -v "LaunchAgents/com.verknowsys.SyncEmAll.plist" "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
+git checkout HEAD -- "LaunchAgents/com.verknowsys.SyncEmAll.plist"
+
+echo "Unloading"
+launchctl unload -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
+
+echo "Loading"
+launchctl load -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"

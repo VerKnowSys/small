@@ -10,11 +10,11 @@
 	<key>Label</key>
 	<string>Launch SyncEmAll</string>
 	<key>Program</key>
-	<string>/usr/local/bin/small_wrapper</string>
+	<string>PREFIX/bin/small_wrapper</string>
 	<key>EnvironmentVariables</key>
 	  <dict>
 	    <key>PATH</key>
-	    <string>/usr/local/sbin:/usr/bin:/bin:/usr/local/bin</string>
+	    <string>PREFIX/sbin:/usr/bin:/bin:PREFIX/bin</string>
 	    <key>HOME</key>
 	    <string>/Users/dmilith</string>
 	  </dict>
