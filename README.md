@@ -102,6 +102,14 @@ server {
 }
 ```
 
+Our default page when no file name is specified in HTTP path:
+
+```html
+<body>
+      <h1>Nothing's here. Go away!</h1>
+</body>
+```
+
 
 ## USAGE:
 
