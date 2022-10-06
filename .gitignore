@@ -7,3 +7,4 @@ small
 log
 Mnesia*
 /doc
+*.sublime-work*
