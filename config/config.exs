@@ -9,7 +9,7 @@ config :logger, :console, format: "$time $message\n"
 # path to be watched for file events:
 config :fs, :path, mix_home <> "/Pictures/Screenshots"
 # absolute path to events listener executable
-config :fs, :events_helper, to_char_list "/opt/homebrew/bin/mac_listener"
+config :fs, :events_helper, to_char_list "/Users/Shared/Small/bin/mac_listener"
 config :mnesia, :dir, (to_char_list mix_home <> (
   case :os.type() do
     {:unix, :darwin} -> "/Library/Small/"

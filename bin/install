@@ -1,18 +1,19 @@
-#!/bin/sh
+#!/bin/zsh
 
-case "$(uname -m)" in
-    arm64)
-        _prefix="/opt/homebrew"
-        ;;
+# case "$(uname -m)" in
+#     arm64)
+#         _prefix="/opt/homebrew"
+#         ;;
 
-    x86_64)
-        _prefix="/usr/local"
-        ;;
-esac
+#     x86_64)
+#         ;;
+# esac
+_prefix="/Users/Shared/Small"
 
 LOCAL_DEST="${_prefix}/bin"
+mkdir -p "${LOCAL_DEST}"
 for entry in small bin/mac_listener bin/small_wrapper; do
-    install -v ${entry} ${LOCAL_DEST}
+    cp -v ${entry} ${LOCAL_DEST}/
 done
 
 sed -i '' -e "s|PREFIX|${_prefix}|" "LaunchAgents/com.verknowsys.SyncEmAll.plist"

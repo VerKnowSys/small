@@ -14,7 +14,7 @@
 	<key>EnvironmentVariables</key>
 	  <dict>
 	    <key>PATH</key>
-	    <string>PREFIX/sbin:/usr/bin:/bin:PREFIX/bin</string>
+	    <string>/Users/Shared/Software/Elixir/exports:PREFIX/sbin:/usr/bin:/bin:PREFIX/bin</string>
 	    <key>HOME</key>
 	    <string>/Users/dmilith</string>
 	  </dict>
