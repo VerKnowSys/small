@@ -50,13 +50,13 @@ defmodule WebApi.Handler do
   def outer_route collection, req, state do
     size = collection |> Enum.count
     {:ok, req} = :cowboy_req.reply 200, [],
-      "<html>" <> head <> "<body><pre class=\"count\"><span>small</span> history of: #{size}</pre></div><div>" <>
+      "<html>" <> head() <> "<body><pre class=\"count\"><span>small</span> history of: #{size}</pre></div><div>" <>
       (collection
         |> (Enum.map fn %Database.History{content: links, timestamp: ts, file: file, uuid: uuid} ->
           links_list = links |> (String.split " ")
           "<article id=\"#{uuid}\" class=\"text-center\">" <> (extract_links ts, links_list, file) <> "</article>"
         end)
-        |> (Enum.join " ")) <> "</div><footer><pre class=\"count\">Sync eM ALL - version: #{version} - © 2015-2017 - Daniel (@dmilith) Dettlaff</pre></footer></body></html>", req
+        |> (Enum.join " ")) <> "</div><footer><pre class=\"count\">Sync eM ALL - version: #{version()} - © 2015-2017 - Daniel (@dmilith) Dettlaff</pre></footer></body></html>", req
     {:ok, req, state}
   end
 
@@ -64,7 +64,7 @@ defmodule WebApi.Handler do
   @spec history_amount(String.t | integer) :: integer
   defp history_amount(input) when is_binary(input), do: history_amount Integer.parse input
   defp history_amount(input) when is_number(input), do: input
-  defp history_amount(_), do: amount_history_load
+  defp history_amount(_), do: amount_history_load()
 
 
   def route path, args, req, state do

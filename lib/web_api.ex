@@ -33,16 +33,16 @@ defmodule WebApi do
         Logger.debug "Ensuring Cowboy started"
     end
 
-    dispatch = :cowboy_router.compile routes
-    "#{@node_name}_#{webapi_port}"
-      |> (:cowboy.start_http 10, [ip: {127,0,0,1}, port: webapi_port], [{:env, [{:dispatch, dispatch}]}])
+    dispatch = :cowboy_router.compile routes()
+    "#{@node_name}_#{webapi_port()}"
+      |> (:cowboy.start_http 10, [ip: {127,0,0,1}, port: webapi_port()], [{:env, [{:dispatch, dispatch}]}])
 
-    {:ok, self}
+    {:ok, self()}
   end
 
 
   def start :normal, [] do
-    start_link
+    start_link()
   end
 
 

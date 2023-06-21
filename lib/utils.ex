@@ -70,15 +70,15 @@ defmodule Utils do
   def stream_file_to_remote channel, handle, local_file, local_size do
     try do
       Logger.info "Streaming file of size: #{size_kib local_size}KiB to remote server.."
-      chunks = div local_size, sftp_buffer_size
+      chunks = div local_size, sftp_buffer_size()
       Logger.debug "Chunks: #{chunks}"
-      (File.stream! local_file, [:read], sftp_buffer_size)
+      (File.stream! local_file, [:read], sftp_buffer_size())
         |> Enum.with_index
         |> (Enum.each fn {chunk, index} ->
           chunks_percent = if chunks == 0, do: 100.0, else: index * 100 / chunks
           percent = Float.round chunks_percent, 2
           IO.write "\rProgress: #{percent}% "
-          SFTP.write channel, handle, chunk, sftp_write_timeout
+          SFTP.write channel, handle, chunk, sftp_write_timeout()
         end)
       notification "Uploaded successfully.", :upload
     catch

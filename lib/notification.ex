@@ -33,6 +33,7 @@ defmodule Notification do
   Types: [:start, :clipboard, :upload, :error]
   """
   def notification message, type do
+    config = config()
     if config[:notifications][type] do
       Logger.debug "Notification of type #{inspect type} with result: #{inspect config[:notifications][type]}"
       if config[:sounds][type] do

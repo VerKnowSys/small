@@ -13,7 +13,7 @@ defmodule Queue do
 
   def init :ok do
     Logger.info "Launching Persistent Queue"
-    {:ok, self}
+    {:ok, self()}
   end
 
 

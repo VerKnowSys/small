@@ -16,7 +16,7 @@ defmodule Small do
   def init :ok do
     FS.subscribe()
     Logger.info "Filesystem events watcher initialized"
-    {:ok, self}
+    {:ok, self()}
   end
 
 
@@ -29,7 +29,7 @@ defmodule Small do
     if File.exists? file_path do
       Logger.debug "Handling event: #{inspect event} for path #{file_path}"
       random_uuid = UUID.uuid3 nil, file_path, :hex
-      remote_dest_file = "#{config[:remote_path]}#{random_uuid}"
+      remote_dest_file = "#{config()[:remote_path]}#{random_uuid}"
       DB.add_to_queue %Database.Queue{local_file: file_path, remote_file: remote_dest_file, uuid: random_uuid}
       Sftp.add
     else

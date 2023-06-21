@@ -13,30 +13,30 @@ defmodule SmallApplication do
 
   def launch_periodic_dump do
     Logger.info "Initializing periodic dumper"
-    Timer.apply_interval dump_interval, DB, :dump_mnesia, []
+    Timer.apply_interval dump_interval(), DB, :dump_mnesia, []
   end
 
 
   def main param do
     Cfg.config_check()
-    content = "Launching SmallApplication v#{version}"
+    content = "Launching SmallApplication v#{version()}"
     Logger.info content
     notification content, :start
-    case SyncSupervisor.start_link do
+    case SyncSupervisor.start_link() do
       {:ok, pid} ->
         Logger.info "Initializing Mnesia backend and backing up current db state.."
         DB.init_and_start
         DB.dump_mnesia "current"
 
-        if config[:open_history_on_start] do
+        if config()[:open_history_on_start] do
           Logger.debug "Open on start enabled"
-          Logger.info "Automatically opening http dashboard: http://localhost:#{webapi_port} in default browser."
-          System.cmd "open", ["http://localhost:#{webapi_port}"]
+          Logger.info "Automatically opening http dashboard: http://localhost:#{webapi_port()} in default browser."
+          System.cmd "open", ["http://localhost:#{webapi_port()}"]
         end
 
-        case launch_periodic_dump do
+        case launch_periodic_dump() do
           {:ok, pd_pid} ->
-            Logger.debug "Periodic dump spawned in background (triggered each #{dump_interval/360} hours)"
+            Logger.debug "Periodic dump spawned in background (triggered each #{dump_interval()/360} hours)"
             Logger.info "SyncSupervisor started properly with pid: #{inspect pid}"
 
           {:error, error} ->
@@ -53,7 +53,7 @@ defmodule SmallApplication do
       Logger.info "Starting an eternal watch.."
       Timer.sleep :infinity
     end
-    {:ok, self}
+    {:ok, self()}
   end
 
 
