@@ -4,8 +4,8 @@ defmodule Small.Mixfile do
   def project do
     [
       app: :small,
-      version: "0.13.0",
-      elixir: "~> 1.7",
+      version: "0.14.0",
+      elixir: "~> 1.16",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -77,6 +77,7 @@ defmodule Small.Mixfile do
       { :fs, github: "VerKnowSys/fs", branch: "master", override: true },
 
       { :credo, "~> 0.6", only: :dev },
+      { :dialyxir, "~> 1.3", only: [:dev], runtime: false },
 
       # { :exsync, github: "VerKnowSys/exsync", only: :dev },
       # { :exsync, "~> 0.1", only: :dev },
