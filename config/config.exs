@@ -9,8 +9,8 @@ config :logger, :console, format: "$time $message\n"
 # path to be watched for file events:
 config :fs, :path, mix_home <> "/Pictures/Screenshots"
 # absolute path to events listener executable
-config :fs, :events_helper, to_char_list "/Users/Shared/Small/bin/mac_listener"
-config :mnesia, :dir, (to_char_list mix_home <> (
+helper_path = if File.exists?("/Users/Shared/Small/bin/mac_listener"), do: "/Users/Shared/Small/bin/mac_listener", else: pwd <> "/bin/mac_listener"
+Config.config :fs, :events_helper, to_charlist helper_path
   case :os.type() do
     {:unix, :darwin} -> "/Library/Small/"
     {:unix, _}       -> "/.small/"
