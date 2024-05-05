@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+_prefix="/Users/Shared/Small"
+
+echo "Unloading…"
+launchctl unload -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
+
+echo "Uninstalling LaunchAgent…"
+rm -f "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
+
+echo "Uninstalling Small…"
+LOCAL_DEST="${_prefix}/bin"
+for entry in small mac_listener small_wrapper; do
+    rm -fv "${LOCAL_DEST}/${entry}"
+done

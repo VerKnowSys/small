@@ -20,8 +20,5 @@ sed -i '' -e "s|PREFIX|${_prefix}|" "LaunchAgents/com.verknowsys.SyncEmAll.plist
 install -v "LaunchAgents/com.verknowsys.SyncEmAll.plist" "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
 git checkout HEAD -- "LaunchAgents/com.verknowsys.SyncEmAll.plist"
 
-echo "Unloading"
-launchctl unload -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
-
 echo "Loading"
 launchctl load -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
