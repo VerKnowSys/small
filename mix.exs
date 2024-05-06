@@ -59,23 +59,17 @@ defmodule Small.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      # { :exlager, github: "VerKnowSys/exlager" },
-      # { :httpotion, github: "myfreeweb/httpotion" },
-      # { :tzdata, "~> 0.5" }, # , override: :true
-      # { :timex, "~> 1.0" },
-
       {:uuid, "~> 1.1"},
       {:cowboy, "~> 1.0"},
-      {:amnesia, "~> 0.2"},
-      # {:amnesia, github: "meh/amnesia", branch: "master"},
-      {:exquisite, github: "meh/exquisite", branch: "master", override: true},
-      {:fs, github: "VerKnowSys/fs", branch: "master", override: true},
-      {:credo, "~> 0.6", only: :dev},
-      {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
+      {:amnesia, "~> 0.2"}, # {:amnesia, github: "meh/amnesia", branch: "master"},
+      {:exquisite, "~> 0.1"}, # {:exquisite, github: "meh/exquisite", branch: "master", override: true},
+      {:ex_doc, "~> 0.14", only: [:prod]},
 
-      # { :exsync, github: "VerKnowSys/exsync", only: :dev },
-      # { :exsync, "~> 0.1", only: :dev },
-      # { :ex_doc, "~> 0.14", only: :prod },
+      # we override fs to our version, synced with ~> 8.6.1 from the original repo
+      {:fs, github: "VerKnowSys/fs", branch: "master", override: true},
+
+      {:credo, "~> 0.6", only: [:dev]},
+      {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
     ]
   end
 end
