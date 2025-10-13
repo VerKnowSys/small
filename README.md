@@ -68,6 +68,9 @@ I use it with Nginx configuration on my server like this:
 ```nginx
 server {
         listen 80;
+        if ( $host != "s.verknowsys.com" ) {
+            return 444; #CONNECTION CLOSED WITHOUT RESPONSE
+        }
         server_name s.verknowsys.com;
         location / {
            return 301 https://s.verknowsys.com/$request_uri;
@@ -78,19 +81,20 @@ server {
 
 server {
         listen 443 ssl http2;
+        if ( $host != "s.verknowsys.com" ) {
+            return 444; #CONNECTION CLOSED WITHOUT RESPONSE
+        }
         ssl_certificate_key /home/dmilith/.acme.sh/s.verknowsys.com/s.verknowsys.com.key;
         ssl_certificate /home/dmilith/.acme.sh/s.verknowsys.com/fullchain.cer;
 
         server_name s.verknowsys.com;
         root /Web/Sshots/;
 
+        ssl_ciphers ALL:!RSA:!CAMELLIA:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SHA1:!SHA256:!SHA384;
         ssl_protocols TLSv1.3 TLSv1.2;
         ssl_session_timeout 1d;
         ssl_session_cache shared:SSL:10m;
         ssl_session_tickets off;
-
-        ssl_stapling on;
-        ssl_stapling_verify on;
 
         # enable HSTS for A+ grade:
         add_header Strict-Transport-Security "max-age=63072000" always;
