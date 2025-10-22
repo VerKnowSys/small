@@ -78,10 +78,7 @@ impl AppConfig {
             amount_history_load: 50,
             mnesia_autodump_interval: 21600000, // 6 hours in ms
             ssh_connection_timeout: 30000,
-            // sftp_start_channel_timeout: 10000,
-            // sftp_open_channel_timeout: 10000,
             sftp_buffer_size: 65536,
-            // sftp_write_timeout: 30000,
             webapi_port,
         })
     }
