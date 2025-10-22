@@ -10,21 +10,16 @@ use crate::database::{Database, QueueItem};
 pub struct FileWatcher {
     config: Arc<AppConfig>,
     database: Arc<Database>,
-    watch_path: String,
 }
 
 impl FileWatcher {
-    pub fn new(config: Arc<AppConfig>, database: Arc<Database>, watch_path: String) -> Self {
-        FileWatcher {
-            config,
-            database,
-            watch_path,
-        }
+    pub fn new(config: Arc<AppConfig>, database: Arc<Database>) -> Self {
+        FileWatcher { config, database }
     }
 
     pub async fn start(self: Arc<Self>) -> Result<()> {
         log::info!("Launching Small Filesystem Handler");
-        log::info!("Watching path: {}", self.watch_path);
+        log::info!("Watching path: {}", self.config.config.watch_path);
 
         let (tx, mut rx) = mpsc::unbounded_channel();
 
@@ -37,7 +32,10 @@ impl FileWatcher {
             Config::default(),
         )?;
 
-        watcher.watch(Path::new(&self.watch_path), RecursiveMode::Recursive)?;
+        watcher.watch(
+            Path::new(&self.config.config.watch_path),
+            RecursiveMode::Recursive,
+        )?;
         log::info!("Filesystem events watcher initialized");
 
         // Keep watcher alive and process events
@@ -85,16 +83,16 @@ impl FileWatcher {
         log::debug!("Processing event for path: {}", file_path);
 
         // Generate UUID for the file
-        let random_uuid =
+        let uuid_from_file =
             uuid::Uuid::new_v3(&uuid::Uuid::NAMESPACE_OID, file_path.as_bytes()).to_string();
 
-        let remote_dest_file = format!("{}{}", self.config.config.remote_path, random_uuid);
+        let remote_dest_file = format!("{}{}", self.config.config.remote_path, uuid_from_file);
 
         // Add to queue
         let queue_item = QueueItem {
             local_file: file_path.to_string(),
             remote_file: remote_dest_file,
-            uuid: random_uuid,
+            uuid: uuid_from_file,
         };
 
         self.database.add_to_queue(&queue_item)?;

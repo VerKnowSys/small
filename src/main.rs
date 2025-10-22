@@ -82,12 +82,7 @@ async fn main() -> Result<()> {
     }
 
     // Start file watcher
-    // let watch_path = config.watch_path.to_string();
-    let file_watcher = Arc::new(watcher::FileWatcher::new(
-        config.clone(),
-        database.clone(),
-        config.config.watch_path.clone(),
-    ));
+    let file_watcher = Arc::new(watcher::FileWatcher::new(config.clone(), database.clone()));
     let watcher_handle = {
         let watcher = file_watcher.clone();
         tokio::spawn(async move {
@@ -111,7 +106,7 @@ async fn main() -> Result<()> {
             loop {
                 interval.tick().await;
                 let timestamp = chrono::Utc::now().format("%Y-%m-%d-%H-%M-%S").to_string();
-                let dump_path = dumps_dir.join(format!("mnesia-db.{}.db", timestamp));
+                let dump_path = dumps_dir.join(format!("database.{}.db", timestamp));
                 if let Err(e) = db.dump_to_file(&dump_path) {
                     log::error!("Failed to dump database: {:?}", e);
                 }
