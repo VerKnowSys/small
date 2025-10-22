@@ -50,7 +50,7 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn new() -> Result<Self> {
-        let env = std::env::var("MIX_ENV").unwrap_or_else(|_| "prod".to_string());
+        let env = std::env::var("RUST_ENV").unwrap_or_else(|_| "prod".to_string());
         let config_file = Self::default_config_file();
 
         if !config_file.exists() {
