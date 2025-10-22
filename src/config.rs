@@ -44,10 +44,7 @@ pub struct AppConfig {
     pub amount_history_load: usize,
     pub mnesia_autodump_interval: u64,
     pub ssh_connection_timeout: u64,
-    // pub sftp_start_channel_timeout: u64,
-    // pub sftp_open_channel_timeout: u64,
     pub sftp_buffer_size: usize,
-    // pub sftp_write_timeout: u64,
     pub webapi_port: u16,
 }
 
