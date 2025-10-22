@@ -1,0 +1,53 @@
+[package]
+name = "small"
+version = "0.14.0"
+edition = "2021"
+authors = ["Daniel Dettlaff <dmilith@verknowsys.com>"]
+description = "Sync 'eM ALL - File sync application with SFTP and web dashboard"
+
+[[bin]]
+name = "small"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+tokio-util = { version = "0.7", features = ["io"] }
+
+# File watching
+notify = "6.1"
+
+# SSH/SFTP
+ssh2 = "0.9"
+
+# Web server
+warp = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Database
+rusqlite = { version = "0.30", features = ["bundled", "backup"] }
+
+# UUID
+uuid = { version = "1.6", features = ["v3", "v4"] }
+
+# Time
+chrono = "0.4"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Configuration
+toml = "0.8"
+
+# Utils
+regex = "1.10"
+home = "0.5"
+
+[dev-dependencies]
+tempfile = "3.8"

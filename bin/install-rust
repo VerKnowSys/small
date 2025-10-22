@@ -1,0 +1,25 @@
+#!/bin/sh
+# Install script for Small Rust version
+
+set -e
+
+if [ ! -f "target/release/small" ]; then
+    echo "Error: Binary not found. Run './bin/build-rust' first."
+    exit 1
+fi
+
+echo "Installing Small to /usr/local/bin..."
+sudo cp target/release/small /usr/local/bin/small
+sudo chmod +x /usr/local/bin/small
+
+echo ""
+echo "Installation complete!"
+echo ""
+echo "Next steps:"
+echo "1. Create config file:"
+echo "   mkdir -p ~/Library/Small  # or ~/.small on Linux"
+echo "   # Then create ~/Library/Small/config.toml with your settings"
+echo ""
+echo "2. Run Small:"
+echo "   small"
+echo ""
