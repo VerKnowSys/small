@@ -1,10 +1,2 @@
-/_build
-/deps
-erl_crash.dump
-*.ez
-mix.lock
-small
-log
-Mnesia*
-/doc
 *.sublime-work*
+target
