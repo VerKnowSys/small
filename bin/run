@@ -1,9 +1,0 @@
-#!/bin/sh
-
-MIX_ENV="$1"
-if [ -z "${MIX_ENV}" ]; then
-    MIX_ENV=dev
-fi
-export MIX_ENV
-
-./small

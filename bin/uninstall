@@ -9,7 +9,5 @@ echo "Uninstalling LaunchAgent…"
 rm -f "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
 
 echo "Uninstalling Small…"
-LOCAL_DEST="${_prefix}/bin"
-for entry in small mac_listener small_wrapper; do
-    rm -fv "${LOCAL_DEST}/${entry}"
-done
+LOCAL_DEST="${_prefix}"
+rm -rfv "${LOCAL_DEST}"

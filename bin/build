@@ -1,20 +1,12 @@
 #!/bin/sh
 
+set -e
 
-. bin/loader
+echo "Building Small (Rust version)..."
+unset CARGO_TARGET_DIR
+cargo build --release
 
-eval "mix do compile, escript.build"
-
-# NOTE: disabled for now, since ex_doc has bonus requirements broken (yacc) on Darwin:
-#
-# if [ ! -d "doc" ] && [ "${MIX_ENV}" = "prod" ]; then
-#     printf "%s\n" "Building doc/"
-#     eval "mix docs"
-# fi
-
-# if [ "${MIX_ENV}" != "prod" ]; then
-#     set +e
-#     eval "mix credo"
-#     exit
-# fi
-
+echo ""
+echo "Build complete!"
+echo ""
+echo "To install, run: bin/install"

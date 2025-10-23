@@ -1,24 +1,25 @@
-#!/bin/zsh
+#!/bin/sh
+# Install script for Small Rust version
 
-# case "$(uname -m)" in
-#     arm64)
-#         _prefix="/opt/homebrew"
-#         ;;
+set -e
 
-#     x86_64)
-#         ;;
-# esac
+if [ ! -f "target/release/small" ]; then
+    echo "Error: Binary not found. Run './bin/build' first."
+    exit 1
+fi
+
 _prefix="/Users/Shared/Small"
 
-LOCAL_DEST="${_prefix}/bin"
-mkdir -p "${LOCAL_DEST}"
-for entry in small bin/mac_listener bin/small_wrapper; do
-    cp -v ${entry} ${LOCAL_DEST}/
-done
+mkdir -p "${_prefix}/bin"
+echo "Installing Small to ${_prefix}"
+install -m755 target/release/small ${_prefix}/bin/small
+install -m755 bin/small_wrapper ${_prefix}/bin/small_wrapper
+strip ${_prefix}/bin/small
+chmod +x ${_prefix}/bin/small
 
-sed -i '' -e "s|PREFIX|${_prefix}|" "LaunchAgents/com.verknowsys.SyncEmAll.plist"
 install -v "LaunchAgents/com.verknowsys.SyncEmAll.plist" "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
-git checkout HEAD -- "LaunchAgents/com.verknowsys.SyncEmAll.plist"
 
 echo "Loading"
 launchctl load -w "${HOME}/Library/LaunchAgents/com.verknowsys.SyncEmAll.plist"
+
+echo "Installation complete!"

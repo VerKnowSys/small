@@ -1,16 +1,6 @@
 #!/bin/zsh
 
-# case "$(uname -m)" in
-#     arm64)
-#         _prefix="/opt/homebrew"
-#         ;;
-
-#     x86_64)
-#         _prefix="/usr/local"
-#         ;;
-# esac
 _prefix="/Users/Shared/Small"
-mkdir -p "${HOME}/Library/Small" "${_prefix}/bin"
+mkdir -p "${HOME}/Library/Small"
 
-export PATH="${PATH}:${_prefix}" \
-&& ${_prefix}/bin/small > "${HOME}/Library/Small/small.log" 2>&1
+${_prefix}/bin/small >> "${HOME}/Library/Small/small.log" 2>&1

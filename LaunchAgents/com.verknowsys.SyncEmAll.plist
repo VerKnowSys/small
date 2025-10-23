@@ -10,11 +10,11 @@
 	<key>Label</key>
 	<string>Launch SyncEmAll</string>
 	<key>Program</key>
-	<string>PREFIX/bin/small_wrapper</string>
+	<string>/Users/Shared/Small/bin/small_wrapper</string>
 	<key>EnvironmentVariables</key>
 	  <dict>
 	    <key>PATH</key>
-	    <string>/Users/Shared/Software/Elixir/exports:PREFIX/sbin:/usr/bin:/bin:PREFIX/bin</string>
+	    <string>/usr/bin:/bin</string>
 	    <key>HOME</key>
 	    <string>/Users/dmilith</string>
 	  </dict>
