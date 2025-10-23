@@ -1,10 +1,12 @@
 [package]
 name = "small"
-version = "0.16.0"
-edition = "2021"
-rust_version = "1.90"
-authors = ["Daniel Dettlaff <dmilith@verknowsys.com>"]
-description = "Sync 'eM ALL - File sync application with SFTP and web dashboard"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.90"
+authors = ["Daniel Dettlaff <dmilith@me.com>"]
+description = "Sync'eM ALL - File/ Screenshot sync application with SFTP support, and web dashboard."
+repository = "https://github.com/verknowsys/Small"
+license = "MIT"
 
 [[bin]]
 name = "small"
@@ -12,7 +14,7 @@ path = "src/main.rs"
 
 [dependencies]
 # Async runtime
-tokio = { version = "1.35", features = ["full"] }
+tokio = { version = "1.48", features = ["full"] }
 tokio-util = { version = "0.7", features = ["io"] }
 
 # File watching
@@ -30,14 +32,14 @@ serde_json = "1.0"
 rusqlite = { version = "0.30", features = ["bundled", "backup"] }
 
 # UUID
-uuid = { version = "1.6", features = ["v3", "v4"] }
+uuid = { version = "1.18", features = ["v3", "v4"] }
 
 # Time
 chrono = "0.4"
 
 # Logging
-log = "0.4"
-env_logger = "0.11"
+tracing = { version = "0.1.41", features = ["log", "attributes", "std"] }
+tracing-subscriber = { version = "0.3.18", features = ["registry", "fmt", "env-filter"] }
 
 # Error handling
 anyhow = "1.0"
@@ -47,8 +49,6 @@ thiserror = "1.0"
 toml = "0.8"
 
 # Utils
-regex = "1.10"
+regex = "1.12"
 home = "0.5"
-
-[dev-dependencies]
-tempfile = "3.8"
+clippers = "0.1.2"
