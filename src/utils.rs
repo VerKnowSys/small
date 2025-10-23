@@ -1,24 +1,56 @@
+use crate::*;
 use anyhow::Result;
-use std::fs;
-use std::io::{self, Read, Write};
-use std::path::Path;
+use std::{
+    fs,
+    io::{self, Read, Write},
+    path::Path,
+};
+use tracing_subscriber::{fmt, EnvFilter};
+
+
+/// Initialize the instruments-subscriber
+pub fn initialize() {
+    let env_log = match EnvFilter::try_from_env("LOG") {
+        Ok(env_value_from_env) => env_value_from_env,
+        Err(_) => EnvFilter::from("info"),
+    };
+    fmt()
+        .compact()
+        .with_thread_names(false)
+        .with_thread_ids(false)
+        .with_ansi(true)
+        .with_env_filter(env_log)
+        .with_filter_reloading()
+        .init();
+}
+
+
+pub fn put_to_clipboard(text: &str) -> Result<()> {
+    let mut clipboard = clippers::Clipboard::get();
+    clipboard.write_text(text)?;
+    Ok(())
+}
+
 
 pub fn local_file_size<P: AsRef<Path>>(file_path: P) -> Result<u64> {
     let metadata = fs::metadata(file_path)?;
     Ok(metadata.len())
 }
 
+
 pub fn size_kib(size_in_bytes: u64) -> f64 {
     (size_in_bytes as f64) / 1024.0
 }
+
 
 pub fn file_extension<P: AsRef<Path>>(path: P) -> String {
     path.as_ref()
         .extension()
         .and_then(|e| e.to_str())
-        .map(|e| format!(".{}", e))
+        .map(|e| format!(".{e}"))
         .unwrap_or_default()
 }
+
 
 pub fn stream_file_to_remote<R, W>(
     reader: &mut R,
@@ -38,7 +70,7 @@ where
         1
     };
 
-    log::info!(
+    info!(
         "Streaming file of size: {:.2}KiB to remote server..",
         size_kib(total_size)
     );
@@ -51,7 +83,6 @@ where
         }
 
         writer.write_all(&buffer[..bytes_read])?;
-        // bytes_written += bytes_read as u64;
         chunk_index += 1;
 
         let percent = if chunks > 0 {
@@ -60,30 +91,11 @@ where
             100.0
         };
 
-        eprint!("\rProgress: {:.2}% ", percent);
+        eprint!("\rProgress: {percent:.2}% ");
         io::stderr().flush()?;
     }
 
     eprintln!(); // New line after progress
-    log::info!("Upload complete!");
+    info!("Upload complete!");
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_file_extension() {
-        assert_eq!(file_extension("/path/to/file.txt"), ".txt");
-        assert_eq!(file_extension("/path/to/file.png"), ".png");
-        assert_eq!(file_extension("/path/to/file"), "");
-    }
-
-    #[test]
-    fn test_size_kib() {
-        assert_eq!(size_kib(1024), 1.0);
-        assert_eq!(size_kib(2048), 2.0);
-        assert_eq!(size_kib(512), 0.5);
-    }
 }

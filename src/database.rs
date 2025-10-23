@@ -1,9 +1,12 @@
+use crate::*;
 use anyhow::Result;
-use chrono::Utc;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
-use std::path::Path;
-use std::sync::{Arc, Mutex};
+use std::{
+    path::Path,
+    sync::{Arc, Mutex},
+};
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct History {
@@ -20,6 +23,7 @@ pub struct QueueItem {
     pub uuid: String,
 }
 
+#[derive(Debug)]
 pub struct Database {
     conn: Arc<Mutex<Connection>>,
 }
@@ -38,6 +42,7 @@ impl Database {
         db.init_schema()?;
         Ok(db)
     }
+
 
     fn init_schema(&self) -> Result<()> {
         let conn = self.conn.lock().unwrap();
@@ -71,6 +76,7 @@ impl Database {
         Ok(())
     }
 
+
     pub fn add_to_queue(&self, item: &QueueItem) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
@@ -79,6 +85,7 @@ impl Database {
         )?;
         Ok(())
     }
+
 
     pub fn get_queue(&self) -> Result<Vec<QueueItem>> {
         let conn = self.conn.lock().unwrap();
@@ -95,11 +102,13 @@ impl Database {
         Ok(items)
     }
 
+
     pub fn remove_from_queue(&self, uuid: &str) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute("DELETE FROM queue WHERE uuid = ?1", params![uuid])?;
         Ok(())
     }
+
 
     pub fn add_history(&self, history: &History) -> Result<()> {
         let conn = self.conn.lock().unwrap();
@@ -110,6 +119,7 @@ impl Database {
         Ok(())
     }
 
+
     pub fn get_history(&self, limit: Option<usize>) -> Result<Vec<History>> {
         let conn = self.conn.lock().unwrap();
         let query = if let Some(lim) = limit {
@@ -118,7 +128,8 @@ impl Database {
                 lim
             )
         } else {
-            "SELECT content, timestamp, file, uuid FROM history ORDER BY timestamp DESC".to_string()
+            "SELECT content, timestamp, file, uuid FROM history ORDER BY timestamp DESC"
+                .to_string()
         };
 
         let mut stmt = conn.prepare(&query)?;
@@ -135,6 +146,7 @@ impl Database {
         Ok(items)
     }
 
+
     pub fn dump_to_file<P: AsRef<Path>>(&self, path: P) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         let mut backup_conn = Connection::open(&path)?;
@@ -142,11 +154,7 @@ impl Database {
         let backup = rusqlite::backup::Backup::new(&conn, &mut backup_conn)?;
         backup.run_to_completion(5, std::time::Duration::from_millis(250), None)?;
 
-        log::info!("Database dumped to: {:?}", path.as_ref());
+        info!("Database dumped to: {:?}", path.as_ref());
         Ok(())
     }
-}
-
-pub fn now_unix() -> i64 {
-    Utc::now().timestamp()
 }

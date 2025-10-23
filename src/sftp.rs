@@ -1,24 +1,21 @@
+use crate::{
+    config::AppConfig,
+    database::{Database, History, QueueItem},
+    notification::notification,
+    utils, *,
+};
 use anyhow::{Context, Result};
+use chrono::Utc;
 use ssh2::Session;
-use std::fs::File;
-use std::io::BufReader;
-use std::net::TcpStream;
-use std::path::Path;
-use std::sync::Arc;
-use std::time::Duration;
-use tokio::sync::mpsc;
-use tokio::time;
+use std::{fs::File, io::BufReader, net::TcpStream, path::Path, sync::Arc, time::Duration};
+use tokio::{sync::mpsc, time};
 
-use crate::config::AppConfig;
-use crate::database::{Database, History, QueueItem};
-use crate::notification::{clipboard, notification};
-use crate::utils;
-
+#[derive(Debug)]
 pub struct SftpManager {
     config: Arc<AppConfig>,
     database: Arc<Database>,
-    // tx: mpsc::UnboundedSender<()>,
 }
+
 
 impl SftpManager {
     pub fn new(
@@ -30,16 +27,17 @@ impl SftpManager {
             SftpManager {
                 config,
                 database,
-                // tx,
             },
             rx,
         )
     }
 
-    pub async fn start(self: Arc<Self>) {
-        let mut interval = time::interval(Duration::from_millis(self.config.fs_check_interval));
 
-        log::info!(
+    pub async fn start(self: Arc<Self>) {
+        let mut interval =
+            time::interval(Duration::from_millis(self.config.fs_check_interval));
+
+        info!(
             "Starting SFTP queue processor with check interval: {}ms",
             self.config.fs_check_interval
         );
@@ -47,10 +45,11 @@ impl SftpManager {
         loop {
             interval.tick().await;
             if let Err(e) = self.process_queue().await {
-                log::error!("Error processing queue: {:?}", e);
+                error!("Error processing queue: {e:?}");
             }
         }
     }
+
 
     async fn process_queue(&self) -> Result<()> {
         let queue = self.database.get_queue()?;
@@ -65,42 +64,53 @@ impl SftpManager {
         // Process each queue item
         for item in queue {
             if let Err(e) = self.process_element(&item).await {
-                log::error!("Error processing queue element: {:?}", e);
+                error!("Error processing queue element: {e:?}");
             }
         }
 
         Ok(())
     }
 
+
     fn build_clipboard(&self, queue: &[QueueItem]) -> Result<()> {
         let links: Vec<String> = queue
             .iter()
             .map(|item| {
+                let config = self
+                    .config
+                    .select_config()
+                    .expect("One of configs should always be selected!");
                 format!(
                     "{}{}{}",
-                    self.config.config.address,
+                    config.address,
                     item.uuid,
-                    utils::file_extension(&item.local_file)
+                    file_extension(&item.local_file)
                 )
             })
             .collect();
 
-        let content = links.join("\n");
-        clipboard::put(&content)?;
+        let content = links.join(", ");
+        put_to_clipboard(&content)?;
 
-        if self.config.config.notifications.clipboard {
-            let _ = notification("Link copied to clipboard", "clipboard", &self.config.config);
+        if self.config.notifications.clipboard {
+            let _ = notification(
+                "Link copied to clipboard",
+                "clipboard",
+                &self.config.notifications,
+                &self.config.sounds,
+            );
         }
 
         Ok(())
     }
+
 
     async fn process_element(&self, item: &QueueItem) -> Result<()> {
         let path = Path::new(&item.local_file);
 
         // Check if file exists and is regular
         if !path.exists() || !path.is_file() {
-            log::debug!(
+            debug!(
                 "Local file not found or not a regular file: {}. Skipping.",
                 item.local_file
             );
@@ -111,17 +121,13 @@ impl SftpManager {
         // Check for temp file pattern
         let temp_pattern = regex::Regex::new(r".*-[a-zA-Z]{4,}$")?;
         if temp_pattern.is_match(&item.local_file) {
-            log::debug!("File matches temp pattern, skipping: {}", item.local_file);
+            debug!("File matches temp pattern, skipping: {}", item.local_file);
             self.database.remove_from_queue(&item.uuid)?;
             return Ok(());
         }
 
         // Upload file
-        let remote_file = format!(
-            "{}{}",
-            item.remote_file,
-            utils::file_extension(&item.local_file)
-        );
+        let remote_file = format!("{}{}", item.remote_file, file_extension(&item.local_file));
         self.send_file(&item.local_file, &remote_file).await?;
 
         // Add to history
@@ -133,8 +139,12 @@ impl SftpManager {
         Ok(())
     }
 
+
     async fn send_file(&self, local_file: &str, remote_file: &str) -> Result<()> {
-        let config = &self.config.config;
+        let config = &self
+            .config
+            .select_config()
+            .expect("One of configs should always be selected!");
 
         // Connect via SSH
         let tcp = TcpStream::connect(format!("{}:{}", config.hostname, config.ssh_port))
@@ -151,11 +161,17 @@ impl SftpManager {
         sess.handshake()?;
 
         // Authenticate
+        let ssh_private_key = if config.ssh_key.is_empty() {
+            ".ssh/id_ed25519"
+        } else {
+            &config.ssh_key
+        };
+
         sess.userauth_pubkey_file(
             &config.username,
             None,
-            Path::new(&home::home_dir().unwrap())
-                .join(".ssh/id_ed25519")
+            Path::new(&home::home_dir().expect("Home dir has to be set!"))
+                .join(ssh_private_key)
                 .as_path(),
             if config.ssh_key_pass.is_empty() {
                 None
@@ -168,57 +184,61 @@ impl SftpManager {
             anyhow::bail!("SSH authentication failed");
         }
 
-        log::debug!("SSH connection established");
+        debug!("SSH connection established");
 
         // Start SFTP session
         let sftp = sess.sftp()?;
-        log::debug!("SFTP session started");
+        debug!("SFTP session started");
 
         // Check remote file
-        let local_size = utils::local_file_size(local_file)?;
+        let local_size = local_file_size(local_file)?;
         let remote_size = sftp
             .stat(Path::new(remote_file))
             .map(|stat| stat.size.unwrap_or(0))
             .unwrap_or(0);
 
-        log::debug!(
-            "Local file: {} ({}); Remote file: {} ({})",
-            local_file,
-            local_size,
-            remote_file,
-            remote_size
+        debug!(
+            "Local file: {local_file} ({local_size}); Remote file: {remote_file} ({remote_size})"
         );
 
         if remote_size > 0 && remote_size == local_size {
-            log::info!("Found file of same size already uploaded. Skipping");
+            info!("Found file of same size already uploaded. Skipping");
             return Ok(());
         }
 
         // Upload file
-        log::info!("Uploading file to remote");
         let mut local = BufReader::new(File::open(local_file)?);
         let mut remote = sftp.create(Path::new(remote_file))?;
 
-        utils::stream_file_to_remote(
+        stream_file_to_remote(
             &mut local,
             &mut remote,
             self.config.sftp_buffer_size,
             local_size,
         )?;
 
-        if self.config.config.notifications.upload {
-            let _ = notification("Uploaded successfully.", "upload", &self.config.config);
+        if self.config.notifications.upload {
+            let _ = notification(
+                "Uploaded successfully.",
+                "upload",
+                &self.config.notifications,
+                &self.config.sounds,
+            );
         }
-
         Ok(())
     }
 
+
     fn add_to_history(&self, queue_item: &QueueItem) -> Result<()> {
+        let config = self
+            .config
+            .select_config()
+            .expect("One of configs should always be selected!");
         let content = format!(
             "{}{}{}",
-            self.config.config.address,
+            config.address,
             queue_item.uuid,
-            utils::file_extension(&queue_item.local_file)
+            file_extension(&queue_item.local_file)
         );
 
         // Check if already in history
@@ -228,7 +248,7 @@ impl SftpManager {
         if !exists {
             let history_item = History {
                 content,
-                timestamp: crate::database::now_unix(),
+                timestamp: Utc::now().timestamp(),
                 file: queue_item.local_file.clone(),
                 uuid: uuid::Uuid::new_v4().to_string(),
             };
@@ -237,8 +257,4 @@ impl SftpManager {
 
         Ok(())
     }
-
-    // pub fn trigger(&self) {
-    //     let _ = self.tx.send(());
-    // }
 }
