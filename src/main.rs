@@ -1,4 +1,4 @@
-use small::*;
+use small_bin::*;
 
 use anyhow::Result;
 use config::AppConfig;
