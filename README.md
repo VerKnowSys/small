@@ -34,6 +34,18 @@ Example configuration:
 open_history_on_start = false
 
 [[configs]]
+default = false
+active_at = "00:00:00-8:59:59"
+username = "otheruser"
+hostname = "my.ssh.host.com"
+ssh_port = 50022
+ssh_key = ".ssh/id_ed25519"
+ssh_key_pass = ""
+address = "https://your.site.com/"
+remote_path = "/Web/Sshots"
+watch_path = "/Users/your-user/Desktop"
+
+[[configs]]
 default = true
 active_at = "9:00:00-17:00:00"
 username = "anuser"
@@ -47,7 +59,7 @@ watch_path = "/Users/your-user/Pictures/Screenshots"
 
 [[configs]]
 default = false
-active_at = "17:00:01-8:59:59"
+active_at = "17:00:01-23:59:59"
 username = "otheruser"
 hostname = "my.ssh.host.com"
 ssh_port = 50022
@@ -75,6 +87,8 @@ upload_sound = "Hero"
 error = true
 error_sound = "Sosumi"
 ```
+
+NOTE: The time ranges are compared naively, so for example "17:00:01-8:59:59" will not work as expected. Additional config part with the time range since "0:00:00" is required as in the example above.
 
 ## Building
 
