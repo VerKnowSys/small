@@ -53,21 +53,17 @@ impl SftpManager {
 
     async fn process_queue(&self) -> Result<()> {
         let queue = self.database.get_queue()?;
+        if !queue.is_empty() {
+            // Build clipboard content
+            self.build_clipboard(&queue)?;
 
-        if queue.is_empty() {
-            return Ok(());
-        }
-
-        // Build clipboard content
-        self.build_clipboard(&queue)?;
-
-        // Process each queue item
-        for item in queue {
-            if let Err(e) = self.process_element(&item).await {
-                error!("Error processing queue element: {e:?}");
+            // Process each queue item
+            for item in &queue {
+                if let Err(e) = self.process_element(item).await {
+                    error!("Error processing queue element: {e:?}");
+                }
             }
         }
-
         Ok(())
     }
 
