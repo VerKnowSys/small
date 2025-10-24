@@ -162,6 +162,16 @@ impl AppConfig {
             .find(|cfg| cfg.default)
             .expect("One of configs has to be the default!");
 
+        if let Some(cfg) = config {
+            debug!(
+                "Selected config: {configuration:?}",
+                configuration = Config {
+                    ssh_key_pass: String::from("<redacted>"), /* don't print the ssh key in logs */
+                    ..cfg.clone()
+                }
+            );
+        }
+
         match config {
             Some(cfg) => Ok(cfg.clone()),
             None => {
