@@ -1,6 +1,6 @@
 [package]
 name = "small-bin"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 rust-version = "1.90"
 authors = ["Daniel Dettlaff <dmilith@me.com>"]
@@ -52,3 +52,4 @@ toml = "0.8"
 regex = "1.12"
 home = "0.5"
 clippers = "0.1.2"
+lazy_static = "1.5.0"
