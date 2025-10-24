@@ -4,7 +4,10 @@ use crate::{
     *,
 };
 use anyhow::Result;
-use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{
+    event::{MetadataKind, ModifyKind, RenameMode},
+    Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher,
+};
 use std::{path::Path, sync::Arc};
 use tokio::sync::mpsc;
 
@@ -73,6 +76,12 @@ impl FileWatcher {
                 debug!("{path_str} matches temp file name! Skipping");
                 continue;
             }
+            // NOTE: do not trigger metadata change events
+            if event.kind == EventKind::Modify(ModifyKind::Metadata(MetadataKind::Any)) {
+                debug!("Skipping event kind: {:?}", event.kind);
+                continue;
+            }
+
             self.process_event(&path_str)?;
         }
 
