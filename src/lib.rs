@@ -36,6 +36,12 @@ pub mod watcher;
 /// The local Web API
 pub mod webapi;
 
+/// Make the TEMP_PATTERN a lazy static
+use lazy_static::lazy_static;
+use regex::Regex;
+lazy_static! {
+    static ref TEMP_PATTERN: Regex = Regex::new(r".*-[a-zA-Z0-9]{4,}$").unwrap();
+}
 
 pub use tracing::{debug, error, info, instrument, trace, warn};
 pub use utils::*;

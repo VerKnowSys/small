@@ -115,8 +115,7 @@ impl SftpManager {
         }
 
         // Check for temp file pattern
-        let temp_pattern = regex::Regex::new(r".*-[a-zA-Z]{4,}$")?;
-        if temp_pattern.is_match(&item.local_file) {
+        if TEMP_PATTERN.is_match(&item.local_file) {
             debug!("File matches temp pattern, skipping: {}", item.local_file);
             self.database.remove_from_queue(&item.uuid)?;
             return Ok(());

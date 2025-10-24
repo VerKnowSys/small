@@ -61,7 +61,6 @@ impl FileWatcher {
 
 
     async fn handle_event(&self, event: Event) -> Result<()> {
-        let temp_pattern = regex::Regex::new(r".*-[a-zA-Z]{4,}$")?;
         for path in event.paths {
             let path_str = path.to_string_lossy().to_string();
             debug!("Handling event: {:?} for path {path_str}", event.kind);
@@ -72,7 +71,7 @@ impl FileWatcher {
                 );
                 continue;
             }
-            if temp_pattern.is_match(&path_str) {
+            if TEMP_PATTERN.is_match(&path_str) {
                 debug!("{path_str} matches temp file name! Skipping");
                 continue;
             }
