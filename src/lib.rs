@@ -5,6 +5,7 @@
 //! Crate docs
 #![deny(
     // missing_docs,
+    unused_imports,
     unstable_features,
     missing_debug_implementations,
     missing_copy_implementations,

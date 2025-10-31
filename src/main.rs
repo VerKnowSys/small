@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
     let config = Arc::new(AppConfig::new()?);
     let version = env!("CARGO_PKG_VERSION");
 
-    info!("Launching Small v{}", version);
+    info!("Launching Small v{version}");
 
     // Send startup notification
     if let Err(e) = notification::notification(
