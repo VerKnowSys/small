@@ -88,7 +88,6 @@ async fn main() -> Result<()> {
             );
             let mut interval = time::interval(Duration::from_millis(dump_interval));
             loop {
-                interval.tick().await; // the first tick is immediate
                 interval.tick().await;
                 let timestamp = chrono::Utc::now().format("%Y-%m-%d-%H-%M-%S").to_string();
                 let dump_path = dumps_dir.join(format!("database.{timestamp}.db"));
