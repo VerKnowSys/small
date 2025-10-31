@@ -89,7 +89,7 @@ async fn main() -> Result<()> {
             let mut interval = time::interval(Duration::from_millis(dump_interval));
             loop {
                 interval.tick().await;
-                let timestamp = chrono::Utc::now().format("%Y-%m-%d-%H-%M-%S").to_string();
+                let timestamp = chrono::Local::now().format("%Y-%m-%d-%H-%M-%S").to_string();
                 let dump_path = dumps_dir.join(format!("database.{timestamp}.db"));
                 if let Err(e) = database.dump_to_file(&dump_path) {
                     error!("Failed to dump database: {e:?}");

@@ -1,6 +1,6 @@
 use crate::*;
 use anyhow::Result;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Local, Utc};
 use std::{convert::Infallible, sync::Arc};
 use warp::Filter;
 use crate::{config::AppConfig, database::Database};
@@ -82,6 +82,10 @@ impl WebApi {
             .iter()
             .map(|entry| {
                 let timestamp = DateTime::<Utc>::from_timestamp(entry.timestamp, 0)
+                    .map(|dt_utc| {
+                        // convert Utc to Local, Utc isn't a standard time in Poland
+                        DateTime::<Local>::from(dt_utc)
+                    })
                     .map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string())
                     .unwrap_or_else(|| entry.timestamp.to_string());
 

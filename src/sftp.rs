@@ -5,7 +5,6 @@ use crate::{
     utils, *,
 };
 use anyhow::{Context, Result};
-use chrono::Utc;
 use ssh2::Session;
 use std::{fs::File, io::BufReader, net::TcpStream, path::Path, sync::Arc, time::Duration};
 use tokio::{sync::mpsc, time};
@@ -243,7 +242,7 @@ impl SftpManager {
         if !exists {
             let history_item = History {
                 content,
-                timestamp: Utc::now().timestamp(),
+                timestamp: chrono::Local::now().timestamp(),
                 file: queue_item.local_file.clone(),
                 uuid: uuid::Uuid::new_v4().to_string(),
             };
