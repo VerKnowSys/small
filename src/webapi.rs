@@ -77,8 +77,7 @@ impl WebApi {
 
 
     fn render_history(&self, history: &[database::History]) -> String {
-        let size = history.len();
-
+        let count = history.len();
         let items: Vec<String> = history
             .iter()
             .map(|entry| {
@@ -100,17 +99,16 @@ impl WebApi {
             r#"<html>
 {}
 <body>
-<pre class="count"><span>small</span> history of: {}</pre>
+<pre class="count"><span>small</span> history of: {count}</pre>
 <div>
 {}
 </div>
 <footer>
-<pre class="count">Sync eM ALL - version: {} - © 2015-2025 - Daniel (@dmilith) Dettlaff</pre>
+<pre class="count">Sync eM ALL - version: {} - © 2015-2025 - Daniel (<a href="https://x.com/dmilith/" target="_blank">@dmilith</a>) Dettlaff</pre>
 </footer>
 </body>
 </html>"#,
             Self::head(),
-            size,
             items.join(" "),
             env!("CARGO_PKG_VERSION")
         )
@@ -150,7 +148,7 @@ impl WebApi {
     article.item { vertical-align: top; display: block; text-align: center; }
     img { background-color: grey; padding: 0.5em; margin-top: 3em; margin-left: 2em; margin-right: 2em; }
     .caption { display: block; }
-    .count { display: block; margin: 0.5em; font-weight: bold; text-align: center; }
+    .count { display: block; margin: 0.5em; font-weight: bold; text-align: center; background: #CFCFCF }
     pre.count { margin: 2em; }
     pre.count span { font-size: 1.6em; }
     body { background-color: #e1e1e1; }
