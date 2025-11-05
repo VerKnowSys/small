@@ -23,6 +23,44 @@ Small is a file synchronization application that watches for file changes and au
 
 ## Configuration
 
+Small requires a SSH accessible backend where files will be stored and hosted from. For this I use Nginx configuration like this:
+
+```nginx
+server {
+        listen 80;
+        server_name s.verknowsys.com;
+        location / {
+           return 302 https://s.verknowsys.com/$request_uri;
+        }
+        autoindex off;
+        index index.html;
+}
+
+server {
+        listen 443 ssl;
+        http2 on;
+
+        ssl_certificate_key /Services/Certsd/certs/wild_verknowsys.com/domain.key;
+        ssl_certificate /Services/Certsd/certs/wild_verknowsys.com/chained.pem;
+
+        server_name s.verknowsys.com;
+        root /Web/Sshots/;
+
+        ssl_protocols TLSv1.3 TLSv1.2;
+        ssl_session_timeout 1d;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off;
+
+        # enable HSTS for A+ grade:
+        add_header Strict-Transport-Security "max-age=63072000" always;
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+
+        autoindex off;
+}
+```
+
 Small uses a TOML configuration file located at:
 - macOS: `~/Library/Small/config.toml`
 - Unix: `~/.small/config.toml`
