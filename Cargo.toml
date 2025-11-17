@@ -18,18 +18,18 @@ tokio = { version = "1.48", features = ["full"] }
 tokio-util = { version = "0.7", features = ["io"] }
 
 # File watching
-notify = "6.1"
+notify = "8.2"
 
 # SSH/SFTP
 ssh2 = "0.9"
 
 # Web server
-warp = "0.3"
+warp = { version = "0.4", features = ["server"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Database
-rusqlite = { version = "0.30", features = ["bundled", "backup"] }
+rusqlite = { version = "0.37", features = ["bundled", "backup", "modern_sqlite"] }
 
 # UUID
 uuid = { version = "1.18", features = ["v3", "v4"] }
@@ -39,14 +39,14 @@ chrono = "0.4"
 
 # Logging
 tracing = { version = "0.1.41", features = ["log", "attributes", "std"] }
-tracing-subscriber = { version = "0.3.18", features = ["registry", "fmt", "env-filter"] }
+tracing-subscriber = { version = "0.3.20", features = ["registry", "fmt", "env-filter"] }
 
 # Error handling
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 
 # Configuration
-toml = "0.8"
+toml = "0.9"
 
 # Utils
 regex = "1.12"
