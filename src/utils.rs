@@ -5,7 +5,7 @@ use std::{
     io::{self, Read, Write},
     path::Path,
 };
-use tracing_subscriber::{fmt, EnvFilter};
+use tracing_subscriber::{EnvFilter, fmt};
 
 
 /// Initialize the instruments-subscriber

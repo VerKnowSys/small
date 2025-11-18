@@ -5,8 +5,8 @@ use crate::{
 };
 use anyhow::Result;
 use notify::{
-    event::{MetadataKind, ModifyKind, RenameMode},
     Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher,
+    event::{MetadataKind, ModifyKind, RenameMode},
 };
 use std::{path::Path, sync::Arc};
 use tokio::sync::mpsc;

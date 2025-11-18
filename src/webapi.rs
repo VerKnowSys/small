@@ -1,9 +1,8 @@
-use crate::*;
+use crate::{config::AppConfig, database::Database, *};
 use anyhow::Result;
 use chrono::{DateTime, Local, Utc};
 use std::{convert::Infallible, sync::Arc};
 use warp::Filter;
-use crate::{config::AppConfig, database::Database};
 
 
 #[derive(Debug)]
