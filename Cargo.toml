@@ -35,7 +35,7 @@ rusqlite = { version = "0.37", features = ["bundled", "backup", "modern_sqlite"]
 uuid = { version = "1.18", features = ["v3", "v4"] }
 
 # Time
-chrono = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
 
 # Logging
 tracing = { version = "0.1.41", features = ["log", "attributes", "std"] }
