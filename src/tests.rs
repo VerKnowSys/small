@@ -4,7 +4,7 @@ use crate::{
     database::{Database, QueueItem},
     *,
 };
-use chrono::NaiveTime;
+use chrono::{Datelike, Local, NaiveTime, Weekday};
 
 
 #[test]
@@ -77,4 +77,34 @@ pub fn select_config_test_default() {
     let default_config = app_config.configs.iter().find(|cfg| cfg.default);
     assert!(default_config.is_some());
     assert_eq!(default_config.unwrap(), &config1);
+}
+
+#[test]
+pub fn select_config_test_active_on() {
+    let today = Local::now().weekday();
+    let tomorrow = today.succ();
+
+    let config1 = Config {
+        active_at: String::from("00:00:00-23:59:59"),
+        active_on: vec![today],
+        ..Config::default()
+    };
+    let config2 = Config {
+        active_at: String::from("00:00:00-23:59:59"),
+        active_on: vec![tomorrow],
+        ..Config::default()
+    };
+    let default_config = Config {
+        active_at: String::from("00:00:00-00:00:01"), // not active now
+        default: true,
+        ..Config::default()
+    };
+
+    let app_config = AppConfig {
+        configs: vec![config1.clone(), config2, default_config],
+        ..AppConfig::default()
+    };
+
+    let selected_config = app_config.select_config().unwrap();
+    assert_eq!(selected_config, config1);
 }

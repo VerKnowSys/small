@@ -1,6 +1,6 @@
 use crate::*;
 use anyhow::{Context, Result};
-use chrono::{Local, NaiveTime};
+use chrono::{Datelike, Local, NaiveTime, Weekday};
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 
@@ -26,6 +26,7 @@ pub struct Config {
     pub ssh_key_pass: String,
     pub watch_path: String,
     pub active_at: String, // hour range when to activate it: example: "9:01:00-15:55:00"
+    pub active_on: Vec<Weekday>, // days of week when to activate it: example: ["Mon", "Tue", "Wed", "Thu", "Fri"]
     pub default: bool,
 }
 
@@ -140,12 +141,22 @@ impl AppConfig {
 
     // selects the current config based on the time
     pub fn select_config(&self) -> Result<Config> {
-        let now = Local::now().time();
+        let now = Local::now();
+        let time = now.time();
+        let weekday = now.weekday();
 
         let configs = &self.configs;
         let config = configs.iter().find(|cfg| {
+            if !cfg.active_on.is_empty() && !cfg.active_on.contains(&weekday) {
+                debug!("Active_on doesn't contain the current day: {weekday}");
+                return false;
+            }
+            if cfg.active_at.is_empty() {
+                debug!("Active_at is empty and thee current day is {weekday}, meaning the config is valid for the whole day");
+                return true;
+            }
             let range: Vec<&str> = cfg.active_at.split('-').collect();
-            if range.len() > 2 {
+            if range.len() != 2 {
                 error!("Wrong format of the time range. Should be: HH:MM:SS-HH:MM:SS");
                 return false;
             }
@@ -154,7 +165,7 @@ impl AppConfig {
             let time_end = NaiveTime::parse_from_str(range[1], "%H:%M:%S")
                 .expect("Valid time is expected");
 
-            now >= time_start && now <= time_end
+            time >= time_start && time <= time_end
         });
 
         let default_config = configs
